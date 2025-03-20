@@ -23,23 +23,21 @@ class Application extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'DrumScribes',
       theme: darkTheme,
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MainWindow(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+class MainWindow extends StatefulWidget {
+  const MainWindow({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MainWindow> createState() => _MainWindowState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MainWindowState extends State<MainWindow> {
   int _counter = 0;
 
   void _incrementCounter() {
@@ -51,7 +49,26 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60),
+        child: AppBar(
+          title: Text("NewGroove"),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.save_outlined),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: const Icon(Icons.folder_outlined),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: const Icon(Icons.settings_outlined),
+              onPressed: () {},
+            ),
+          ],
+        ),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
