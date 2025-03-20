@@ -4,9 +4,10 @@
 *.log
 *.pyc
 *.swp
+*.iml
 .buildlog/
 .history
-
+.idea/
 
 
 # Flutter repo-specific
