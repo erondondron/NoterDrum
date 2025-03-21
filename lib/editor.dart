@@ -69,6 +69,8 @@ class InstrumentsPanel extends StatefulWidget {
 
 class _InstrumentsPanelState extends State<InstrumentsPanel> {
   static const double _rowHeight = 40;
+  static const double _iconSize = 24;
+  bool _isExpanded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -89,13 +91,18 @@ class _InstrumentsPanelState extends State<InstrumentsPanel> {
   }
 
   Widget controlRow(InstrumentsController controller) {
+    if (!_isExpanded) return expansionToggle();
+
     return SizedBox(
       height: _rowHeight,
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [moreButton(controller)],
+        children: [
+          addNewDrumButton(controller),
+          expansionToggle(),
+        ],
       ),
     );
   }
@@ -104,6 +111,8 @@ class _InstrumentsPanelState extends State<InstrumentsPanel> {
     Instruments instrument,
     InstrumentsController controller,
   ) {
+    if (!_isExpanded) return drumIcon(instrument.icon);
+
     return SizedBox(
       height: _rowHeight,
       child: Row(
@@ -111,8 +120,8 @@ class _InstrumentsPanelState extends State<InstrumentsPanel> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          rowLabel(instrumentIcon(instrument.icon), instrument.name),
-          removeButton(instrument, controller),
+          rowLabel(drumIcon(instrument.icon), instrument.name),
+          removeDrumButton(instrument, controller),
         ],
       ),
     );
@@ -131,16 +140,17 @@ class _InstrumentsPanelState extends State<InstrumentsPanel> {
     );
   }
 
-  Widget instrumentIcon(String iconPath) {
+  Widget drumIcon(String iconPath) {
     final color = Theme.of(context).iconTheme.color!;
     final theme = ColorFilter.mode(color, BlendMode.srcIn);
     return SizedBox(
-      width: 24,
-      child: SvgPicture.asset(iconPath, colorFilter: theme),
+      height: _rowHeight,
+      width: _iconSize,
+      child: SvgPicture.asset(iconPath, colorFilter: theme, fit: BoxFit.none),
     );
   }
 
-  Widget removeButton(
+  Widget removeDrumButton(
     Instruments instrument,
     InstrumentsController controller,
   ) {
@@ -148,13 +158,14 @@ class _InstrumentsPanelState extends State<InstrumentsPanel> {
       onTap: () => controller.remove(instrument),
       behavior: HitTestBehavior.translucent,
       child: SizedBox(
-          height: _rowHeight,
-          width: _rowHeight,
-          child: Icon(Icons.close_outlined, size: 15)),
+        height: _rowHeight,
+        width: _iconSize,
+        child: Icon(Icons.close_outlined, size: 15),
+      ),
     );
   }
 
-  Widget moreButton(InstrumentsController controller) {
+  Widget addNewDrumButton(InstrumentsController controller) {
     return PopupMenuButton<Instruments>(
       child: rowLabel(Icon(Icons.add_outlined), "More"),
       onSelected: (Instruments instrument) => controller.add(instrument),
@@ -164,13 +175,27 @@ class _InstrumentsPanelState extends State<InstrumentsPanel> {
               (instrument) => PopupMenuItem(
                 value: instrument,
                 child: rowLabel(
-                  instrumentIcon(instrument.icon),
+                  drumIcon(instrument.icon),
                   instrument.name,
                 ),
               ),
             )
             .toList();
       },
+    );
+  }
+
+  Widget expansionToggle() {
+    return GestureDetector(
+      onTap: () => setState(() => _isExpanded = !_isExpanded),
+      behavior: HitTestBehavior.translucent,
+      child: SizedBox(
+        height: _rowHeight,
+        width: _iconSize,
+        child: _isExpanded
+            ? Icon(Icons.keyboard_double_arrow_left_outlined, size: 18)
+            : Icon(Icons.keyboard_double_arrow_right_outlined, size: 24),
+      ),
     );
   }
 }
