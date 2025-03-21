@@ -8,6 +8,10 @@ final textTheme = GoogleFonts.baloo2TextTheme(ThemeData.dark().textTheme)
         fontSize: 30,
         fontWeight: FontWeight.w500,
       ),
+      bodyMedium: GoogleFonts.baloo2(
+        fontSize: 16,
+        fontWeight: FontWeight.w500,
+      )
     );
 
 final ThemeData darkTheme = ThemeData(

@@ -1,33 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-class Instrument {
-  const Instrument({
-    required this.id,
+enum Instruments {
+  crash(order: 0, name: "Crash", icon: "crash.svg"),
+  hiHat(order: 1, name: "Hi-Hat", icon: "hi_hat.svg"),
+  ride(order: 2, name: "Ride", icon: "ride.svg"),
+  tom1(order: 3, name: "Tom 1", icon: "tom_1.svg"),
+  tom2(order: 4, name: "Tom 2", icon: "tom_2.svg"),
+  snare(order: 5, name: "Snare", icon: "snare.svg"),
+  tom3(order: 6, name: "Tom 3", icon: "tom_3.svg"),
+  kick(order: 7, name: "Kick", icon: "kick.svg");
+
+  const Instruments({
+    required this.order,
     required this.name,
-    required this.icon,
-  });
+    required String icon,
+  }) : icon = "assets/icons/$icon";
 
-  final int id;
+  final int order;
   final String name;
-  final IconData icon;
+  final String icon;
 }
 
 class InstrumentsController extends ChangeNotifier {
-  final List<Instrument> instruments = [
-    Instrument(id: 0, name: "Crash", icon: Icons.music_note),
-    Instrument(id: 1, name: "Hi-Hat", icon: Icons.music_note),
-    Instrument(id: 2, name: "Ride", icon: Icons.music_note),
-    Instrument(id: 3, name: "Tom 1", icon: Icons.music_note),
-    Instrument(id: 4, name: "Tom 2", icon: Icons.music_note),
-    Instrument(id: 5, name: "Snare", icon: Icons.music_note),
-    Instrument(id: 6, name: "Tom 3", icon: Icons.music_note),
-    Instrument(id: 7, name: "Kick", icon: Icons.music_note),
+  final List<Instruments> _selected = [
+    Instruments.crash,
+    Instruments.ride,
+    Instruments.hiHat,
+    Instruments.tom1,
+    Instruments.tom2,
+    Instruments.snare,
+    Instruments.tom3,
+    Instruments.kick,
   ];
 
-  final Set<int> _selected = {0, 1, 2, 3, 4, 5, 6, 7};
-
-  List<Instrument> get selected =>
-      instruments.where((i) => _selected.contains(i.id)).toList();
+  List<Instruments> get selected => _selected.toList();
 }
 
 class SheetMusicEditor extends StatefulWidget {
@@ -68,16 +75,28 @@ class _InstrumentsPanelState extends State<InstrumentsPanel> {
     );
   }
 
-  Widget instrumentRow(Instrument instrument) {
+  Widget instrumentRow(Instruments instrument) {
     return SizedBox(
       height: 30,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Icon(instrument.icon),
-          Text(instrument.name),
+          instrumentIcon(instrument.icon),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            child: Text(instrument.name),
+          ),
         ],
       ),
+    );
+  }
+
+  Widget instrumentIcon(String iconPath) {
+    final color = Theme.of(context).iconTheme.color!;
+    final theme = ColorFilter.mode(color, BlendMode.srcIn);
+    return SizedBox(
+      width: 24,
+      child: SvgPicture.asset(iconPath, colorFilter: theme),
     );
   }
 }
