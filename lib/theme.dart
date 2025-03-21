@@ -9,7 +9,7 @@ final textTheme = GoogleFonts.baloo2TextTheme(ThemeData.dark().textTheme)
         fontWeight: FontWeight.w500,
       ),
       bodyMedium: GoogleFonts.baloo2(
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: FontWeight.w500,
       )
     );
@@ -26,4 +26,8 @@ final ThemeData darkTheme = ThemeData(
     backgroundColor: Color(0xFF1F1F1F),
     titleTextStyle: textTheme.titleLarge,
   ),
+  popupMenuTheme: PopupMenuThemeData(
+    color: Color(0xFF181818),
+    labelTextStyle: WidgetStatePropertyAll(textTheme.bodyMedium),
+  )
 );

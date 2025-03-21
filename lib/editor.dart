@@ -27,18 +27,19 @@ enum Instruments {
 
 class InstrumentsController extends ChangeNotifier {
   final List<Instruments> _selected = [
-    Instruments.crash,
-    Instruments.ride,
     Instruments.hiHat,
-    Instruments.tom1,
-    Instruments.tom2,
     Instruments.snare,
-    Instruments.tom3,
     Instruments.kick,
   ];
 
   UnmodifiableListView<Instruments> get selected =>
       UnmodifiableListView(_selected);
+
+  UnmodifiableListView<Instruments> get unselected {
+    final unselected = Instruments.values
+        .where((instrument) => !_selected.contains(instrument));
+    return UnmodifiableListView(unselected);
+  }
 
   void add(Instruments instrument) {
     _selected.add(instrument);
@@ -67,7 +68,7 @@ class InstrumentsPanel extends StatefulWidget {
 }
 
 class _InstrumentsPanelState extends State<InstrumentsPanel> {
-  static const double _rowHeight = 30;
+  static const double _rowHeight = 40;
 
   @override
   Widget build(BuildContext context) {
@@ -76,12 +77,26 @@ class _InstrumentsPanelState extends State<InstrumentsPanel> {
         return IntrinsicWidth(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: controller.selected
-                .map((instrument) => instrumentRow(instrument, controller))
-                .toList(),
+            children: [
+              controlRow(controller),
+              ...controller.selected
+                  .map((instrument) => instrumentRow(instrument, controller)),
+            ],
           ),
         );
       },
+    );
+  }
+
+  Widget controlRow(InstrumentsController controller) {
+    return SizedBox(
+      height: _rowHeight,
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [moreButton(controller)],
+      ),
     );
   }
 
@@ -96,20 +111,21 @@ class _InstrumentsPanelState extends State<InstrumentsPanel> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          instrumentDescription(instrument),
+          rowLabel(instrumentIcon(instrument.icon), instrument.name),
           removeButton(instrument, controller),
         ],
       ),
     );
   }
 
-  Widget instrumentDescription(Instruments instrument) {
+  Widget rowLabel(Widget icon, String label) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        instrumentIcon(instrument.icon),
+        icon,
         Padding(
           padding: EdgeInsets.only(left: 10, right: 20),
-          child: Text(instrument.name),
+          child: Text(label),
         ),
       ],
     );
@@ -134,7 +150,27 @@ class _InstrumentsPanelState extends State<InstrumentsPanel> {
       child: SizedBox(
           height: _rowHeight,
           width: _rowHeight,
-          child: Icon(Icons.close_outlined, size: 17)),
+          child: Icon(Icons.close_outlined, size: 15)),
+    );
+  }
+
+  Widget moreButton(InstrumentsController controller) {
+    return PopupMenuButton<Instruments>(
+      child: rowLabel(Icon(Icons.add_outlined), "More"),
+      onSelected: (Instruments instrument) => controller.add(instrument),
+      itemBuilder: (BuildContext context) {
+        return controller.unselected
+            .map(
+              (instrument) => PopupMenuItem(
+                value: instrument,
+                child: rowLabel(
+                  instrumentIcon(instrument.icon),
+                  instrument.name,
+                ),
+              ),
+            )
+            .toList();
+      },
     );
   }
 }
