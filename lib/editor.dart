@@ -1,5 +1,8 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 enum Instruments {
   crash(order: 0, name: "Crash", icon: "crash.svg"),
@@ -34,60 +37,81 @@ class InstrumentsController extends ChangeNotifier {
     Instruments.kick,
   ];
 
-  List<Instruments> get selected => _selected.toList();
-}
+  UnmodifiableListView<Instruments> get selected =>
+      UnmodifiableListView(_selected);
 
-class SheetMusicEditor extends StatefulWidget {
-  const SheetMusicEditor({super.key});
+  void add(Instruments instrument) {
+    _selected.add(instrument);
+    _selected.sort((a, b) => a.order.compareTo(b.order));
+    notifyListeners();
+  }
 
-  @override
-  State<SheetMusicEditor> createState() => _SheetMusicEditorState();
-}
-
-class _SheetMusicEditorState extends State<SheetMusicEditor> {
-  final InstrumentsController controller = InstrumentsController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(children: [
-      InstrumentsPanel(controller: controller),
-    ]);
+  void remove(Instruments instrument) {
+    _selected.remove(instrument);
+    notifyListeners();
   }
 }
 
-class InstrumentsPanel extends StatefulWidget {
-  const InstrumentsPanel({super.key, required this.controller});
+class SheetMusicEditor extends StatelessWidget {
+  const SheetMusicEditor({super.key});
 
-  final InstrumentsController controller;
+  @override
+  Widget build(BuildContext context) => Row(children: [InstrumentsPanel()]);
+}
+
+class InstrumentsPanel extends StatefulWidget {
+  const InstrumentsPanel({super.key});
 
   @override
   State<InstrumentsPanel> createState() => _InstrumentsPanelState();
 }
 
 class _InstrumentsPanelState extends State<InstrumentsPanel> {
+  static const double _rowHeight = 30;
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: widget.controller.selected
-          .map((instrument) => instrumentRow(instrument))
-          .toList(),
+    return Consumer<InstrumentsController>(
+      builder: (BuildContext context, InstrumentsController controller, _) {
+        return IntrinsicWidth(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: controller.selected
+                .map((instrument) => instrumentRow(instrument, controller))
+                .toList(),
+          ),
+        );
+      },
     );
   }
 
-  Widget instrumentRow(Instruments instrument) {
+  Widget instrumentRow(
+    Instruments instrument,
+    InstrumentsController controller,
+  ) {
     return SizedBox(
-      height: 30,
+      height: _rowHeight,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          instrumentIcon(instrument.icon),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            child: Text(instrument.name),
-          ),
+          instrumentDescription(instrument),
+          removeButton(instrument, controller),
         ],
       ),
+    );
+  }
+
+  Widget instrumentDescription(Instruments instrument) {
+    return Row(
+      children: [
+        instrumentIcon(instrument.icon),
+        Padding(
+          padding: EdgeInsets.only(left: 10, right: 20),
+          child: Text(instrument.name),
+        ),
+      ],
     );
   }
 
@@ -97,6 +121,20 @@ class _InstrumentsPanelState extends State<InstrumentsPanel> {
     return SizedBox(
       width: 24,
       child: SvgPicture.asset(iconPath, colorFilter: theme),
+    );
+  }
+
+  Widget removeButton(
+    Instruments instrument,
+    InstrumentsController controller,
+  ) {
+    return GestureDetector(
+      onTap: () => controller.remove(instrument),
+      behavior: HitTestBehavior.translucent,
+      child: SizedBox(
+          height: _rowHeight,
+          width: _rowHeight,
+          child: Icon(Icons.close_outlined, size: 17)),
     );
   }
 }

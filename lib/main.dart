@@ -4,6 +4,7 @@ import 'package:drums/editor.dart';
 import 'package:drums/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -70,7 +71,10 @@ class _MainWindowState extends State<MainWindow> {
       ),
       body: Padding(
         padding: EdgeInsets.only(left: sidePadding, top: 25),
-        child: SheetMusicEditor(),
+        child: ChangeNotifierProvider(
+          create: (BuildContext context) => InstrumentsController(),
+          child: const SheetMusicEditor(),
+        ),
       ),
     );
   }
