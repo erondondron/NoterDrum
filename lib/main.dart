@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:drums/editor.dart';
 import 'package:drums/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -38,20 +41,16 @@ class MainWindow extends StatefulWidget {
 }
 
 class _MainWindowState extends State<MainWindow> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    double notchSize = MediaQuery.of(context).padding.left;
+    double sidePadding = max(notchSize, 80);
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
         child: AppBar(
+          titleSpacing: sidePadding - notchSize,
           title: Text("NewGroove"),
           actions: [
             IconButton(
@@ -69,24 +68,9 @@ class _MainWindowState extends State<MainWindow> {
           ],
         ),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      body: Padding(
+        padding: EdgeInsets.only(left: sidePadding, top: 25),
+        child: SheetMusicEditor(),
       ),
     );
   }
