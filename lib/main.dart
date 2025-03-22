@@ -48,7 +48,7 @@ class _MainWindowState extends State<MainWindow> {
     double notchSize = MediaQuery.of(context).padding.left;
     double sidePadding = max(notchSize, 80);
 
-    final sheetMusic = DrumSetModel();
+    final sheetMusic = SheetMusicModel();
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
