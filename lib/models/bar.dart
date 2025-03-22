@@ -1,11 +1,19 @@
+import 'dart:collection';
+
+import 'package:drums/models/beat.dart';
 import 'package:drums/models/drum_set.dart';
 import 'package:flutter/material.dart';
 
 class BarModel extends ChangeNotifier {
-  BarModel({List<Drums>? beats}) : _beats = beats ?? const [];
+  BarModel({Map<Drums, List<BeatModel>>? beats}) : _beats = beats ?? {};
 
   DrumSetModel? _drumSet;
-  List<Drums> _beats;
+  final Map<Drums, List<BeatModel>> _beats;
+
+  DrumSetModel? get drumSet => _drumSet;
+
+  UnmodifiableListView<BeatModel> getBeats(Drums drum) =>
+      UnmodifiableListView(_beats[drum] ?? []);
 
   void setupDrumSet(DrumSetModel drumSet) {
     _drumSet?.removeListener(_updateDrums);
@@ -21,9 +29,17 @@ class BarModel extends ChangeNotifier {
   }
 
   void _updateDrums() {
-    _beats = _drumSet?.selected ?? [];
+    if (_drumSet == null) return notifyListeners();
+
+    final selected = _drumSet!.selected;
+    _beats.removeWhere((Drums drum, _) => !selected.contains(drum));
+    for (final drum in selected) {
+      _beats.putIfAbsent(
+        drum,
+        () => List.generate(4, (_) => BeatModel.generate()),
+      );
+    }
+
     notifyListeners();
   }
-
-  List<Drums> get selectedDrums => _beats;
 }

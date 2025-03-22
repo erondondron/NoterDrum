@@ -19,7 +19,7 @@ final ThemeData darkTheme = ThemeData(
   textTheme: textTheme,
   scaffoldBackgroundColor: const Color(0xFF1F1F1F),
   colorScheme: const ColorScheme.dark(
-    surface: Color(0xFF1F1F1F),
+    surface: Color(0xFF181818),
     onSurface: Color(0xFFEEEEEE),
   ),
   appBarTheme: AppBarTheme(
