@@ -13,22 +13,32 @@ class SheetMusicWidget extends StatelessWidget {
       builder: (BuildContext context, SheetMusicModel sheetMusic, _) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: sheetMusic.bars
-              .map(
-                (BarModel bar) => Row(
-                  children: [
-                    ChangeNotifierProvider.value(
-                      value: sheetMusic.drumSet,
-                      child: const DrumSetWidget(),
+          children: sheetMusic.bars.map((BarModel bar) {
+            final isLast = bar == sheetMusic.bars.last;
+            return Padding(
+              padding: EdgeInsets.symmetric(vertical: 10),
+              child: Row(
+                children: [
+                  ChangeNotifierProvider.value(
+                    value: sheetMusic.drumSet,
+                    child: const DrumSetWidget(),
+                  ),
+                  ChangeNotifierProvider.value(
+                    value: bar,
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 25),
+                      child: BarWidget(),
                     ),
-                    ChangeNotifierProvider.value(
-                      value: bar,
-                      child: const BarWidget(),
+                  ),
+                  if (isLast)
+                    IconButton(
+                      icon: const Icon(Icons.add_outlined),
+                      onPressed: sheetMusic.addNewBar,
                     ),
-                  ],
-                ),
-              )
-              .toList(),
+                ],
+              ),
+            );
+          }).toList(),
         );
       },
     );

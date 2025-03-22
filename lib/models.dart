@@ -101,4 +101,14 @@ class SheetMusicModel extends ChangeNotifier {
   DrumSetModel get drumSet => _drumSet;
 
   UnmodifiableListView<BarModel> get bars => UnmodifiableListView(_bars);
+
+  void addNewBar() {
+    _bars.add(BarModel()..setupDrumSet(_drumSet));
+    notifyListeners();
+  }
+
+  void removeBar(BarModel bar) {
+    _bars.remove(bar);
+    notifyListeners();
+  }
 }
