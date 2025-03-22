@@ -3,29 +3,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
-class InstrumentsPanel extends StatefulWidget {
-  const InstrumentsPanel({super.key});
+class DrumSetWidget extends StatefulWidget {
+  const DrumSetWidget({super.key});
 
   @override
-  State<InstrumentsPanel> createState() => _InstrumentsPanelState();
+  State<DrumSetWidget> createState() => _DrumSetWidgetState();
 }
 
-class _InstrumentsPanelState extends State<InstrumentsPanel> {
+class _DrumSetWidgetState extends State<DrumSetWidget> {
   static const double _rowHeight = 40;
   static const double _iconSize = 24;
-  bool _isExpanded = false;
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<SheetMusic>(
-      builder: (BuildContext context, SheetMusic sheetMusic, _) {
+    return Consumer<DrumSetModel>(
+      builder: (BuildContext context, DrumSetModel drumSet, _) {
         return IntrinsicWidth(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              controlRow(sheetMusic),
-              ...sheetMusic.selectedDrums
-                  .map((drum) => selectedDrumRow(drum, sheetMusic)),
+              controlRow(drumSet),
+              ...drumSet.selected.map((drum) => selectedDrumRow(drum, drumSet)),
             ],
           ),
         );
@@ -33,8 +31,8 @@ class _InstrumentsPanelState extends State<InstrumentsPanel> {
     );
   }
 
-  Widget controlRow(SheetMusic sheetMusic) {
-    if (!_isExpanded) return panelExpansionToggle();
+  Widget controlRow(DrumSetModel drumSet) {
+    if (drumSet.isHidden) return hidingToggle(drumSet);
 
     return SizedBox(
       height: _rowHeight,
@@ -43,15 +41,15 @@ class _InstrumentsPanelState extends State<InstrumentsPanel> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          addNewDrumButton(sheetMusic),
-          panelExpansionToggle(),
+          addNewDrumButton(drumSet),
+          hidingToggle(drumSet),
         ],
       ),
     );
   }
 
-  Widget selectedDrumRow(Drums drum, SheetMusic sheetMusic) {
-    if (!_isExpanded) return drumIcon(drum.icon);
+  Widget selectedDrumRow(Drums drum, DrumSetModel drumSet) {
+    if (drumSet.isHidden) return drumIcon(drum.icon);
 
     return SizedBox(
       height: _rowHeight,
@@ -61,7 +59,7 @@ class _InstrumentsPanelState extends State<InstrumentsPanel> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           rowLabel(drumIcon(drum.icon), drum.name),
-          removeDrumButton(drum, sheetMusic),
+          removeDrumButton(drum, drumSet),
         ],
       ),
     );
@@ -90,9 +88,9 @@ class _InstrumentsPanelState extends State<InstrumentsPanel> {
     );
   }
 
-  Widget removeDrumButton(Drums drum, SheetMusic controller) {
+  Widget removeDrumButton(Drums drum, DrumSetModel drumSet) {
     return GestureDetector(
-      onTap: () => controller.removeDrum(drum),
+      onTap: () => drumSet.remove(drum),
       behavior: HitTestBehavior.translucent,
       child: SizedBox(
         height: _rowHeight,
@@ -102,12 +100,12 @@ class _InstrumentsPanelState extends State<InstrumentsPanel> {
     );
   }
 
-  Widget addNewDrumButton(SheetMusic controller) {
+  Widget addNewDrumButton(DrumSetModel drumSet) {
     return PopupMenuButton<Drums>(
       child: rowLabel(Icon(Icons.add_outlined), "More"),
-      onSelected: (Drums drum) => controller.addDrum(drum),
+      onSelected: (Drums drum) => drumSet.add(drum),
       itemBuilder: (BuildContext context) {
-        return controller.unselectedDrums
+        return drumSet.unselected
             .map(
               (drum) => PopupMenuItem(
                 value: drum,
@@ -119,16 +117,16 @@ class _InstrumentsPanelState extends State<InstrumentsPanel> {
     );
   }
 
-  Widget panelExpansionToggle() {
+  Widget hidingToggle(DrumSetModel drumSet) {
     return GestureDetector(
-      onTap: () => setState(() => _isExpanded = !_isExpanded),
+      onTap: drumSet.toggleHiding,
       behavior: HitTestBehavior.translucent,
       child: SizedBox(
         height: _rowHeight,
         width: _iconSize,
-        child: _isExpanded
-            ? Icon(Icons.keyboard_double_arrow_left_outlined, size: 18)
-            : Icon(Icons.keyboard_double_arrow_right_outlined, size: 24),
+        child: drumSet.isHidden
+            ? Icon(Icons.keyboard_double_arrow_right_outlined, size: 24)
+            : Icon(Icons.keyboard_double_arrow_left_outlined, size: 18),
       ),
     );
   }

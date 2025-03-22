@@ -23,27 +23,36 @@ enum Drums {
   final String icon;
 }
 
-class SheetMusic extends ChangeNotifier {
-  SheetMusic({
-    List<Drums> selectedDrums = const [Drums.hiHat, Drums.snare, Drums.kick],
-  }) : _selectedDrums = selectedDrums.toList();
+class DrumSetModel extends ChangeNotifier {
+  DrumSetModel({
+    List<Drums> selected = const [Drums.hiHat, Drums.snare, Drums.kick],
+    bool isHidden = true,
+  })  : _selected = selected.toList(),
+        _isHidden = isHidden;
 
-  final List<Drums> _selectedDrums;
+  final List<Drums> _selected;
+  bool _isHidden;
 
-  UnmodifiableListView<Drums> get selectedDrums =>
-      UnmodifiableListView(_selectedDrums);
+  UnmodifiableListView<Drums> get selected => UnmodifiableListView(_selected);
 
-  UnmodifiableListView<Drums> get unselectedDrums => UnmodifiableListView(
-      Drums.values.where((Drums drum) => !_selectedDrums.contains(drum)));
+  UnmodifiableListView<Drums> get unselected => UnmodifiableListView(
+      Drums.values.where((Drums drum) => !_selected.contains(drum)));
 
-  void addDrum(Drums drum) {
-    _selectedDrums.add(drum);
-    _selectedDrums.sort((a, b) => a.order.compareTo(b.order));
+  bool get isHidden => _isHidden;
+
+  void add(Drums drum) {
+    _selected.add(drum);
+    _selected.sort((a, b) => a.order.compareTo(b.order));
     notifyListeners();
   }
 
-  void removeDrum(Drums drum) {
-    _selectedDrums.remove(drum);
+  void remove(Drums drum) {
+    _selected.remove(drum);
+    notifyListeners();
+  }
+
+  void toggleHiding() {
+    _isHidden = !_isHidden;
     notifyListeners();
   }
 }

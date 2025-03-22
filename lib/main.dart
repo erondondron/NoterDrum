@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:drums/models.dart';
-import 'package:drums/instruments.dart';
+import 'package:drums/sheet_music.dart';
 import 'package:drums/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -48,7 +48,7 @@ class _MainWindowState extends State<MainWindow> {
     double notchSize = MediaQuery.of(context).padding.left;
     double sidePadding = max(notchSize, 80);
 
-    final sheetMusic = SheetMusic();
+    final sheetMusic = DrumSetModel();
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
@@ -75,16 +75,9 @@ class _MainWindowState extends State<MainWindow> {
         padding: EdgeInsets.only(left: sidePadding, top: 25),
         child: ChangeNotifierProvider.value(
           value: sheetMusic,
-          child: const SheetMusicEditor(),
+          child: const SheetMusicWidget(),
         ),
       ),
     );
   }
-}
-
-class SheetMusicEditor extends StatelessWidget {
-  const SheetMusicEditor({super.key});
-
-  @override
-  Widget build(BuildContext context) => Row(children: [InstrumentsPanel()]);
 }
