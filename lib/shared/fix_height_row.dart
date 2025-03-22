@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class FixHeightRow extends StatelessWidget {
   static const double height = 40;
 
-  const FixHeightRow({super.key, required this.children});
+  const FixHeightRow({super.key, this.children = const []});
 
   final List<Widget> children;
 

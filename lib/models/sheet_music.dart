@@ -29,6 +29,9 @@ class SheetMusicModel extends ChangeNotifier {
 
   void removeBar(BarModel bar) {
     _bars.remove(bar);
+    if (_bars.isEmpty) {
+      return addNewBar();
+    }
     notifyListeners();
   }
 }
