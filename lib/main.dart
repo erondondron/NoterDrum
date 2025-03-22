@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:drums/models.dart';
-import 'package:drums/sheet_music.dart';
+import 'package:drums/models/sheet_music.dart';
+import 'package:drums/widgets/sheet_music.dart';
 import 'package:drums/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

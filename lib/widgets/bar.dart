@@ -1,4 +1,6 @@
-import 'package:drums/models.dart';
+import 'package:drums/models/bar.dart';
+import 'package:drums/models/drum_set.dart';
+import 'package:drums/shared/fix_height_row.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -11,8 +13,14 @@ class BarWidget extends StatelessWidget {
       builder: (BuildContext context, BarModel bar, _) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children:
-              bar.selectedDrums.map((Drums drum) => Text(drum.name)).toList(),
+          children: [
+            FixHeightRow(children: [Text("Bar:")]),
+            ...bar.selectedDrums.map(
+              (Drums drum) => FixHeightRow(
+                children: [Text("${drum.name} beats")],
+              ),
+            ),
+          ],
         );
       },
     );

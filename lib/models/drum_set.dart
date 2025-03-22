@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 enum Drums {
   crash(order: 0, name: "Crash", icon: "crash.svg"),
@@ -53,62 +53,6 @@ class DrumSetModel extends ChangeNotifier {
 
   void toggleHiding() {
     _isHidden = !_isHidden;
-    notifyListeners();
-  }
-}
-
-class BarModel extends ChangeNotifier {
-  BarModel({List<Drums>? beats}) : _beats = beats ?? const [];
-
-  DrumSetModel? _drumSet;
-  List<Drums> _beats;
-
-  void setupDrumSet(DrumSetModel drumSet) {
-    _drumSet?.removeListener(_updateDrums);
-    _drumSet = drumSet;
-    _drumSet!.addListener(_updateDrums);
-    _updateDrums();
-  }
-
-  @override
-  void dispose() {
-    _drumSet?.removeListener(_updateDrums);
-    super.dispose();
-  }
-
-  void _updateDrums() {
-    _beats = _drumSet?.selected ?? [];
-    notifyListeners();
-  }
-
-  List<Drums> get selectedDrums => _beats;
-}
-
-class SheetMusicModel extends ChangeNotifier {
-  SheetMusicModel({
-    DrumSetModel? drumSet,
-    List<BarModel>? bars,
-  })  : _drumSet = drumSet ?? DrumSetModel(),
-        _bars = bars ?? [BarModel()] {
-    for (BarModel bar in _bars) {
-      bar.setupDrumSet(_drumSet);
-    }
-  }
-
-  final DrumSetModel _drumSet;
-  final List<BarModel> _bars;
-
-  DrumSetModel get drumSet => _drumSet;
-
-  UnmodifiableListView<BarModel> get bars => UnmodifiableListView(_bars);
-
-  void addNewBar() {
-    _bars.add(BarModel()..setupDrumSet(_drumSet));
-    notifyListeners();
-  }
-
-  void removeBar(BarModel bar) {
-    _bars.remove(bar);
     notifyListeners();
   }
 }

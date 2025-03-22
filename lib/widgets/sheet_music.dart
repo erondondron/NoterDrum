@@ -1,6 +1,7 @@
-import 'package:drums/bar.dart';
-import 'package:drums/drum_set.dart';
-import 'package:drums/models.dart';
+import 'package:drums/models/bar.dart';
+import 'package:drums/models/sheet_music.dart';
+import 'package:drums/widgets/bar.dart';
+import 'package:drums/widgets/drum_set.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
