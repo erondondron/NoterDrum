@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 enum NoteValues {
   quarter(value: 4),
   eight(value: 8),
@@ -18,8 +20,8 @@ enum StrokeTypes {
   final String name;
 }
 
-class NoteModel {
-  const NoteModel({
+class NoteModel extends ChangeNotifier{
+  NoteModel({
     this.value = NoteValues.sixteenth,
     this.type = StrokeTypes.off,
   });

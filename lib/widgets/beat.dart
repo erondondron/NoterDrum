@@ -1,5 +1,7 @@
 import 'package:drums/models/beat.dart';
+import 'package:drums/models/note.dart';
 import 'package:drums/shared/fix_height_row.dart';
+import 'package:drums/widgets/note.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -11,22 +13,18 @@ class BeatWidget extends StatelessWidget {
     return Consumer<BeatModel>(
       builder: (BuildContext context, BeatModel beat, _) {
         return FixHeightRow(
-          children: List.generate(
-            beat.notes.length,
-            (_) => Padding(
-              padding: EdgeInsets.symmetric(horizontal: 5),
-              child: Container(
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  shape: BoxShape.circle,
+          children: beat.notes
+              .map(
+                (NoteModel note) => ChangeNotifierProvider.value(
+                  value: note,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 5),
+                    child: NoteWidget(),
+                  ),
                 ),
-              ),
-            ),
-          ),
+              )
+              .toList(),
         );
-        return Text("${beat.notes.length} notes");
       },
     );
   }

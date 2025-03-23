@@ -11,7 +11,7 @@ final textTheme = GoogleFonts.baloo2TextTheme(ThemeData.dark().textTheme)
       bodyMedium: GoogleFonts.baloo2(
         fontSize: 18,
         fontWeight: FontWeight.w500,
-      )
+      ),
     );
 
 final ThemeData darkTheme = ThemeData(
@@ -19,8 +19,10 @@ final ThemeData darkTheme = ThemeData(
   textTheme: textTheme,
   scaffoldBackgroundColor: const Color(0xFF1F1F1F),
   colorScheme: const ColorScheme.dark(
-    surface: Color(0xFF181818),
+    surface: Color(0xFF1F1F1F),
     onSurface: Color(0xFFEEEEEE),
+    secondaryContainer: Color(0xFF181818),
+    onSecondaryContainer: Color(0xFF373737),
   ),
   appBarTheme: AppBarTheme(
     backgroundColor: Color(0xFF1F1F1F),
@@ -29,5 +31,5 @@ final ThemeData darkTheme = ThemeData(
   popupMenuTheme: PopupMenuThemeData(
     color: Color(0xFF181818),
     labelTextStyle: WidgetStatePropertyAll(textTheme.bodyMedium),
-  )
+  ),
 );
