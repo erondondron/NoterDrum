@@ -71,11 +71,20 @@ class _MainWindowState extends State<MainWindow> {
           ],
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.only(left: sidePadding, top: 25),
-        child: ChangeNotifierProvider.value(
-          value: sheetMusic,
-          child: const SheetMusicWidget(),
+      body: ChangeNotifierProvider.value(
+        value: sheetMusic,
+        child: InteractiveViewer(
+          constrained: false,
+          panAxis: PanAxis.aligned,
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: sidePadding,
+              top: 25,
+              right: 25,
+              bottom: 25,
+            ),
+            child: const SheetMusicWidget(),
+          ),
         ),
       ),
     );
