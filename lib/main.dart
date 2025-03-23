@@ -74,6 +74,7 @@ class _MainWindowState extends State<MainWindow> {
       body: ChangeNotifierProvider.value(
         value: sheetMusic,
         child: InteractiveViewer(
+          clipBehavior: Clip.antiAlias,
           constrained: false,
           panAxis: PanAxis.aligned,
           child: Padding(
