@@ -20,12 +20,22 @@ enum StrokeTypes {
   final String name;
 }
 
-class NoteModel extends ChangeNotifier{
+class NoteModel extends ChangeNotifier {
   NoteModel({
-    this.value = NoteValues.sixteenth,
-    this.type = StrokeTypes.off,
-  });
+    NoteValues value = NoteValues.sixteenth,
+    StrokeTypes type = StrokeTypes.off,
+  })  : _value = value,
+        _type = type;
 
-  final NoteValues value;
-  final StrokeTypes type;
+  NoteValues _value;
+  StrokeTypes _type;
+
+  NoteValues get value => _value;
+
+  StrokeTypes get type => _type;
+
+  void plainStroke() {
+    _type = _type == StrokeTypes.off ? StrokeTypes.plain : StrokeTypes.off;
+    notifyListeners();
+  }
 }

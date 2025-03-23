@@ -8,17 +8,23 @@ class NoteWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<NoteModel>(
-      builder: (BuildContext context, NoteModel beat, _) {
-        return Container(
-          width: 30,
-          height: 30,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondaryContainer,
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: Theme.of(context).colorScheme.onSecondaryContainer,
-              width: 1.5,
-            )
+      builder: (BuildContext context, NoteModel note, _) {
+        return GestureDetector(
+          onTap: note.plainStroke,
+          behavior: HitTestBehavior.translucent,
+          child: Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              color: note.type == StrokeTypes.off
+                  ? Theme.of(context).colorScheme.secondaryContainer
+                  : Theme.of(context).colorScheme.onSurface,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Theme.of(context).colorScheme.onSecondaryContainer,
+                width: 1.5,
+              ),
+            ),
           ),
         );
       },
