@@ -10,15 +10,20 @@ class DrumSetWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<DrumSetModel>(
-      builder: (BuildContext context, DrumSetModel drumSet, _) {
+    return Consumer2<DrumSetModel, DrumSetPanelController>(
+      builder: (BuildContext context, DrumSetModel drumSet,
+          DrumSetPanelController controller, _) {
         return IntrinsicWidth(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _ControlPanel(drumSet: drumSet),
+              _ControlPanel(drumSet: drumSet, controller: controller),
               ...drumSet.selected.map(
-                (Drums drum) => _SelectedDrumRow(drumSet: drumSet, drum: drum),
+                (Drums drum) => _SelectedDrumRow(
+                  drumSet: drumSet,
+                  drum: drum,
+                  isHidden: controller.isHidden,
+                ),
               ),
             ],
           ),
@@ -29,14 +34,18 @@ class DrumSetWidget extends StatelessWidget {
 }
 
 class _ControlPanel extends StatelessWidget {
-  const _ControlPanel({required this.drumSet});
+  const _ControlPanel({
+    required this.drumSet,
+    required this.controller,
+  });
 
   final DrumSetModel drumSet;
+  final DrumSetPanelController controller;
 
   @override
   Widget build(BuildContext context) {
-    final toggle = _HidingToggle(drumSet: drumSet);
-    if (drumSet.isHidden) return toggle;
+    final toggle = _HidingToggle(controller: controller);
+    if (controller.isHidden) return toggle;
 
     final moreButton = _SelectNewDrumButton(drumSet: drumSet);
     return FixHeightRow(children: [moreButton, toggle]);
@@ -78,19 +87,19 @@ class _SelectNewDrumButton extends StatelessWidget {
 }
 
 class _HidingToggle extends StatelessWidget {
-  const _HidingToggle({required this.drumSet});
+  const _HidingToggle({required this.controller});
 
-  final DrumSetModel drumSet;
+  final DrumSetPanelController controller;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: drumSet.toggleHiding,
+      onTap: controller.toggleHiding,
       behavior: HitTestBehavior.translucent,
       child: SizedBox(
         height: FixHeightRow.height,
         width: FixHeightRow.height,
-        child: drumSet.isHidden
+        child: controller.isHidden
             ? Icon(Icons.keyboard_double_arrow_right_outlined, size: 24)
             : Icon(Icons.keyboard_double_arrow_left_outlined, size: 18),
       ),
@@ -99,15 +108,20 @@ class _HidingToggle extends StatelessWidget {
 }
 
 class _SelectedDrumRow extends StatelessWidget {
-  const _SelectedDrumRow({required this.drumSet, required this.drum});
+  const _SelectedDrumRow({
+    required this.drumSet,
+    required this.drum,
+    required this.isHidden,
+  });
 
   final DrumSetModel drumSet;
   final Drums drum;
+  final bool isHidden;
 
   @override
   Widget build(BuildContext context) {
     final icon = _DrumIcon(asset: drum.icon);
-    if (drumSet.isHidden) return icon;
+    if (isHidden) return icon;
 
     return FixHeightRow(
       children: [

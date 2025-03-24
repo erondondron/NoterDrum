@@ -23,22 +23,28 @@ enum Drums {
   final String icon;
 }
 
+class DrumSetPanelController extends ChangeNotifier {
+  bool _isHidden = true;
+
+  bool get isHidden => _isHidden;
+
+  void toggleHiding() {
+    _isHidden = !_isHidden;
+    notifyListeners();
+  }
+}
+
 class DrumSetModel extends ChangeNotifier {
   DrumSetModel({
     List<Drums> selected = const [Drums.hiHat, Drums.snare, Drums.kick],
-    bool isHidden = true,
-  })  : _selected = selected.toList(),
-        _isHidden = isHidden;
+  }) : _selected = selected.toList();
 
   final List<Drums> _selected;
-  bool _isHidden;
 
   UnmodifiableListView<Drums> get selected => UnmodifiableListView(_selected);
 
   UnmodifiableListView<Drums> get unselected => UnmodifiableListView(
       Drums.values.where((Drums drum) => !_selected.contains(drum)));
-
-  bool get isHidden => _isHidden;
 
   void add(Drums drum) {
     _selected.add(drum);
@@ -48,11 +54,6 @@ class DrumSetModel extends ChangeNotifier {
 
   void remove(Drums drum) {
     _selected.remove(drum);
-    notifyListeners();
-  }
-
-  void toggleHiding() {
-    _isHidden = !_isHidden;
     notifyListeners();
   }
 }

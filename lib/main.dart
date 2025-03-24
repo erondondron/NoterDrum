@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:drums/models/drum_set.dart';
 import 'package:drums/models/sheet_music.dart';
 import 'package:drums/widgets/sheet_music.dart';
 import 'package:drums/theme.dart';
@@ -71,8 +72,11 @@ class _MainWindowState extends State<MainWindow> {
           ],
         ),
       ),
-      body: ChangeNotifierProvider.value(
-        value: sheetMusic,
+      body: MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: sheetMusic),
+          ChangeNotifierProvider(create: (_) => DrumSetPanelController()),
+        ],
         child: InteractiveViewer(
           clipBehavior: Clip.antiAlias,
           constrained: false,
