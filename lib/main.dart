@@ -44,24 +44,19 @@ class MainWindow extends StatefulWidget {
 }
 
 class _MainWindowState extends State<MainWindow> {
-  late final double _notchSize = MediaQuery.of(context).padding.left;
-  late final double _leftPadding = max(_notchSize, 80);
-  static const double _otherPadding = 25;
-
-  static const double _appBarHeight = 60;
-  late final double _bodyHeight =
-      MediaQuery.of(context).size.height - _appBarHeight - _otherPadding * 2;
-  late final double _bodyWidth =
-      MediaQuery.of(context).size.width - _leftPadding - _otherPadding;
-
   @override
   Widget build(BuildContext context) {
+    final notchSize = MediaQuery.of(context).padding.left;
+    final leftPadding = max(notchSize, 80.0);
+    final otherPadding = 25.0;
+    final appBarHeight = 60.0;
+
     final sheetMusic = SheetMusicModel();
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(_appBarHeight),
+        preferredSize: Size.fromHeight(appBarHeight),
         child: AppBar(
-          titleSpacing: _leftPadding - _notchSize,
+          titleSpacing: leftPadding - notchSize,
           title: Text("NewGroove"),
           actions: [
             IconButton(
@@ -90,15 +85,19 @@ class _MainWindowState extends State<MainWindow> {
           panAxis: PanAxis.aligned,
           child: Padding(
             padding: EdgeInsets.only(
-              left: _leftPadding,
-              top: _otherPadding,
-              right: _otherPadding,
-              bottom: _otherPadding,
+              left: leftPadding,
+              top: otherPadding,
+              right: otherPadding,
+              bottom: otherPadding,
             ),
-            child: ConstrainedBox(
+            child: Container(
               constraints: BoxConstraints(
-                minHeight: _bodyHeight,
-                minWidth: _bodyWidth,
+                minHeight: MediaQuery.of(context).size.height -
+                    appBarHeight -
+                    otherPadding * 2,
+                minWidth: MediaQuery.of(context).size.width -
+                    leftPadding -
+                    otherPadding,
               ),
               child: SheetMusicWidget(),
             ),
