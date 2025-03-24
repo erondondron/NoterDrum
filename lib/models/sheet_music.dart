@@ -37,8 +37,13 @@ class SheetMusicModel extends ChangeNotifier {
   }
 
   void removeBar(SheetMusicBarModel bar) {
+    if (_bars.length == 1) {
+      final newBar = SheetMusicBarModel(timeSignature: _bars.last.timeSignature)
+        ..updateDrums(_drumSet.selected);
+      _bars.insert(0, newBar);
+    }
     _bars.remove(bar);
-    return _bars.isEmpty ? addNewBar() : notifyListeners();
+    notifyListeners();
   }
 
   void _updateDrums() {
