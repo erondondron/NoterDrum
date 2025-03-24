@@ -1,3 +1,4 @@
+import 'package:drums/models/note.dart';
 import 'package:drums/models/sheet_music_bar.dart';
 import 'package:drums/models/time_signature.dart';
 import 'package:flutter/material.dart';
@@ -82,6 +83,14 @@ class _CustomizeWindowState extends State<_CustomizeWindow> {
                 icon: Icon(Icons.add_outlined),
                 onPressed: () => setState(() => _timeSignature.measures.add(1)),
               ),
+              Padding(
+                padding: EdgeInsets.only(left: 10, right: 20),
+                child: Text(
+                  "/",
+                  style: Theme.of(context).textTheme.headlineLarge,
+                ),
+              ),
+              noteValues(),
             ],
           ),
         ),
@@ -116,6 +125,42 @@ class _CustomizeWindowState extends State<_CustomizeWindow> {
           onPressed: () => setState(() => _timeSignature.measures[index] > 1
               ? _timeSignature.measures[index]--
               : _timeSignature.measures.removeAt(index)),
+        ),
+      ],
+    );
+  }
+
+  Widget noteValues() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: Icon(Icons.add_outlined),
+          onPressed: _timeSignature.noteValue != NoteValues.thirtySecond
+              ? () {
+                  final nextValue = _timeSignature.noteValue.value * 2;
+                  final nextNote = NoteValues.values.firstWhere(
+                    (NoteValues note) => note.value == nextValue,
+                  );
+                  setState(() => _timeSignature.noteValue = nextNote);
+                }
+              : null,
+        ),
+        Text(
+          _timeSignature.noteValue.value.toString(),
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
+        IconButton(
+          icon: Icon(Icons.remove_outlined),
+          onPressed: _timeSignature.noteValue != NoteValues.quarter
+              ? () {
+                  final nextValue = _timeSignature.noteValue.value ~/ 2;
+                  final nextNote = NoteValues.values.firstWhere(
+                    (NoteValues note) => note.value == nextValue,
+                  );
+                  setState(() => _timeSignature.noteValue = nextNote);
+                }
+              : null,
         ),
       ],
     );
