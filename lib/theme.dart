@@ -19,6 +19,7 @@ final ThemeData darkTheme = ThemeData(
   textTheme: textTheme,
   scaffoldBackgroundColor: const Color(0xFF1F1F1F),
   colorScheme: const ColorScheme.dark(
+    primary: Color(0xFFE28C52),
     surface: Color(0xFF1F1F1F),
     onSurface: Color(0xFFEEEEEE),
     secondaryContainer: Color(0xFF181818),
