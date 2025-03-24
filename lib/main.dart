@@ -44,17 +44,24 @@ class MainWindow extends StatefulWidget {
 }
 
 class _MainWindowState extends State<MainWindow> {
+  late final double _notchSize = MediaQuery.of(context).padding.left;
+  late final double _leftPadding = max(_notchSize, 80);
+  static const double _otherPadding = 25;
+
+  static const double _appBarHeight = 60;
+  late final double _bodyHeight =
+      MediaQuery.of(context).size.height - _appBarHeight - _otherPadding * 2;
+  late final double _bodyWidth =
+      MediaQuery.of(context).size.width - _leftPadding - _otherPadding;
+
   @override
   Widget build(BuildContext context) {
-    double notchSize = MediaQuery.of(context).padding.left;
-    double sidePadding = max(notchSize, 80);
-
     final sheetMusic = SheetMusicModel();
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60),
+        preferredSize: Size.fromHeight(_appBarHeight),
         child: AppBar(
-          titleSpacing: sidePadding - notchSize,
+          titleSpacing: _leftPadding - _notchSize,
           title: Text("NewGroove"),
           actions: [
             IconButton(
@@ -83,12 +90,18 @@ class _MainWindowState extends State<MainWindow> {
           panAxis: PanAxis.aligned,
           child: Padding(
             padding: EdgeInsets.only(
-              left: sidePadding,
-              top: 25,
-              right: 25,
-              bottom: 25,
+              left: _leftPadding,
+              top: _otherPadding,
+              right: _otherPadding,
+              bottom: _otherPadding,
             ),
-            child: const SheetMusicWidget(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: _bodyHeight,
+                minWidth: _bodyWidth,
+              ),
+              child: SheetMusicWidget(),
+            ),
           ),
         ),
       ),
