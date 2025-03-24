@@ -29,7 +29,10 @@ class SheetMusicModel extends ChangeNotifier {
       UnmodifiableListView(_bars);
 
   void addNewBar() {
-    _bars.add(SheetMusicBarModel()..updateDrums(_drumSet.selected));
+    _bars.add(
+      SheetMusicBarModel(timeSignature: _bars.last.timeSignature)
+        ..updateDrums(_drumSet.selected),
+    );
     notifyListeners();
   }
 
