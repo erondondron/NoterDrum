@@ -3,7 +3,9 @@ import 'package:flutter/cupertino.dart';
 enum NoteValues {
   quarter(value: 4),
   eight(value: 8),
+  eightTriplet(value: 12),
   sixteenth(value: 16),
+  sixteenthTriplet(value: 24),
   thirtySecond(value: 32);
 
   const NoteValues({required this.value});

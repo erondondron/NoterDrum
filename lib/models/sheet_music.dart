@@ -1,37 +1,55 @@
 import 'dart:collection';
 
-import 'package:drums/models/bar.dart';
 import 'package:drums/models/drum_set.dart';
+import 'package:drums/models/sheet_music_bar.dart';
 import 'package:flutter/material.dart';
 
 class SheetMusicModel extends ChangeNotifier {
   SheetMusicModel({
     DrumSetModel? drumSet,
-    List<BarModel>? bars,
+    List<SheetMusicBarModel>? bars,
   })  : _drumSet = drumSet ?? DrumSetModel(),
-        _bars = bars ?? [BarModel()] {
-    for (BarModel bar in _bars) {
-      bar.setupDrumSet(_drumSet);
-    }
+        _bars = bars ?? [SheetMusicBarModel()] {
+    _updateDrums();
+    _drumSet.addListener(_updateDrums);
+  }
+
+  @override
+  void dispose() {
+    _drumSet.removeListener(_updateDrums);
+    super.dispose();
   }
 
   final DrumSetModel _drumSet;
-  final List<BarModel> _bars;
+  final List<SheetMusicBarModel> _bars;
 
   DrumSetModel get drumSet => _drumSet;
 
-  UnmodifiableListView<BarModel> get bars => UnmodifiableListView(_bars);
+  UnmodifiableListView<SheetMusicBarModel> get bars =>
+      UnmodifiableListView(_bars);
 
   void addNewBar() {
-    _bars.add(BarModel()..setupDrumSet(_drumSet));
+    _bars.add(
+      SheetMusicBarModel(timeSignature: _bars.last.timeSignature)
+        ..updateDrums(_drumSet.selected),
+    );
     notifyListeners();
   }
 
-  void removeBar(BarModel bar) {
-    _bars.remove(bar);
-    if (_bars.isEmpty) {
-      return addNewBar();
+  void removeBar(SheetMusicBarModel bar) {
+    if (_bars.length == 1) {
+      final newBar = SheetMusicBarModel(timeSignature: _bars.last.timeSignature)
+        ..updateDrums(_drumSet.selected);
+      _bars.insert(0, newBar);
     }
+    _bars.remove(bar);
     notifyListeners();
+  }
+
+  void _updateDrums() {
+    final selectedDrums = _drumSet.selected;
+    for (SheetMusicBarModel bar in _bars) {
+      bar.updateDrums(selectedDrums);
+    }
   }
 }

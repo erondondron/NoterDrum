@@ -1,9 +1,10 @@
 import 'package:drums/models/bar.dart';
 import 'package:drums/models/beat.dart';
-import 'package:drums/models/drum_set.dart';
 import 'package:drums/models/sheet_music.dart';
+import 'package:drums/models/sheet_music_bar.dart';
 import 'package:drums/shared/fix_height_row.dart';
 import 'package:drums/widgets/beat.dart';
+import 'package:drums/widgets/time_signature.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,20 +13,20 @@ class BarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<BarModel>(
-      builder: (BuildContext context, BarModel bar, _) {
+    return Consumer<SheetMusicBarModel>(
+      builder: (BuildContext context, SheetMusicBarModel bar, _) {
         return IntrinsicWidth(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               FixHeightRow(
                 children: [
-                  Text("Bar:"),
+                  TimeSignatureWidget(),
                   _RemoveBarButton(bar: bar),
                 ],
               ),
-              ...bar.drumSet!.selected.map(
-                (Drums drum) => _BeatsRow(drum: drum, bar: bar),
+              ...bar.drumBars.map(
+                (BarModel bar) => _BeatsRow(bar: bar),
               ),
             ],
           ),
@@ -36,19 +37,14 @@ class BarWidget extends StatelessWidget {
 }
 
 class _BeatsRow extends StatelessWidget {
-  const _BeatsRow({
-    required this.drum,
-    required this.bar,
-  });
+  const _BeatsRow({required this.bar});
 
-  final Drums drum;
   final BarModel bar;
 
   @override
   Widget build(BuildContext context) {
-    final beats = bar.getBeats(drum);
     return FixHeightRow(
-      children: beats
+      children: bar.beats
           .map(
             (BeatModel beat) => ChangeNotifierProvider.value(
               value: beat,
@@ -66,7 +62,7 @@ class _BeatsRow extends StatelessWidget {
 class _RemoveBarButton extends StatelessWidget {
   const _RemoveBarButton({required this.bar});
 
-  final BarModel bar;
+  final SheetMusicBarModel bar;
 
   @override
   Widget build(BuildContext context) {

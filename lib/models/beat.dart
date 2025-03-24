@@ -7,11 +7,11 @@ class BeatModel extends ChangeNotifier {
   BeatModel({required List<NoteModel> notes}) : _notes = notes;
 
   factory BeatModel.generate({
-    NoteValues value = NoteValues.sixteenth,
-    int number = 4,
+    required NoteValues value,
+    required int measure,
   }) {
     return BeatModel(
-      notes: List.generate(number, (_) => NoteModel(value: value)),
+      notes: List.generate(measure, (_) => NoteModel(value: value)),
     );
   }
 

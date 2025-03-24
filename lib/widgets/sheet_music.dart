@@ -1,5 +1,5 @@
-import 'package:drums/models/bar.dart';
 import 'package:drums/models/sheet_music.dart';
+import 'package:drums/models/sheet_music_bar.dart';
 import 'package:drums/widgets/bar.dart';
 import 'package:drums/widgets/drum_set.dart';
 import 'package:flutter/material.dart';
@@ -12,14 +12,14 @@ class SheetMusicWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<SheetMusicModel>(
       builder: (BuildContext context, SheetMusicModel sheetMusic, _) {
+        final sheetMusicBars = sheetMusic.bars;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: sheetMusic.bars.map((BarModel bar) {
-            final isLast = bar == sheetMusic.bars.last;
+          children: sheetMusicBars.map((SheetMusicBarModel bar) {
             return Padding(
               padding: EdgeInsets.symmetric(vertical: 10),
               child: Row(
-                children: [
+                children: <Widget>[
                   ChangeNotifierProvider.value(
                     value: sheetMusic.drumSet,
                     child: const DrumSetWidget(),
@@ -31,7 +31,7 @@ class SheetMusicWidget extends StatelessWidget {
                       child: BarWidget(),
                     ),
                   ),
-                  if (isLast)
+                  if (bar == sheetMusicBars.last)
                     IconButton(
                       icon: const Icon(Icons.add_outlined),
                       onPressed: sheetMusic.addNewBar,
