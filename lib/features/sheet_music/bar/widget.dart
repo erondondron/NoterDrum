@@ -1,7 +1,7 @@
-import 'package:drums/models/bar.dart';
+import 'package:drums/features/sheet_music/bar/models.dart';
+import 'package:drums/features/sheet_music/bar/selector.dart';
 import 'package:drums/models/beat.dart';
 import 'package:drums/models/sheet_music.dart';
-import 'package:drums/models/sheet_music_bar.dart';
 import 'package:drums/shared/fix_height_row.dart';
 import 'package:drums/widgets/beat.dart';
 import 'package:drums/widgets/time_signature.dart';
@@ -25,10 +25,12 @@ class BarWidget extends StatelessWidget {
                   _RemoveBarButton(bar: bar),
                 ],
               ),
-              Column(
-                children: bar.drumBars
-                    .map((BarModel bar) => _BeatsRow(bar: bar))
-                    .toList(),
+              NotesSelector(
+                child: Column(
+                  children: bar.drumBars
+                      .map((BarModel bar) => _BeatsRow(bar: bar))
+                      .toList(),
+                ),
               ),
             ],
           ),

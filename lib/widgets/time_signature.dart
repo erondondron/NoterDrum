@@ -1,5 +1,5 @@
+import 'package:drums/features/sheet_music/bar/models.dart';
 import 'package:drums/models/note.dart';
-import 'package:drums/models/sheet_music_bar.dart';
 import 'package:drums/models/time_signature.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
