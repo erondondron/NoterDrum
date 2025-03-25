@@ -1,8 +1,8 @@
-import 'package:drums/widgets/actions/edit.dart';
-import 'package:drums/widgets/actions/play.dart';
+import 'package:drums/features/actions/editing/widget.dart';
+import 'package:drums/features/actions/playback/widget.dart';
 import 'package:flutter/material.dart';
 
-import 'metronome.dart';
+import 'metronome/widget.dart';
 
 class ActionsPanel extends StatelessWidget {
   const ActionsPanel({super.key});
@@ -12,7 +12,7 @@ class ActionsPanel extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        NoteEditPanel(),
+        NotesEditingPanel(),
         SizedBox(width: 10),
         PlayButton(),
         SizedBox(width: 10),

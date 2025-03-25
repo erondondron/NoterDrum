@@ -1,8 +1,9 @@
 import 'dart:math';
 
+import 'package:drums/features/actions/editing/model.dart';
 import 'package:drums/models/drum_set.dart';
 import 'package:drums/models/sheet_music.dart';
-import 'package:drums/widgets/actions/panel.dart';
+import 'package:drums/features/actions/widget.dart';
 import 'package:drums/widgets/sheet_music.dart';
 import 'package:drums/theme.dart';
 import 'package:flutter/material.dart';
@@ -82,6 +83,7 @@ class _MainWindowState extends State<MainWindow> {
         providers: [
           ChangeNotifierProvider.value(value: sheetMusic),
           ChangeNotifierProvider(create: (_) => DrumSetPanelController()),
+          ChangeNotifierProvider(create: (_) => NotesEditingModel()),
         ],
         child: Stack(
           children: [

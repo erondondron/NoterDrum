@@ -25,8 +25,10 @@ class BarWidget extends StatelessWidget {
                   _RemoveBarButton(bar: bar),
                 ],
               ),
-              ...bar.drumBars.map(
-                (BarModel bar) => _BeatsRow(bar: bar),
+              Column(
+                children: bar.drumBars
+                    .map((BarModel bar) => _BeatsRow(bar: bar))
+                    .toList(),
               ),
             ],
           ),
