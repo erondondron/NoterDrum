@@ -1,7 +1,7 @@
 import 'package:drums/features/sheet_music/bar/models.dart';
-import 'package:drums/models/sheet_music.dart';
+import 'package:drums/features/sheet_music/model.dart';
 import 'package:drums/features/sheet_music/bar/widget.dart';
-import 'package:drums/widgets/drum_set.dart';
+import 'package:drums/features/sheet_music/drum_set/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -27,7 +27,7 @@ class SheetMusicWidget extends StatelessWidget {
                   ChangeNotifierProvider.value(
                     value: bar,
                     child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 25),
+                      padding: EdgeInsets.symmetric(horizontal: 15),
                       child: BarWidget(),
                     ),
                   ),

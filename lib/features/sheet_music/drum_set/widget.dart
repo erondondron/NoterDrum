@@ -1,4 +1,4 @@
-import 'package:drums/models/drum_set.dart';
+import 'package:drums/features/sheet_music/drum_set/model.dart';
 import 'package:drums/shared/fix_height_row.dart';
 import 'package:drums/shared/text_with_icon.dart';
 import 'package:flutter/material.dart';

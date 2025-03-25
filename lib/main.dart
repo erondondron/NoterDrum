@@ -1,10 +1,10 @@
 import 'dart:math';
 
 import 'package:drums/features/actions/editing/model.dart';
-import 'package:drums/models/drum_set.dart';
-import 'package:drums/models/sheet_music.dart';
+import 'package:drums/features/sheet_music/drum_set/model.dart';
+import 'package:drums/features/sheet_music/model.dart';
 import 'package:drums/features/actions/widget.dart';
-import 'package:drums/widgets/sheet_music.dart';
+import 'package:drums/features/sheet_music/widget.dart';
 import 'package:drums/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

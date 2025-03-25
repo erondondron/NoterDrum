@@ -1,11 +1,13 @@
-import 'package:drums/models/beat.dart';
-import 'package:drums/models/note.dart';
+import 'package:drums/features/sheet_music/beat/model.dart';
+import 'package:drums/features/sheet_music/note/model.dart';
 import 'package:drums/shared/fix_height_row.dart';
-import 'package:drums/widgets/note.dart';
+import 'package:drums/features/sheet_music/note/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class BeatWidget extends StatelessWidget {
+  static const double padding = 5;
+
   const BeatWidget({super.key});
 
   @override
@@ -17,10 +19,7 @@ class BeatWidget extends StatelessWidget {
               .map(
                 (NoteModel note) => ChangeNotifierProvider.value(
                   value: note,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 5),
-                    child: NoteWidget(),
-                  ),
+                  child: NoteWidget(),
                 ),
               )
               .toList(),

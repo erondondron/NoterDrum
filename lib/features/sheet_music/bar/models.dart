@@ -1,8 +1,8 @@
 import 'dart:collection';
 
-import 'package:drums/models/beat.dart';
-import 'package:drums/models/drum_set.dart';
-import 'package:drums/models/time_signature.dart';
+import 'package:drums/features/sheet_music/beat/model.dart';
+import 'package:drums/features/sheet_music/drum_set/model.dart';
+import 'package:drums/features/sheet_music/time_signature/model.dart';
 import 'package:flutter/material.dart';
 
 class BarModel extends ChangeNotifier {

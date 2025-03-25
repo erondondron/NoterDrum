@@ -1,4 +1,4 @@
-import 'package:drums/models/note.dart';
+import 'package:drums/features/sheet_music/note/model.dart';
 import 'package:flutter/cupertino.dart';
 
 class TimeSignature extends ChangeNotifier {

@@ -1,10 +1,10 @@
 import 'package:drums/features/sheet_music/bar/models.dart';
 import 'package:drums/features/sheet_music/bar/selector.dart';
-import 'package:drums/models/beat.dart';
-import 'package:drums/models/sheet_music.dart';
+import 'package:drums/features/sheet_music/beat/model.dart';
+import 'package:drums/features/sheet_music/model.dart';
 import 'package:drums/shared/fix_height_row.dart';
-import 'package:drums/widgets/beat.dart';
-import 'package:drums/widgets/time_signature.dart';
+import 'package:drums/features/sheet_music/beat/widget.dart';
+import 'package:drums/features/sheet_music/time_signature/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,7 +21,10 @@ class BarWidget extends StatelessWidget {
             children: [
               FixHeightRow(
                 children: [
-                  TimeSignatureWidget(),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: TimeSignatureWidget(),
+                  ),
                   _RemoveBarButton(bar: bar),
                 ],
               ),
@@ -53,7 +56,7 @@ class _BeatsRow extends StatelessWidget {
             (BeatModel beat) => ChangeNotifierProvider.value(
               value: beat,
               child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 5),
+                padding: EdgeInsets.symmetric(horizontal: BeatWidget.padding),
                 child: BeatWidget(),
               ),
             ),
