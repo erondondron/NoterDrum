@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:drums/models/drum_set.dart';
 import 'package:drums/models/sheet_music.dart';
+import 'package:drums/widgets/actions/panel.dart';
 import 'package:drums/widgets/sheet_music.dart';
 import 'package:drums/theme.dart';
 import 'package:flutter/material.dart';
@@ -48,8 +49,11 @@ class _MainWindowState extends State<MainWindow> {
   Widget build(BuildContext context) {
     final notchSize = MediaQuery.of(context).padding.left;
     final leftPadding = max(notchSize, 80.0);
-    final otherPadding = 25.0;
+    final bodyPadding = 25.0;
     final appBarHeight = 60.0;
+
+    final actionsPadding = 20.0;
+    final actionsSize = 50.0;
 
     final sheetMusic = SheetMusicModel();
     return Scaffold(
@@ -61,15 +65,15 @@ class _MainWindowState extends State<MainWindow> {
           actions: [
             IconButton(
               icon: const Icon(Icons.save_outlined),
-              onPressed: () {},
+              onPressed: null,
             ),
             IconButton(
               icon: const Icon(Icons.folder_outlined),
-              onPressed: () {},
+              onPressed: null,
             ),
             IconButton(
               icon: const Icon(Icons.settings_outlined),
-              onPressed: () {},
+              onPressed: null,
             ),
           ],
         ),
@@ -79,29 +83,38 @@ class _MainWindowState extends State<MainWindow> {
           ChangeNotifierProvider.value(value: sheetMusic),
           ChangeNotifierProvider(create: (_) => DrumSetPanelController()),
         ],
-        child: InteractiveViewer(
-          clipBehavior: Clip.antiAlias,
-          constrained: false,
-          panAxis: PanAxis.aligned,
-          child: Padding(
-            padding: EdgeInsets.only(
-              left: leftPadding,
-              top: otherPadding,
-              right: otherPadding,
-              bottom: otherPadding,
-            ),
-            child: Container(
-              constraints: BoxConstraints(
-                minHeight: MediaQuery.of(context).size.height -
-                    appBarHeight -
-                    otherPadding * 2,
-                minWidth: MediaQuery.of(context).size.width -
-                    leftPadding -
-                    otherPadding,
+        child: Stack(
+          children: [
+            InteractiveViewer(
+              clipBehavior: Clip.antiAlias,
+              constrained: false,
+              panAxis: PanAxis.aligned,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: leftPadding,
+                  top: bodyPadding,
+                  right: bodyPadding + actionsPadding + actionsSize,
+                  bottom: bodyPadding + actionsPadding + actionsSize,
+                ),
+                child: Container(
+                  constraints: BoxConstraints(
+                    minHeight: MediaQuery.of(context).size.height -
+                        appBarHeight -
+                        bodyPadding * 2,
+                    minWidth: MediaQuery.of(context).size.width -
+                        leftPadding -
+                        bodyPadding,
+                  ),
+                  child: SheetMusicWidget(),
+                ),
               ),
-              child: SheetMusicWidget(),
             ),
-          ),
+            Positioned(
+              right: actionsPadding,
+              bottom: actionsPadding,
+              child: ActionsPanel(),
+            ),
+          ],
         ),
       ),
     );
