@@ -7,26 +7,26 @@ class TimeSignature extends ChangeNotifier {
     required this.measures,
   });
 
-  NoteValues noteValue;
+  NoteValue noteValue;
   List<int> measures;
 
   String get label {
     int nominator = measures.reduce((a, b) => a + b);
-    return "$nominator / ${noteValue.value}";
+    return "$nominator / ${noteValue.part}";
   }
 }
 
 final sixEights = TimeSignature(
-  noteValue: NoteValues.eight,
+  noteValue: NoteValue.eight,
   measures: const [3, 3],
 );
 
 final eightEights = TimeSignature(
-  noteValue: NoteValues.eight,
+  noteValue: NoteValue.eight,
   measures: const [2, 2, 2, 2],
 );
 
 final sixteenSixteenths = TimeSignature(
-  noteValue: NoteValues.sixteenth,
+  noteValue: NoteValue.sixteenth,
   measures: const [4, 4, 4, 4],
 );

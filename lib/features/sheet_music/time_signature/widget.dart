@@ -136,27 +136,27 @@ class _CustomizeWindowState extends State<_CustomizeWindow> {
       children: [
         IconButton(
           icon: Icon(Icons.add_outlined),
-          onPressed: _timeSignature.noteValue != NoteValues.thirtySecond
+          onPressed: _timeSignature.noteValue != NoteValue.thirtySecond
               ? () {
-                  final nextValue = _timeSignature.noteValue.value * 2;
-                  final nextNote = NoteValues.values.firstWhere(
-                    (NoteValues note) => note.value == nextValue,
+                  final nextValue = _timeSignature.noteValue.part * 2;
+                  final nextNote = NoteValue.values.firstWhere(
+                    (NoteValue note) => note.part == nextValue,
                   );
                   setState(() => _timeSignature.noteValue = nextNote);
                 }
               : null,
         ),
         Text(
-          _timeSignature.noteValue.value.toString(),
+          _timeSignature.noteValue.part.toString(),
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         IconButton(
           icon: Icon(Icons.remove_outlined),
-          onPressed: _timeSignature.noteValue != NoteValues.quarter
+          onPressed: _timeSignature.noteValue != NoteValue.quarter
               ? () {
-                  final nextValue = _timeSignature.noteValue.value ~/ 2;
-                  final nextNote = NoteValues.values.firstWhere(
-                    (NoteValues note) => note.value == nextValue,
+                  final nextValue = _timeSignature.noteValue.part ~/ 2;
+                  final nextNote = NoteValue.values.firstWhere(
+                    (NoteValue note) => note.part == nextValue,
                   );
                   setState(() => _timeSignature.noteValue = nextNote);
                 }

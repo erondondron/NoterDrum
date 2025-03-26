@@ -56,7 +56,7 @@ class _BeatsRow extends StatelessWidget {
             (BeatModel beat) => ChangeNotifierProvider.value(
               value: beat,
               child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: BeatWidget.padding),
+                padding: EdgeInsets.symmetric(horizontal: 5),
                 child: BeatWidget(),
               ),
             ),

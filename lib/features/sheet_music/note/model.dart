@@ -1,43 +1,39 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
-enum NoteValues {
-  quarter(value: 4),
-  eight(value: 8),
-  eightTriplet(value: 12),
-  sixteenth(value: 16),
-  sixteenthTriplet(value: 24),
-  thirtySecond(value: 32);
+enum NoteValue {
+  quarter(part: 4),
+  eight(part: 8),
+  eightTriplet(part: 12),
+  sixteenth(part: 16),
+  sixteenthTriplet(part: 24),
+  thirtySecond(part: 32);
 
-  const NoteValues({required this.value});
+  const NoteValue({required this.part});
 
-  final int value;
+  final int part;
 }
 
-enum StrokeTypes {
+enum StrokeType {
   plain(name: "Plain"),
   off(name: "Off");
 
-  const StrokeTypes({required this.name});
+  const StrokeType({required this.name});
 
   final String name;
 }
 
 class NoteModel extends ChangeNotifier {
   NoteModel({
-    NoteValues value = NoteValues.sixteenth,
-    StrokeTypes type = StrokeTypes.off,
-  })  : _value = value,
-        _type = type;
+    required this.value,
+    this.type = StrokeType.off,
+  }) : key = GlobalKey();
 
-  NoteValues _value;
-  StrokeTypes _type;
-
-  NoteValues get value => _value;
-
-  StrokeTypes get type => _type;
+  NoteValue value;
+  StrokeType type;
+  GlobalKey key;
 
   void plainStroke() {
-    _type = _type == StrokeTypes.off ? StrokeTypes.plain : StrokeTypes.off;
+    type = type == StrokeType.off ? StrokeType.plain : StrokeType.off;
     notifyListeners();
   }
 }

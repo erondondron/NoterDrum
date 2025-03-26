@@ -19,7 +19,7 @@ class DrumSetWidget extends StatelessWidget {
             children: [
               _ControlPanel(drumSet: drumSet, controller: controller),
               ...drumSet.selected.map(
-                (Drums drum) => _SelectedDrumRow(
+                (Drum drum) => _SelectedDrumRow(
                   drumSet: drumSet,
                   drum: drum,
                   isHidden: controller.isHidden,
@@ -59,7 +59,7 @@ class _SelectNewDrumButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton<Drums>(
+    return PopupMenuButton<Drum>(
       child: TextWithIcon(
         icon: SizedBox(
           height: FixHeightRow.height,
@@ -68,7 +68,7 @@ class _SelectNewDrumButton extends StatelessWidget {
         ),
         text: "More",
       ),
-      onSelected: (Drums drum) => drumSet.add(drum),
+      onSelected: (Drum drum) => drumSet.add(drum),
       itemBuilder: (BuildContext context) {
         return drumSet.unselected
             .map(
@@ -115,7 +115,7 @@ class _SelectedDrumRow extends StatelessWidget {
   });
 
   final DrumSetModel drumSet;
-  final Drums drum;
+  final Drum drum;
   final bool isHidden;
 
   @override
@@ -153,7 +153,7 @@ class _RemoveDrumButton extends StatelessWidget {
   const _RemoveDrumButton({required this.drumSet, required this.drum});
 
   final DrumSetModel drumSet;
-  final Drums drum;
+  final Drum drum;
 
   @override
   Widget build(BuildContext context) {

@@ -1,16 +1,13 @@
-import 'dart:collection';
-
 import 'package:drums/features/sheet_music/beat/model.dart';
 import 'package:drums/features/sheet_music/drum_set/model.dart';
 import 'package:drums/features/sheet_music/time_signature/model.dart';
 import 'package:flutter/material.dart';
 
 class BarModel extends ChangeNotifier {
-  BarModel({required this.drum, required List<BeatModel> beats})
-      : _beats = beats;
+  BarModel({required this.drum, required this.beats});
 
   factory BarModel.generate({
-    required Drums drum,
+    required Drum drum,
     required TimeSignature timeSignature,
   }) {
     return BarModel(
@@ -26,46 +23,39 @@ class BarModel extends ChangeNotifier {
     );
   }
 
-  final Drums drum;
-  final List<BeatModel> _beats;
-
-  UnmodifiableListView<BeatModel> get beats => UnmodifiableListView(_beats);
+  final Drum drum;
+  final List<BeatModel> beats;
 }
 
 class SheetMusicBarModel extends ChangeNotifier {
   SheetMusicBarModel({
-    TimeSignature? timeSignature,
+    required this.timeSignature,
     List<BarModel>? drumBars,
-  })  : _timeSignature = timeSignature ?? sixteenSixteenths,
-        _bars = drumBars ?? [];
+  }) : drumBars = drumBars ?? [];
 
-  TimeSignature _timeSignature;
-  List<BarModel> _bars;
+  TimeSignature timeSignature;
+  List<BarModel> drumBars;
 
-  TimeSignature get timeSignature => _timeSignature;
+  void updateDrums(List<Drum> drums) {
+    drumBars.removeWhere((BarModel bar) => !drums.contains(bar.drum));
 
-  UnmodifiableListView<BarModel> get drumBars => UnmodifiableListView(_bars);
-
-  void updateDrums(List<Drums> drums) {
-    _bars.removeWhere((BarModel bar) => !drums.contains(bar.drum));
-
-    final barsDrums = _bars.map((BarModel bar) => bar.drum).toSet();
+    final barsDrums = drumBars.map((BarModel bar) => bar.drum).toSet();
     final newDrums = drums.toSet().difference(barsDrums);
-    _bars.addAll(newDrums.map((Drums drum) =>
+    drumBars.addAll(newDrums.map((Drum drum) =>
         BarModel.generate(drum: drum, timeSignature: timeSignature)));
 
-    _bars.sort((a, b) => a.drum.order.compareTo(b.drum.order));
+    drumBars.sort((a, b) => a.drum.order.compareTo(b.drum.order));
     notifyListeners();
   }
 
   void updateTimeSignature(TimeSignature timeSignature) {
-    final barsDrums = _bars.map((BarModel bar) => bar.drum).toSet();
-    _bars = barsDrums
-        .map((Drums drum) =>
+    final barsDrums = drumBars.map((BarModel bar) => bar.drum).toSet();
+    drumBars = barsDrums
+        .map((Drum drum) =>
             BarModel.generate(drum: drum, timeSignature: timeSignature))
         .toList();
 
-    _timeSignature = timeSignature;
+    timeSignature = timeSignature;
     notifyListeners();
   }
 }

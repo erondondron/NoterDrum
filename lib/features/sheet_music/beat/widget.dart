@@ -6,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class BeatWidget extends StatelessWidget {
-  static const double padding = 5;
-
   const BeatWidget({super.key});
 
   @override
