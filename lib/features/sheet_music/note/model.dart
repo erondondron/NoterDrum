@@ -30,10 +30,17 @@ class NoteModel extends ChangeNotifier {
 
   NoteValue value;
   StrokeType type;
+
   GlobalKey key;
+  bool selected = false;
 
   void plainStroke() {
     type = type == StrokeType.off ? StrokeType.plain : StrokeType.off;
+    notifyListeners();
+  }
+
+  void select() {
+    selected = !selected;
     notifyListeners();
   }
 }

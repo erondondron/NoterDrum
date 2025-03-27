@@ -1,3 +1,4 @@
+import 'package:drums/features/actions/editing/model.dart';
 import 'package:drums/features/sheet_music/note/model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,14 +17,15 @@ class NoteWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<NoteModel>(
-      builder: (BuildContext context, NoteModel note, _) {
+    return Consumer2<NoteModel, NotesEditingModel>(
+      builder: (BuildContext context, NoteModel note,
+          NotesEditingModel controller, _) {
         return Padding(
           padding: EdgeInsets.only(right: notesPadding[note.value]!),
           child: GestureDetector(
-            onTap: note.plainStroke,
+            onTap: !controller.isActive ? note.plainStroke : null,
             behavior: HitTestBehavior.translucent,
-            child: _NoteBox(note: note),
+            child: NoteBox(note: note),
           ),
         );
       },
@@ -31,11 +33,12 @@ class NoteWidget extends StatelessWidget {
   }
 }
 
-class _NoteBox extends StatelessWidget {
-  static const double outerSize = 35;
+class NoteBox extends StatelessWidget {
+  static const double outerHeight = 40;
+  static const double outerWidth = 35;
   static const double innerSize = 30;
 
-  const _NoteBox({required this.note});
+  const NoteBox({super.key, required this.note});
 
   final NoteModel note;
 
@@ -43,8 +46,8 @@ class _NoteBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       key: note.key,
-      width: outerSize,
-      height: outerSize,
+      width: outerWidth,
+      height: outerHeight,
       child: Center(
         child: Container(
           width: innerSize,
@@ -55,7 +58,9 @@ class _NoteBox extends StatelessWidget {
                 : Theme.of(context).colorScheme.onSurface,
             shape: BoxShape.circle,
             border: Border.all(
-              color: Theme.of(context).colorScheme.onSecondaryContainer,
+              color: note.selected
+                  ? Colors.orange
+                  : Theme.of(context).colorScheme.onSecondaryContainer,
               width: 1.5,
             ),
           ),

@@ -4,7 +4,7 @@ import 'package:drums/features/sheet_music/time_signature/model.dart';
 import 'package:flutter/material.dart';
 
 class BarModel extends ChangeNotifier {
-  BarModel({required this.drum, required this.beats});
+  BarModel({required this.drum, required this.beats}) : key = GlobalKey();
 
   factory BarModel.generate({
     required Drum drum,
@@ -25,6 +25,7 @@ class BarModel extends ChangeNotifier {
 
   final Drum drum;
   final List<BeatModel> beats;
+  final GlobalKey key;
 }
 
 class SheetMusicBarModel extends ChangeNotifier {
@@ -48,14 +49,14 @@ class SheetMusicBarModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateTimeSignature(TimeSignature timeSignature) {
+  void updateTimeSignature(TimeSignature newSignature) {
     final barsDrums = drumBars.map((BarModel bar) => bar.drum).toSet();
     drumBars = barsDrums
         .map((Drum drum) =>
-            BarModel.generate(drum: drum, timeSignature: timeSignature))
+            BarModel.generate(drum: drum, timeSignature: newSignature))
         .toList();
 
-    timeSignature = timeSignature;
+    timeSignature = newSignature;
     notifyListeners();
   }
 }

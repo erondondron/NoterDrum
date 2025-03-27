@@ -51,6 +51,7 @@ class _BeatsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FixHeightRow(
+      key: bar.key,
       children: bar.beats
           .map(
             (BeatModel beat) => ChangeNotifierProvider.value(
