@@ -47,6 +47,11 @@ class NoteBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final containerColor = Theme.of(context).colorScheme.secondaryContainer;
+    final fillColor = Theme.of(context).colorScheme.onSurface;
+    final borderColor = Theme.of(context).colorScheme.onSecondaryContainer;
+    final selectionColor = Theme.of(context).colorScheme.primary;
+
     return SizedBox(
       key: note.key,
       width: outerWidth,
@@ -56,16 +61,26 @@ class NoteBox extends StatelessWidget {
           width: innerSize,
           height: innerSize,
           decoration: BoxDecoration(
-            color: note.type == StrokeType.off
-                ? Theme.of(context).colorScheme.secondaryContainer
-                : Theme.of(context).colorScheme.onSurface,
+            color: note.type == StrokeType.off ? containerColor : fillColor,
             shape: BoxShape.circle,
             border: Border.all(
-              color: note.selected
-                  ? Colors.orange
-                  : Theme.of(context).colorScheme.onSecondaryContainer,
+              color: note.selected ? Colors.transparent : borderColor,
               width: 1.5,
             ),
+            boxShadow: note.selected
+                ? [
+                    BoxShadow(
+                      color: selectionColor,
+                      blurRadius: 7.5,
+                      spreadRadius: 2,
+                    ),
+                    BoxShadow(
+                      color: selectionColor.withValues(alpha: 0.5),
+                      blurRadius: 15,
+                      spreadRadius: 4,
+                    ),
+                  ]
+                : [],
           ),
         ),
       ),
