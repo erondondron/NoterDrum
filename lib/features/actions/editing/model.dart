@@ -1,12 +1,22 @@
+import 'package:drums/features/sheet_music/note/model.dart';
 import 'package:flutter/material.dart';
 
 class NotesEditingModel extends ChangeNotifier {
-  bool _isActive = false;
+  bool isActive = false;
 
-  bool get isActive => _isActive;
+  Set<NoteModel> selectedNotes = {};
 
   void toggle() {
-    _isActive = !_isActive;
+    isActive = !isActive;
     notifyListeners();
+  }
+
+  void updateSelectedNotes({Set<NoteModel> newSelection = const {}}) {
+    var intersection = selectedNotes.intersection(newSelection);
+    var union = selectedNotes.union(newSelection);
+    for (var note in union.difference(intersection)) {
+      note.select();
+    }
+    selectedNotes = newSelection;
   }
 }

@@ -17,12 +17,10 @@ class NotesSelector extends StatefulWidget {
 }
 
 class _NotesSelectorState extends State<NotesSelector> {
-  SheetMusicBarModel? _sheetMusicBar;
+  late SheetMusicBarModel _sheetMusicBar;
+  late NotesEditingModel _controller;
 
-  Offset? _tapSelectionStart;
   Offset? _dragSelectionStart;
-
-  Set<NoteModel> _selected = {};
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +28,12 @@ class _NotesSelectorState extends State<NotesSelector> {
       builder: (BuildContext context, NotesEditingModel controller,
           SheetMusicBarModel bar, _) {
         if (!controller.isActive) {
-          _updateSelected();
+          controller.updateSelectedNotes();
           return widget.child;
         }
         _sheetMusicBar = bar;
+        _controller = controller;
         return GestureDetector(
-          onTapDown: _onTapDown,
-          onTapUp: _onTapUp,
           onLongPressStart: _onLongPressStart,
           onLongPressMoveUpdate: _onLongPressMoveUpdate,
           onLongPressEnd: _onLongPressEnd,
@@ -46,53 +43,32 @@ class _NotesSelectorState extends State<NotesSelector> {
     );
   }
 
-  void _onTapDown(TapDownDetails details) =>
-      _tapSelectionStart = details.globalPosition;
-
-  void _onTapUp(TapUpDetails details) {
-    if (_tapSelectionStart == null) return;
-    var startSelection = _getSelectedNotes(startPosition: _tapSelectionStart!);
-    var endSelection = _getSelectedNotes(startPosition: details.globalPosition);
-    var newSelection = startSelection.intersection(endSelection);
-    _updateSelected(newSelection: newSelection.difference(_selected));
-    _tapSelectionStart = null;
-  }
-
   void _onLongPressStart(LongPressStartDetails details) {
-    _updateSelected();
+    _controller.updateSelectedNotes();
     _dragSelectionStart = details.globalPosition;
   }
 
   void _onLongPressMoveUpdate(LongPressMoveUpdateDetails details) {
     if (_dragSelectionStart == null) return;
-    var x = [_tapSelectionStart!.dx, details.globalPosition.dx];
-    var y = [_tapSelectionStart!.dy, details.globalPosition.dy];
+    var x = [_dragSelectionStart!.dx, details.globalPosition.dx];
+    var y = [_dragSelectionStart!.dy, details.globalPosition.dy];
 
     var selection = _getSelectedNotes(
       startPosition: Offset(x.reduce(min), y.reduce(min)),
       endPosition: Offset(x.reduce(max), y.reduce(max)),
     );
-    _updateSelected(newSelection: selection);
+    _controller.updateSelectedNotes(newSelection: selection);
   }
 
   void _onLongPressEnd(LongPressEndDetails details) =>
       _dragSelectionStart = null;
-
-  void _updateSelected({Set<NoteModel> newSelection = const {}}) {
-    var intersection = _selected.intersection(newSelection);
-    var union = _selected.union(newSelection);
-    for (var note in union.difference(intersection)) {
-      note.select();
-    }
-    _selected = newSelection;
-  }
 
   List<BarModel> _getSelectedBars({
     required Offset startPosition,
     Offset? endPosition,
   }) {
     var bars = <BarModel>[];
-    for (var bar in _sheetMusicBar!.drumBars) {
+    for (var bar in _sheetMusicBar.drumBars) {
       if (bars.isEmpty) {
         var bellowOrAbove = _getYRelation(startPosition, bar.key);
         if (bellowOrAbove.first || bellowOrAbove.last) continue;

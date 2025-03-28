@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 const Map<NoteValue, double> notesPadding = {
-  NoteValue.quarter: 40,
-  NoteValue.eight: 20,
-  NoteValue.eightTriplet: 10,
+  NoteValue.quarter: 20,
+  NoteValue.eight: 10,
+  NoteValue.eightTriplet: 7.5,
   NoteValue.sixteenth: 5,
   NoteValue.sixteenthTriplet: 2.5,
   NoteValue.thirtySecond: 0,
@@ -23,7 +23,10 @@ class NoteWidget extends StatelessWidget {
         return Padding(
           padding: EdgeInsets.only(right: notesPadding[note.value]!),
           child: GestureDetector(
-            onTap: !controller.isActive ? note.plainStroke : null,
+            onTap: controller.isActive
+                ? () => controller.updateSelectedNotes(
+                    newSelection: {note}.difference(controller.selectedNotes))
+                : note.plainStroke,
             behavior: HitTestBehavior.translucent,
             child: NoteBox(note: note),
           ),
