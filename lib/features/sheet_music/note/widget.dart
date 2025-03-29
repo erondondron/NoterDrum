@@ -1,4 +1,5 @@
 import 'package:drums/features/actions/editing/model.dart';
+import 'package:drums/features/sheet_music/measure_unit_line/model.dart';
 import 'package:drums/features/sheet_music/note/model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +14,10 @@ class NoteWidget extends StatelessWidget {
           NotesEditingController controller, _) {
         return GestureDetector(
           onTap: controller.isActive
-              ? () => controller.updateSelectedNote(note)
+              ? () => controller.updateSelectedNote(
+                    Provider.of<MeasureUnitDrumLine>(context, listen: false),
+                    note,
+                  )
               : note.changeStroke,
           behavior: HitTestBehavior.translucent,
           child: NoteView(note: note),
@@ -66,9 +70,10 @@ class NoteView extends StatelessWidget {
   List<BoxShadow> _noteSelection(BuildContext context) {
     if (!note.isSelected) return [];
     final selectionColor = Theme.of(context).colorScheme.primary;
+    final errorColor = Theme.of(context).colorScheme.error;
     return [
       BoxShadow(
-        color: selectionColor,
+        color: note.isValid ? selectionColor : errorColor,
         blurRadius: 7.5,
         spreadRadius: 2,
       ),

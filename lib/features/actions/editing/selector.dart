@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:drums/features/actions/editing/model.dart';
 import 'package:drums/features/sheet_music/measure/model.dart';
+import 'package:drums/features/sheet_music/measure_unit_line/model.dart';
 import 'package:drums/features/sheet_music/note/model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
@@ -62,18 +63,19 @@ class _NotesSelectorState extends State<NotesSelector> {
   void _onLongPressEnd(LongPressEndDetails details) =>
       _dragSelectionStart = null;
 
-  List<Set<Note>> _getSelectedNotes(Offset topLeft, Offset bottomRight) {
-    var notes = <Set<Note>>[];
+  Map<MeasureUnitDrumLine, Set<Note>> _getSelectedNotes(
+      Offset topLeft, Offset bottomRight) {
+    var notes = <MeasureUnitDrumLine, Set<Note>>{};
     for (var unit in _measure.units.where(
       (unit) => _isSelected(unit.key, topLeft, bottomRight),
     )) {
       for (var line in unit.drumLines.where(
         (line) => _isSelected(line.key, topLeft, bottomRight),
       )) {
-        var notesGroup = line.notes
+        var lineNotes = line.notes
             .where((note) => _isSelected(note.key, topLeft, bottomRight))
             .toSet();
-        notes.add(notesGroup);
+        notes[line] = (lineNotes);
       }
     }
     return notes;

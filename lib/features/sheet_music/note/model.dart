@@ -36,6 +36,7 @@ class Note extends ChangeNotifier {
 
   GlobalKey key = GlobalKey();
   bool isSelected = false;
+  bool isValid = true;
 
   NoteValue value;
   StrokeType type;

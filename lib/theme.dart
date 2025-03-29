@@ -24,6 +24,7 @@ final ThemeData darkTheme = ThemeData(
     onSurface: Color(0xFFEEEEEE),
     secondaryContainer: Color(0xFF181818),
     onSecondaryContainer: Color(0xFF373737),
+    error: Colors.red,
   ),
   appBarTheme: AppBarTheme(
     backgroundColor: Color(0xFF1F1F1F),
