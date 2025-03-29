@@ -27,7 +27,7 @@ class _NotesSelectorState extends State<NotesSelector> {
       builder: (BuildContext context, NotesEditingController controller,
           SheetMusicMeasure measure, _) {
         if (!controller.isActive) {
-          controller.updateSelectedNotes();
+          controller.updateSelectedNoteGroups();
           return widget.child;
         }
         _controller = controller;
@@ -43,7 +43,7 @@ class _NotesSelectorState extends State<NotesSelector> {
   }
 
   void _onLongPressStart(LongPressStartDetails details) {
-    _controller.updateSelectedNotes();
+    _controller.updateSelectedNoteGroups();
     _dragSelectionStart = details.globalPosition;
   }
 
@@ -52,27 +52,28 @@ class _NotesSelectorState extends State<NotesSelector> {
     var x = [_dragSelectionStart!.dx, details.globalPosition.dx];
     var y = [_dragSelectionStart!.dy, details.globalPosition.dy];
 
-    var selection = _getSelectedNotes(
+    var newSelection = _getSelectedNotes(
       Offset(x.reduce(min), y.reduce(min)),
       Offset(x.reduce(max), y.reduce(max)),
     );
-    _controller.updateSelectedNotes(newSelection: selection);
+    _controller.updateSelectedNoteGroups(groups: newSelection);
   }
 
   void _onLongPressEnd(LongPressEndDetails details) =>
       _dragSelectionStart = null;
 
-  Set<Note> _getSelectedNotes(Offset topLeft, Offset bottomRight) {
-    var notes = <Note>{};
+  List<Set<Note>> _getSelectedNotes(Offset topLeft, Offset bottomRight) {
+    var notes = <Set<Note>>[];
     for (var unit in _measure.units.where(
       (unit) => _isSelected(unit.key, topLeft, bottomRight),
     )) {
       for (var line in unit.drumLines.where(
         (line) => _isSelected(line.key, topLeft, bottomRight),
       )) {
-        notes.addAll(line.notes.where(
-          (note) => _isSelected(note.key, topLeft, bottomRight),
-        ));
+        var notesGroup = line.notes
+            .where((note) => _isSelected(note.key, topLeft, bottomRight))
+            .toSet();
+        notes.add(notesGroup);
       }
     }
     return notes;

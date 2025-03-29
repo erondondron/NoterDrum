@@ -4,20 +4,29 @@ import 'package:flutter/material.dart';
 class NotesEditingController extends ChangeNotifier {
   bool isActive = false;
 
-  Set<Note> selectedNotes = {};
+  List<Set<Note>> selectedNoteGroups = [];
 
   void toggleActiveStatus() {
     isActive = !isActive;
     notifyListeners();
   }
 
-  void updateSelectedNotes({Set<Note> newSelection = const {}}) {
-    var intersection = selectedNotes.intersection(newSelection);
-    var union = selectedNotes.union(newSelection);
+  void updateSelectedNote(Note note) {
+    var group = {note};
+    var oldSelection = selectedNoteGroups.expand((group) => group).toSet();
+    var newSelection = oldSelection.contains(note) ? <Set<Note>>[] : [group];
+    updateSelectedNoteGroups(groups: newSelection);
+  }
+
+  void updateSelectedNoteGroups({List<Set<Note>> groups = const []}) {
+    var oldSelection = selectedNoteGroups.expand((group) => group).toSet();
+    var newSelection = groups.expand((group) => group).toSet();
+    var intersection = oldSelection.intersection(newSelection);
+    var union = oldSelection.union(newSelection);
     for (var note in union.difference(intersection)) {
       note.changeSelection();
     }
-    selectedNotes = newSelection;
+    selectedNoteGroups = groups;
   }
 
   List<NoteValue> possibleNoteValues() => NoteValue.values;

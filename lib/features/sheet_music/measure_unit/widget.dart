@@ -10,16 +10,19 @@ class MeasureUnitWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<MeasureUnit>(
       builder: (BuildContext context, MeasureUnit unit, _) {
-        return Column(
-          key: unit.key,
-          children: unit.drumLines
-              .map(
-                (unitLine) => ChangeNotifierProvider.value(
-                  value: unitLine,
-                  child: MeasureUnitLineWidget(),
-                ),
-              )
-              .toList(),
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 5),
+          child: Column(
+            key: unit.key,
+            children: unit.drumLines
+                .map(
+                  (unitLine) => ChangeNotifierProvider.value(
+                    value: unitLine,
+                    child: MeasureUnitLineWidget(),
+                  ),
+                )
+                .toList(),
+          ),
         );
       },
     );

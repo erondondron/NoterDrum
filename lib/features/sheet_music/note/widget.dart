@@ -13,8 +13,7 @@ class NoteWidget extends StatelessWidget {
           NotesEditingController controller, _) {
         return GestureDetector(
           onTap: controller.isActive
-              ? () => controller.updateSelectedNotes(
-                  newSelection: {note}.difference(controller.selectedNotes))
+              ? () => controller.updateSelectedNote(note)
               : note.changeStroke,
           behavior: HitTestBehavior.translucent,
           child: NoteView(note: note),
