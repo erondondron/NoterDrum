@@ -15,6 +15,8 @@ enum NoteValue {
 
   final int part;
   final int count;
+
+  int get duration => part ~/ count;
 }
 
 enum StrokeType {

@@ -1,5 +1,5 @@
 import 'package:drums/features/sheet_music/note/model.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class TimeSignature extends ChangeNotifier {
   TimeSignature({
@@ -19,6 +19,8 @@ class TimeSignature extends ChangeNotifier {
     if (noteValue == NoteValue.values.last) return;
     var idx = NoteValue.values.indexOf(noteValue);
     noteValue = NoteValue.values[idx + 1];
+    var unitLength = noteValue.part ~/ NoteValue.quarter.part;
+    measures = List.generate(4, (_) => unitLength);
     notifyListeners();
   }
 
@@ -26,6 +28,8 @@ class TimeSignature extends ChangeNotifier {
     if (noteValue == NoteValue.values.first) return;
     var idx = NoteValue.values.indexOf(noteValue);
     noteValue = NoteValue.values[idx - 1];
+    var unitLength = noteValue.part ~/ NoteValue.quarter.part;
+    measures = List.generate(4, (_) => unitLength);
     notifyListeners();
   }
 
@@ -38,7 +42,8 @@ class TimeSignature extends ChangeNotifier {
   }
 
   void addUnit() {
-    measures.add(1);
+    var unitLength = noteValue.part ~/ NoteValue.quarter.part;
+    measures.add(unitLength);
     notifyListeners();
   }
 }

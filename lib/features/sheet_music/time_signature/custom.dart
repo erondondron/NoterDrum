@@ -81,7 +81,8 @@ class _MeasureUnitsLengthEditor extends StatelessWidget {
       children: [
         IconButton(
           icon: Icon(Icons.add_outlined),
-          onPressed: () => timeSignature.changeUnitLength(unitIndex, 1),
+          onPressed: () => timeSignature.changeUnitLength(
+              unitIndex, timeSignature.noteValue.count),
         ),
         Text(
           timeSignature.measures[unitIndex].toString(),
@@ -89,7 +90,8 @@ class _MeasureUnitsLengthEditor extends StatelessWidget {
         ),
         IconButton(
           icon: Icon(Icons.remove_outlined),
-          onPressed: () => timeSignature.changeUnitLength(unitIndex, -1),
+          onPressed: () => timeSignature.changeUnitLength(
+              unitIndex, -timeSignature.noteValue.count),
         ),
       ],
     );
