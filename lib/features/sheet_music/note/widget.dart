@@ -3,55 +3,38 @@ import 'package:drums/features/sheet_music/note/model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-const Map<NoteValue, double> notesPadding = {
-  NoteValue.quarter: 20,
-  NoteValue.eight: 10,
-  NoteValue.eightTriplet: 7.5,
-  NoteValue.sixteenth: 5,
-  NoteValue.sixteenthTriplet: 2.5,
-  NoteValue.thirtySecond: 0,
-};
-
 class NoteWidget extends StatelessWidget {
   const NoteWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<NoteModel, NotesEditingModel>(
-      builder: (BuildContext context, NoteModel note,
-          NotesEditingModel controller, _) {
-        return Padding(
-          padding: EdgeInsets.only(right: notesPadding[note.value]!),
-          child: GestureDetector(
-            onTap: controller.isActive
-                ? () => controller.updateSelectedNotes(
-                    newSelection: {note}.difference(controller.selectedNotes))
-                : note.plainStroke,
-            behavior: HitTestBehavior.translucent,
-            child: NoteBox(note: note),
-          ),
+    return Consumer2<Note, NotesEditingController>(
+      builder: (BuildContext context, Note note,
+          NotesEditingController controller, _) {
+        return GestureDetector(
+          onTap: controller.isActive
+              ? () => controller.updateSelectedNotes(
+                  newSelection: {note}.difference(controller.selectedNotes))
+              : note.changeStroke,
+          behavior: HitTestBehavior.translucent,
+          child: NoteView(note: note),
         );
       },
     );
   }
 }
 
-class NoteBox extends StatelessWidget {
+class NoteView extends StatelessWidget {
   static const double outerHeight = 40;
   static const double outerWidth = 35;
   static const double innerSize = 30;
 
-  const NoteBox({super.key, required this.note});
+  const NoteView({super.key, required this.note});
 
-  final NoteModel note;
+  final Note note;
 
   @override
   Widget build(BuildContext context) {
-    final containerColor = Theme.of(context).colorScheme.secondaryContainer;
-    final fillColor = Theme.of(context).colorScheme.onSurface;
-    final borderColor = Theme.of(context).colorScheme.onSecondaryContainer;
-    final selectionColor = Theme.of(context).colorScheme.primary;
-
     return SizedBox(
       key: note.key,
       width: outerWidth,
@@ -60,30 +43,41 @@ class NoteBox extends StatelessWidget {
         child: Container(
           width: innerSize,
           height: innerSize,
-          decoration: BoxDecoration(
-            color: note.type == StrokeType.off ? containerColor : fillColor,
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: note.selected ? Colors.transparent : borderColor,
-              width: 1.5,
-            ),
-            boxShadow: note.selected
-                ? [
-                    BoxShadow(
-                      color: selectionColor,
-                      blurRadius: 7.5,
-                      spreadRadius: 2,
-                    ),
-                    BoxShadow(
-                      color: selectionColor.withValues(alpha: 0.5),
-                      blurRadius: 15,
-                      spreadRadius: 4,
-                    ),
-                  ]
-                : [],
-          ),
+          decoration: _noteDecoration(context),
         ),
       ),
     );
+  }
+
+  BoxDecoration _noteDecoration(BuildContext context) {
+    final containerColor = Theme.of(context).colorScheme.secondaryContainer;
+    final fillColor = Theme.of(context).colorScheme.onSurface;
+    final borderColor = Theme.of(context).colorScheme.onSecondaryContainer;
+    return BoxDecoration(
+      color: note.type == StrokeType.off ? containerColor : fillColor,
+      shape: BoxShape.circle,
+      border: Border.all(
+        color: note.isSelected ? Colors.transparent : borderColor,
+        width: 1.5,
+      ),
+      boxShadow: _noteSelection(context),
+    );
+  }
+
+  List<BoxShadow> _noteSelection(BuildContext context) {
+    if (!note.isSelected) return [];
+    final selectionColor = Theme.of(context).colorScheme.primary;
+    return [
+      BoxShadow(
+        color: selectionColor,
+        blurRadius: 7.5,
+        spreadRadius: 2,
+      ),
+      BoxShadow(
+        color: selectionColor.withValues(alpha: 0.5),
+        blurRadius: 15,
+        spreadRadius: 4,
+      ),
+    ];
   }
 }

@@ -1,5 +1,5 @@
-import 'package:drums/features/sheet_music/bar/models.dart';
-import 'package:drums/features/sheet_music/note/model.dart';
+import 'package:drums/features/sheet_music/measure/model.dart';
+import 'package:drums/features/sheet_music/time_signature/custom.dart';
 import 'package:drums/features/sheet_music/time_signature/model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,31 +9,36 @@ class TimeSignatureWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<SheetMusicBarModel>(
-      builder: (BuildContext context, SheetMusicBarModel bar, _) {
+    return Consumer<SheetMusicMeasure>(
+      builder: (BuildContext context, SheetMusicMeasure measure, _) {
         return PopupMenuButton<TimeSignature>(
-          child: Text(bar.timeSignature.label),
+          child: Text(measure.timeSignature.label),
           itemBuilder: (BuildContext context) {
             return [
               ...[sixEights, eightEights, sixteenSixteenths].map(
                 (TimeSignature timeSignature) => PopupMenuItem(
                   value: timeSignature,
                   child: Text(timeSignature.label),
-                  onTap: () => bar.updateTimeSignature(timeSignature),
+                  onTap: () => measure.updateTimeSignature(timeSignature),
                 ),
               ),
               PopupMenuItem(
-                value: bar.timeSignature,
+                value: measure.timeSignature,
                 child: Text("Custom"),
                 onTap: () async {
-                  final timeSignature = await showDialog<TimeSignature?>(
+                  var timeSignature = TimeSignature(
+                    noteValue: measure.timeSignature.noteValue,
+                    measures: measure.timeSignature.measures.toList(),
+                  );
+                  var accepted = await showDialog<bool?>(
                     context: context,
-                    builder: (_) => _CustomizeWindow(
-                      initial: bar.timeSignature,
+                    builder: (_) => ChangeNotifierProvider.value(
+                      value: timeSignature,
+                      child: TimeSignatureCustomizeWindow(),
                     ),
                   );
-                  if (timeSignature != null) {
-                    bar.updateTimeSignature(timeSignature);
+                  if (accepted == true) {
+                    measure.updateTimeSignature(timeSignature);
                   }
                 },
               ),
@@ -41,128 +46,6 @@ class TimeSignatureWidget extends StatelessWidget {
           },
         );
       },
-    );
-  }
-}
-
-class _CustomizeWindow extends StatefulWidget {
-  const _CustomizeWindow({required this.initial});
-
-  final TimeSignature initial;
-
-  @override
-  State<_CustomizeWindow> createState() => _CustomizeWindowState();
-}
-
-class _CustomizeWindowState extends State<_CustomizeWindow> {
-  late TimeSignature _timeSignature;
-
-  @override
-  void initState() {
-    _timeSignature = TimeSignature(
-      noteValue: widget.initial.noteValue,
-      measures: widget.initial.measures.toList(),
-    );
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text("Custom time signature ${_timeSignature.label}"),
-      content: Center(
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ..._timeSignature.measures.asMap().keys.map(
-                    (int index) => measureEditor(index),
-                  ),
-              IconButton(
-                icon: Icon(Icons.add_outlined),
-                onPressed: () => setState(() => _timeSignature.measures.add(1)),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 10, right: 20),
-                child: Text(
-                  "/",
-                  style: Theme.of(context).textTheme.headlineLarge,
-                ),
-              ),
-              noteValues(),
-            ],
-          ),
-        ),
-      ),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: () => Navigator.pop(context, _timeSignature),
-          child: const Text('Accept'),
-        ),
-      ],
-    );
-  }
-
-  Widget measureEditor(int index) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          icon: Icon(Icons.add_outlined),
-          onPressed: () => setState(() => _timeSignature.measures[index]++),
-        ),
-        Text(
-          _timeSignature.measures[index].toString(),
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
-        IconButton(
-          icon: Icon(Icons.remove_outlined),
-          onPressed: () => setState(() => _timeSignature.measures[index] > 1
-              ? _timeSignature.measures[index]--
-              : _timeSignature.measures.removeAt(index)),
-        ),
-      ],
-    );
-  }
-
-  Widget noteValues() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          icon: Icon(Icons.add_outlined),
-          onPressed: _timeSignature.noteValue != NoteValue.thirtySecond
-              ? () {
-                  final nextValue = _timeSignature.noteValue.part * 2;
-                  final nextNote = NoteValue.values.firstWhere(
-                    (NoteValue note) => note.part == nextValue,
-                  );
-                  setState(() => _timeSignature.noteValue = nextNote);
-                }
-              : null,
-        ),
-        Text(
-          _timeSignature.noteValue.part.toString(),
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
-        IconButton(
-          icon: Icon(Icons.remove_outlined),
-          onPressed: _timeSignature.noteValue != NoteValue.quarter
-              ? () {
-                  final nextValue = _timeSignature.noteValue.part ~/ 2;
-                  final nextNote = NoteValue.values.firstWhere(
-                    (NoteValue note) => note.part == nextValue,
-                  );
-                  setState(() => _timeSignature.noteValue = nextNote);
-                }
-              : null,
-        ),
-      ],
     );
   }
 }

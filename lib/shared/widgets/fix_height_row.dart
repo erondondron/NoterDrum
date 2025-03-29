@@ -1,8 +1,7 @@
+import 'package:drums/features/sheet_music/note/widget.dart';
 import 'package:flutter/material.dart';
 
 class FixHeightRow extends StatelessWidget {
-  static const double height = 40;
-
   const FixHeightRow({super.key, this.children = const []});
 
   final List<Widget> children;
@@ -10,7 +9,7 @@ class FixHeightRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: height,
+      height: NoteView.outerHeight,
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

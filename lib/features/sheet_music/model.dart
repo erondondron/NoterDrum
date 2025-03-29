@@ -1,48 +1,61 @@
-import 'package:drums/features/sheet_music/bar/models.dart';
 import 'package:drums/features/sheet_music/drum_set/model.dart';
+import 'package:drums/features/sheet_music/measure/model.dart';
 import 'package:drums/features/sheet_music/time_signature/model.dart';
 import 'package:flutter/material.dart';
 
-class SheetMusicModel extends ChangeNotifier {
-  SheetMusicModel({
-    DrumSetModel? drumSet,
-    List<SheetMusicBarModel>? bars,
-  })  : drumSet = drumSet ?? DrumSetModel(),
-        bars = bars ?? [SheetMusicBarModel(timeSignature: sixteenSixteenths)] {
-    this.drumSet.addListener(_updateDrums);
-    _updateDrums();
+class SheetMusic extends ChangeNotifier {
+  SheetMusic({
+    required this.name,
+    required this.drumSet,
+    required this.measures,
+  }) {
+    drumSet.addListener(_updateMeasureDrumLines);
+  }
+
+  factory SheetMusic.generate({String name = "NewGroove"}) {
+    var drumSet = DrumSetModel();
+    var measure = SheetMusicMeasure.generate(
+      timeSignature: sixteenSixteenths,
+      drums: drumSet.selected,
+    );
+    return SheetMusic(name: name, drumSet: drumSet, measures: [measure]);
   }
 
   @override
   void dispose() {
-    drumSet.removeListener(_updateDrums);
+    drumSet.removeListener(_updateMeasureDrumLines);
     super.dispose();
   }
 
+  final String name;
   final DrumSetModel drumSet;
-  final List<SheetMusicBarModel> bars;
+  final List<SheetMusicMeasure> measures;
 
-  void addNewBar() {
-    bars.add(
-      SheetMusicBarModel(timeSignature: bars.last.timeSignature)
-        ..updateDrums(drumSet.selected),
+  void addNewMeasure() {
+    measures.add(
+      SheetMusicMeasure.generate(
+        timeSignature: measures.last.timeSignature,
+        drums: drumSet.selected,
+      ),
     );
     notifyListeners();
   }
 
-  void removeBar(SheetMusicBarModel bar) {
-    if (bars.length == 1) {
-      final newBar = SheetMusicBarModel(timeSignature: bars.last.timeSignature)
-        ..updateDrums(drumSet.selected);
-      bars.insert(0, newBar);
+  void removeMeasure(SheetMusicMeasure measure) {
+    if (measures.length == 1) {
+      final newMeasure = SheetMusicMeasure.generate(
+        timeSignature: measures.last.timeSignature,
+        drums: drumSet.selected,
+      );
+      measures.insert(0, newMeasure);
     }
-    bars.remove(bar);
+    measures.remove(measure);
     notifyListeners();
   }
 
-  void _updateDrums() {
-    for (SheetMusicBarModel bar in bars) {
-      bar.updateDrums(drumSet.selected);
+  void _updateMeasureDrumLines() {
+    for (SheetMusicMeasure measure in measures) {
+      measure.updateDrumLines(drumSet.selected);
     }
   }
 }

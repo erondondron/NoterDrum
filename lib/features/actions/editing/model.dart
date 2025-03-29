@@ -1,33 +1,26 @@
 import 'package:drums/features/sheet_music/note/model.dart';
 import 'package:flutter/material.dart';
 
-class NotesEditingModel extends ChangeNotifier {
+class NotesEditingController extends ChangeNotifier {
   bool isActive = false;
 
-  Set<NoteModel> selectedNotes = {};
+  Set<Note> selectedNotes = {};
 
-  void toggle() {
+  void toggleActiveStatus() {
     isActive = !isActive;
     notifyListeners();
   }
 
-  void updateSelectedNotes({Set<NoteModel> newSelection = const {}}) {
+  void updateSelectedNotes({Set<Note> newSelection = const {}}) {
     var intersection = selectedNotes.intersection(newSelection);
     var union = selectedNotes.union(newSelection);
     for (var note in union.difference(intersection)) {
-      note.select();
+      note.changeSelection();
     }
     selectedNotes = newSelection;
   }
 
-  List<NoteValue> possibleNoteValues() {
-    if (selectedNotes.isEmpty) return NoteValue.values;
-    var maxNoteValues = selectedNotes.map((note) => note.beat.maxNoteValue);
-    var maxNoteValue = maxNoteValues.reduce((a, b) => a.part < b.part ? a : b);
-    return NoteValue.values
-        .where((note) => note.part >= maxNoteValue.part)
-        .toList();
-  }
+  List<NoteValue> possibleNoteValues() => NoteValue.values;
 
   void changeSelectedNotesValues(NoteValue noteValue) {}
 }

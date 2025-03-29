@@ -31,7 +31,7 @@ class Application extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'DrumScribes',
+      title: 'NoterDrums',
       theme: darkTheme,
       home: const MainWindow(),
     );
@@ -52,17 +52,16 @@ class _MainWindowState extends State<MainWindow> {
     final leftPadding = max(notchSize, 80.0);
     final bodyPadding = 25.0;
     final appBarHeight = 60.0;
-
     final actionsPadding = 20.0;
     final actionsSize = 50.0;
 
-    final sheetMusic = SheetMusicModel();
+    final sheetMusic = SheetMusic.generate();
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(appBarHeight),
         child: AppBar(
           titleSpacing: leftPadding - notchSize,
-          title: Text("NewGroove"),
+          title: Text(sheetMusic.name),
           actions: [
             IconButton(
               icon: const Icon(Icons.save_outlined),
@@ -83,7 +82,7 @@ class _MainWindowState extends State<MainWindow> {
         providers: [
           ChangeNotifierProvider.value(value: sheetMusic),
           ChangeNotifierProvider(create: (_) => DrumSetPanelController()),
-          ChangeNotifierProvider(create: (_) => NotesEditingModel()),
+          ChangeNotifierProvider(create: (_) => NotesEditingController()),
         ],
         child: Stack(
           children: [

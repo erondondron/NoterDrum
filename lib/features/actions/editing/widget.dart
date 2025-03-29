@@ -8,8 +8,8 @@ class NotesEditingPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<NotesEditingModel>(
-      builder: (BuildContext context, NotesEditingModel controller, _) {
+    return Consumer<NotesEditingController>(
+      builder: (BuildContext context, NotesEditingController controller, _) {
         return Container(
           width: !controller.isActive ? 55 : null,
           height: 55,
@@ -40,7 +40,7 @@ class NotesEditingPanel extends StatelessWidget {
 class _NotesEditingActions extends StatelessWidget {
   const _NotesEditingActions({required this.controller});
 
-  final NotesEditingModel controller;
+  final NotesEditingController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +74,7 @@ class _NotesEditingActions extends StatelessWidget {
 class _NoteValuesSelector extends StatelessWidget {
   const _NoteValuesSelector({required this.controller});
 
-  final NotesEditingModel controller;
+  final NotesEditingController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -100,13 +100,13 @@ class _NoteValuesSelector extends StatelessWidget {
 class _ActivationButton extends StatelessWidget {
   const _ActivationButton({required this.controller});
 
-  final NotesEditingModel controller;
+  final NotesEditingController controller;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
-      onTap: controller.toggle,
+      onTap: controller.toggleActiveStatus,
       child: SizedBox(
         height: 50,
         width: 50,
