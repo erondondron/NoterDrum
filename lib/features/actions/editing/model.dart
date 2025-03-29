@@ -19,4 +19,15 @@ class NotesEditingModel extends ChangeNotifier {
     }
     selectedNotes = newSelection;
   }
+
+  List<NoteValue> possibleNoteValues() {
+    if (selectedNotes.isEmpty) return NoteValue.values;
+    var maxNoteValues = selectedNotes.map((note) => note.beat.maxNoteValue);
+    var maxNoteValue = maxNoteValues.reduce((a, b) => a.part < b.part ? a : b);
+    return NoteValue.values
+        .where((note) => note.part >= maxNoteValue.part)
+        .toList();
+  }
+
+  void changeSelectedNotesValues(NoteValue noteValue) {}
 }

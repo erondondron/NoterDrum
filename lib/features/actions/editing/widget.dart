@@ -1,4 +1,5 @@
 import 'package:drums/features/actions/editing/model.dart';
+import 'package:drums/features/sheet_music/note/model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,7 +25,8 @@ class NotesEditingPanel extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (controller.isActive) _NotesEditingActions(),
+                if (controller.isActive)
+                  _NotesEditingActions(controller: controller),
                 _ActivationButton(controller: controller),
               ],
             ),
@@ -36,13 +38,17 @@ class NotesEditingPanel extends StatelessWidget {
 }
 
 class _NotesEditingActions extends StatelessWidget {
+  const _NotesEditingActions({required this.controller});
+
+  final NotesEditingModel controller;
+
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 15),
-          child: Text("Note value"),
+          child: _NoteValuesSelector(controller: controller),
         ),
         Padding(
           padding: EdgeInsets.symmetric(vertical: 10),
@@ -61,6 +67,32 @@ class _NotesEditingActions extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _NoteValuesSelector extends StatelessWidget {
+  const _NoteValuesSelector({required this.controller});
+
+  final NotesEditingModel controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<NoteValue>(
+      child: Text("Note value"),
+      onSelected: (NoteValue noteValue) =>
+          controller.changeSelectedNotesValues(noteValue),
+      itemBuilder: (BuildContext context) {
+        return controller
+            .possibleNoteValues()
+            .map(
+              (NoteValue noteValue) => PopupMenuItem(
+                value: noteValue,
+                child: Text(noteValue.part.toString()),
+              ),
+            )
+            .toList();
+      },
     );
   }
 }

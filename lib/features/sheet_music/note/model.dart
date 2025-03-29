@@ -1,3 +1,4 @@
+import 'package:drums/features/sheet_music/beat/model.dart';
 import 'package:flutter/material.dart';
 
 enum NoteValue {
@@ -33,6 +34,7 @@ class NoteModel extends ChangeNotifier {
 
   GlobalKey key;
   bool selected = false;
+  late BeatModel beat;
 
   void plainStroke() {
     type = type == StrokeType.off ? StrokeType.plain : StrokeType.off;
