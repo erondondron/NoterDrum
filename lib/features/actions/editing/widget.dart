@@ -53,7 +53,7 @@ class _NotesEditingActions extends StatelessWidget {
         VerticalDivider(),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 15),
-          child: Text("Stroke type"),
+          child: _StrokeTypesSelector(controller: controller),
         ),
         VerticalDivider(),
       ],
@@ -61,6 +61,7 @@ class _NotesEditingActions extends StatelessWidget {
   }
 }
 
+// TODO(erondondron): Add note symbols
 class _NoteValuesSelector extends StatelessWidget {
   const _NoteValuesSelector({required this.controller});
 
@@ -79,6 +80,33 @@ class _NoteValuesSelector extends StatelessWidget {
               (NoteValue noteValue) => PopupMenuItem(
                 value: noteValue,
                 child: Text(noteValue.part.toString()),
+              ),
+            )
+            .toList();
+      },
+    );
+  }
+}
+
+// TODO(erondondron): Add note symbols
+class _StrokeTypesSelector extends StatelessWidget {
+  const _StrokeTypesSelector({required this.controller});
+
+  final NotesEditingController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<StrokeType>(
+      child: Text("Stroke type"),
+      onSelected: (StrokeType strokeType) =>
+          controller.changeSelectedStrokeTypes(strokeType),
+      itemBuilder: (BuildContext context) {
+        return controller
+            .possibleStrokes()
+            .map(
+              (StrokeType strokeType) => PopupMenuItem(
+                value: strokeType,
+                child: Text(strokeType.name),
               ),
             )
             .toList();

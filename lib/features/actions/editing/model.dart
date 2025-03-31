@@ -48,6 +48,22 @@ class NotesEditingController extends ChangeNotifier {
     selectedMeasure = measure;
   }
 
+  List<StrokeType> possibleStrokes() {
+    if (selectedNotes.isEmpty) return <StrokeType>[];
+    var drums = selectedNotes.keys.map((line) => line.drum).toSet();
+    return StrokeType.values
+        .where((stroke) => drums.difference(stroke.filter).isEmpty)
+        .toList();
+  }
+
+  void changeSelectedStrokeTypes(StrokeType stroke) {
+    var notes = selectedNotes.values.expand((notes) => notes).toList();
+    if (notes.isEmpty) return;
+    for (var note in notes) {
+      note.changeStroke(strokeType: stroke);
+    }
+  }
+
   List<NoteValue> possibleNoteValues() {
     if (selectedNotes.isEmpty) return <NoteValue>[];
     var minDuration = NoteValue.values.last.duration;

@@ -84,6 +84,7 @@ class _MeasureUnitsLengthEditor extends StatelessWidget {
           onPressed: () => timeSignature.changeUnitLength(
               unitIndex, timeSignature.noteValue.count),
         ),
+        // TODO(erondondron): Add note symbols
         Text(
           timeSignature.measures[unitIndex].toString(),
           style: Theme.of(context).textTheme.headlineSmall,
