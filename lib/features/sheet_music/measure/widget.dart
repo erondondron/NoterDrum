@@ -17,6 +17,7 @@ class SheetMusicMeasureWidget extends StatelessWidget {
       builder: (BuildContext context, SheetMusicMeasure measure, _) {
         return IntrinsicWidth(
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _ControlPanel(measure: measure),
@@ -36,16 +37,20 @@ class _UnitsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NotesSelector(
-      child: Row(
-        children: measure.units
-            .map(
-              (unit) => ChangeNotifierProvider.value(
-                value: unit,
-                child: MeasureUnitWidget(),
-              ),
-            )
-            .toList(),
+    return IntrinsicHeight(
+      child: NotesSelector(
+        child: Row(
+          children: measure.units
+              .map(
+                (unit) => ChangeNotifierProvider.value(
+                  value: unit,
+                  child: MeasureUnitWidget(),
+                ),
+              )
+              .expand((widget) => [widget, VerticalDivider()])
+              .toList()
+            ..removeLast(),
+        ),
       ),
     );
   }

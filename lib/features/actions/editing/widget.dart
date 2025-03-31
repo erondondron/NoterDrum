@@ -50,22 +50,12 @@ class _NotesEditingActions extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 15),
           child: _NoteValuesSelector(controller: controller),
         ),
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 10),
-          child: VerticalDivider(
-            color: Theme.of(context).colorScheme.onSecondaryContainer,
-          ),
-        ),
+        VerticalDivider(),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 15),
           child: Text("Stroke type"),
         ),
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 10),
-          child: VerticalDivider(
-            color: Theme.of(context).colorScheme.onSecondaryContainer,
-          ),
-        ),
+        VerticalDivider(),
       ],
     );
   }

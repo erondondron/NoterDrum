@@ -8,7 +8,9 @@ class MeasureUnit extends ChangeNotifier {
     required this.noteValue,
     required this.length,
     required this.drumLines,
-  });
+  }) {
+    calculateNotesWidth();
+  }
 
   factory MeasureUnit.generate({
     required NoteValue noteValue,
@@ -42,5 +44,19 @@ class MeasureUnit extends ChangeNotifier {
 
     drumLines.sort((a, b) => a.drum.order.compareTo(b.drum.order));
     notifyListeners();
+  }
+
+  void calculateNotesWidth() {
+    var minNoteValue = drumLines
+        .expand((line) => line.notes)
+        .reduce((min, note) => min.value.part > note.value.part ? min : note)
+        .value;
+
+    for (var line in drumLines) {
+      for (var note in line.notes) {
+        var relative = minNoteValue.part / note.value.part;
+        note.width = relative * Note.minWidth;
+      }
+    }
   }
 }

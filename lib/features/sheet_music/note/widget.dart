@@ -1,4 +1,5 @@
 import 'package:drums/features/actions/editing/model.dart';
+import 'package:drums/features/sheet_music/measure/model.dart';
 import 'package:drums/features/sheet_music/measure_unit_line/model.dart';
 import 'package:drums/features/sheet_music/note/model.dart';
 import 'package:flutter/material.dart';
@@ -12,24 +13,37 @@ class NoteWidget extends StatelessWidget {
     return Consumer2<Note, NotesEditingController>(
       builder: (BuildContext context, Note note,
           NotesEditingController controller, _) {
-        return GestureDetector(
-          onTap: controller.isActive
-              ? () => controller.updateSelectedNote(
-                    Provider.of<MeasureUnitDrumLine>(context, listen: false),
-                    note,
-                  )
-              : note.changeStroke,
-          behavior: HitTestBehavior.translucent,
-          child: NoteView(note: note),
+        return SizedBox(
+          width: note.width,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: GestureDetector(
+              onTap: controller.isActive
+                  ? () => select(note, controller, context)
+                  : note.changeStroke,
+              behavior: HitTestBehavior.translucent,
+              child: NoteView(note: note),
+            ),
+          ),
         );
       },
     );
   }
+
+  void select(
+    Note note,
+    NotesEditingController controller,
+    BuildContext context,
+  ) =>
+      controller.updateSelectedNote(
+        Provider.of<SheetMusicMeasure>(context, listen: false),
+        Provider.of<MeasureUnitDrumLine>(context, listen: false),
+        note,
+      );
 }
 
 class NoteView extends StatelessWidget {
   static const double outerHeight = 40;
-  static const double outerWidth = 35;
   static const double innerSize = 30;
 
   const NoteView({super.key, required this.note});
@@ -40,7 +54,7 @@ class NoteView extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       key: note.key,
-      width: outerWidth,
+      width: Note.minWidth,
       height: outerHeight,
       child: Center(
         child: Container(

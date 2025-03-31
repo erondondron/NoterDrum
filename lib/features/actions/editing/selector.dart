@@ -28,7 +28,7 @@ class _NotesSelectorState extends State<NotesSelector> {
       builder: (BuildContext context, NotesEditingController controller,
           SheetMusicMeasure measure, _) {
         if (!controller.isActive) {
-          controller.updateSelectedNoteGroups();
+          controller.unselect();
           return widget.child;
         }
         _controller = controller;
@@ -44,7 +44,7 @@ class _NotesSelectorState extends State<NotesSelector> {
   }
 
   void _onLongPressStart(LongPressStartDetails details) {
-    _controller.updateSelectedNoteGroups();
+    _controller.unselect();
     _dragSelectionStart = details.globalPosition;
   }
 
@@ -57,7 +57,7 @@ class _NotesSelectorState extends State<NotesSelector> {
       Offset(x.reduce(min), y.reduce(min)),
       Offset(x.reduce(max), y.reduce(max)),
     );
-    _controller.updateSelectedNoteGroups(groups: newSelection);
+    _controller.updateSelectedNoteGroups(_measure, newSelection);
   }
 
   void _onLongPressEnd(LongPressEndDetails details) =>

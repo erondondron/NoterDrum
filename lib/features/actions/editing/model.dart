@@ -1,3 +1,4 @@
+import 'package:drums/features/sheet_music/measure/model.dart';
 import 'package:drums/features/sheet_music/measure_unit_line/model.dart';
 import 'package:drums/features/sheet_music/note/model.dart';
 import 'package:flutter/material.dart';
@@ -6,39 +7,49 @@ class NotesEditingController extends ChangeNotifier {
   bool isActive = false;
 
   Map<MeasureUnitDrumLine, Set<Note>> selectedNotes = {};
+  SheetMusicMeasure? selectedMeasure;
 
   void toggleActiveStatus() {
-    updateSelectedNoteGroups();
     isActive = !isActive;
+    unselect();
     notifyListeners();
   }
 
-  void updateSelectedNote(MeasureUnitDrumLine drumLine, Note note) {
+  void unselect() => updateSelectedNoteGroups(null, {});
+
+  void updateSelectedNote(
+    SheetMusicMeasure measure,
+    MeasureUnitDrumLine drumLine,
+    Note note,
+  ) {
     var group = {note};
     var oldSelection = selectedNotes.values.expand((group) => group).toSet();
     var newSelection = oldSelection.contains(note)
         ? <MeasureUnitDrumLine, Set<Note>>{}
         : {drumLine: group};
-    updateSelectedNoteGroups(groups: newSelection);
+    updateSelectedNoteGroups(measure, newSelection);
   }
 
   void updateSelectedNoteGroups(
-      {Map<MeasureUnitDrumLine, Set<Note>> groups = const {}}) {
+    SheetMusicMeasure? measure,
+    Map<MeasureUnitDrumLine, Set<Note>> lineNotes,
+  ) {
     var oldSelection = selectedNotes.values.expand((g) => g).toSet();
     for (var note in oldSelection) {
       note.isValid = true;
     }
-    var newSelection = groups.values.expand((group) => group).toSet();
+    var newSelection = lineNotes.values.expand((group) => group).toSet();
     var intersection = oldSelection.intersection(newSelection);
     var union = oldSelection.union(newSelection);
     for (var note in union.difference(intersection)) {
       note.changeSelection();
     }
-    selectedNotes = groups;
+    selectedNotes = lineNotes;
+    selectedMeasure = measure;
   }
 
   List<NoteValue> possibleNoteValues() {
-    if (selectedNotes.isEmpty) return NoteValue.values;
+    if (selectedNotes.isEmpty) return <NoteValue>[];
     var minDuration = NoteValue.values.last.duration;
     for (var group in selectedNotes.values) {
       var wholeNote = 0.0;
@@ -56,11 +67,7 @@ class NotesEditingController extends ChangeNotifier {
   }
 
   void changeSelectedNotesValues(NoteValue newNoteValue) {
-    var oldSelection = selectedNotes;
-    updateSelectedNoteGroups();
-    var newSelection = <MeasureUnitDrumLine, Set<Note>>{};
-    for (var drumLineNotes in oldSelection.entries) {
-      newSelection[drumLineNotes.key] = {};
+    for (var drumLineNotes in selectedNotes.entries) {
       var triplets = drumLineNotes.key.notes
           .where((note) => note.value.count == 3)
           .toList();
@@ -73,7 +80,6 @@ class NotesEditingController extends ChangeNotifier {
         for (var note in selectedTriples) {
           note.isValid = false;
           selectedNotes.remove(note);
-          newSelection[drumLineNotes.key]!.add(note);
         }
       }
 
@@ -83,6 +89,10 @@ class NotesEditingController extends ChangeNotifier {
         duration += NoteValue.values.last.part / note.value.part;
         idx = drumLineNotes.key.notes.indexOf(note);
         drumLineNotes.key.notes.remove(note);
+
+        note.isValid = true;
+        note.isSelected = false;
+        drumLineNotes.value.remove(note);
       }
       if (idx < 0) continue;
 
@@ -105,14 +115,16 @@ class NotesEditingController extends ChangeNotifier {
         for (int i = 0; i < noteValue.count; i++) {
           var note = Note(value: noteValue);
           drumLineNotes.key.notes.insert(idx++, note);
-          newSelection[drumLineNotes.key]!.add(note);
+
           note.isValid = isValid;
+          note.isSelected = true;
+          drumLineNotes.value.add(note);
         }
       }
     }
-    updateSelectedNoteGroups(groups: newSelection);
-    for (var drumLine in selectedNotes.keys){
-      drumLine.notifyListeners();
+    for (var unit in selectedMeasure!.units) {
+      unit.calculateNotesWidth();
     }
+    selectedMeasure!.notifyListeners();
   }
 }

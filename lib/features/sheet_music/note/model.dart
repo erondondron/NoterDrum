@@ -29,6 +29,8 @@ enum StrokeType {
 }
 
 class Note extends ChangeNotifier {
+  static const double minWidth = 35;
+
   Note({
     required this.value,
     this.type = StrokeType.off,
@@ -37,6 +39,7 @@ class Note extends ChangeNotifier {
   GlobalKey key = GlobalKey();
   bool isSelected = false;
   bool isValid = true;
+  double width = minWidth;
 
   NoteValue value;
   StrokeType type;
