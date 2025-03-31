@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:drums/features/actions/editing/model.dart';
 import 'package:drums/features/sheet_music/measure/model.dart';
 import 'package:drums/features/sheet_music/measure_unit_line/model.dart';
@@ -43,8 +45,10 @@ class NoteWidget extends StatelessWidget {
 }
 
 class NoteView extends StatelessWidget {
-  static const double outerHeight = 40;
-  static const double innerSize = 30;
+  static const double height = 40;
+  static const double borderWidth = 1.5;
+  static const double outerDiameter = 30;
+  static const double innerDiameter = outerDiameter - borderWidth * 2;
 
   const NoteView({super.key, required this.note});
 
@@ -55,12 +59,13 @@ class NoteView extends StatelessWidget {
     return SizedBox(
       key: note.key,
       width: Note.minWidth,
-      height: outerHeight,
+      height: height,
       child: Center(
         child: Container(
-          width: innerSize,
-          height: innerSize,
+          width: outerDiameter,
+          height: outerDiameter,
           decoration: _noteDecoration(context),
+          child: Center(child: _noteStrokeView(context)),
         ),
       ),
     );
@@ -68,14 +73,13 @@ class NoteView extends StatelessWidget {
 
   BoxDecoration _noteDecoration(BuildContext context) {
     final containerColor = Theme.of(context).colorScheme.secondaryContainer;
-    final fillColor = Theme.of(context).colorScheme.onSurface;
     final borderColor = Theme.of(context).colorScheme.onSecondaryContainer;
     return BoxDecoration(
-      color: note.type == StrokeType.off ? containerColor : fillColor,
+      color: containerColor,
       shape: BoxShape.circle,
       border: Border.all(
         color: note.isSelected ? Colors.transparent : borderColor,
-        width: 1.5,
+        width: borderWidth,
       ),
       boxShadow: _noteSelection(context),
     );
@@ -97,5 +101,148 @@ class NoteView extends StatelessWidget {
         spreadRadius: 4,
       ),
     ];
+  }
+
+  Widget _noteStrokeView(BuildContext context) {
+    switch (note.type) {
+      case (StrokeType.off):
+        return SizedBox.shrink();
+      case StrokeType.plain:
+        return _plainStrokeView(context: context);
+      case StrokeType.accent:
+        return _accentStrokeView(context: context);
+      case StrokeType.ghost:
+        return _ghostStrokeView(context: context);
+      case StrokeType.rimClick:
+        return _rimClickView(context: context);
+      case StrokeType.rimShot:
+        return _rimShotView(context: context);
+      case StrokeType.flam:
+        return _flamStrokeView(context: context);
+      case StrokeType.buzz:
+        return _buzzStrokeView(context: context);
+      case StrokeType.opened:
+        return _rimShotView(context: context);
+      case StrokeType.foot:
+        return _rimClickView(context: context);
+      case StrokeType.bell:
+        return _bellStrokeView(context: context);
+      case StrokeType.choke:
+        return _rimClickView(context: context);
+    }
+  }
+
+  Widget _plainStrokeView({required BuildContext context, Widget? child}) {
+    final fillColor = Theme.of(context).colorScheme.onSurface;
+    return Container(
+      width: innerDiameter,
+      height: innerDiameter,
+      decoration: BoxDecoration(
+        color: fillColor,
+        shape: BoxShape.circle,
+      ),
+      child: child,
+    );
+  }
+
+  Widget _accentStrokeView({required BuildContext context}) {
+    final containerColor = Theme.of(context).colorScheme.secondaryContainer;
+    return _plainStrokeView(
+      context: context,
+      child: Center(
+        child: Icon(
+          Icons.keyboard_arrow_right,
+          color: containerColor,
+          size: innerDiameter,
+        ),
+      ),
+    );
+  }
+
+  Widget _ghostStrokeView({required BuildContext context}) {
+    final fillColor = Theme.of(context).colorScheme.onSurface;
+    final diameter = innerDiameter * 0.4;
+    return Container(
+      width: diameter,
+      height: diameter,
+      decoration: BoxDecoration(
+        color: fillColor,
+        shape: BoxShape.circle,
+      ),
+    );
+  }
+
+  Widget _rimClickView({required BuildContext context, Widget? child}) {
+    final fillColor = Theme.of(context).colorScheme.onSurface;
+    final containerColor = Theme.of(context).colorScheme.secondaryContainer;
+    final diameter = innerDiameter * 0.7;
+    return Container(
+      width: innerDiameter,
+      height: innerDiameter,
+      decoration: BoxDecoration(
+        color: fillColor,
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: Container(
+          width: diameter,
+          height: diameter,
+          decoration: BoxDecoration(
+            color: containerColor,
+            shape: BoxShape.circle,
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
+
+  Widget _rimShotView({required BuildContext context}) {
+    return _rimClickView(
+      context: context,
+      child: Center(
+        child: _ghostStrokeView(context: context),
+      ),
+    );
+  }
+
+  Widget _flamStrokeView({required BuildContext context}) {
+    final containerColor = Theme.of(context).colorScheme.secondaryContainer;
+    return _plainStrokeView(
+      context: context,
+      child: Center(
+        child: Container(
+          height: innerDiameter,
+          width: 5,
+          color: containerColor,
+        ),
+      ),
+    );
+  }
+
+  Widget _buzzStrokeView({required BuildContext context}) {
+    final containerColor = Theme.of(context).colorScheme.secondaryContainer;
+    return _plainStrokeView(
+      context: context,
+      child: Center(
+        child: Icon(
+          Icons.menu_outlined,
+          color: containerColor,
+        ),
+      ),
+    );
+  }
+
+  Widget _bellStrokeView({required BuildContext context}) {
+    final fillColor = Theme.of(context).colorScheme.onSurface;
+    final size = innerDiameter / 2;
+    return Transform.rotate(
+      angle: pi / 4,
+      child: Container(
+        width: size,
+        height: size,
+        color: fillColor,
+      ),
+    );
   }
 }

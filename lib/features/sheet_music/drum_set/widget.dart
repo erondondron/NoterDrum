@@ -63,8 +63,8 @@ class _SelectNewDrumButton extends StatelessWidget {
     return PopupMenuButton<Drum>(
       child: TextWithIcon(
         icon: SizedBox(
-          height: NoteView.outerHeight,
-          width: NoteView.outerHeight,
+          height: NoteView.height,
+          width: NoteView.height,
           child: Icon(Icons.add_outlined),
         ),
         text: "More",
@@ -98,8 +98,8 @@ class _HidingToggle extends StatelessWidget {
       onTap: controller.toggleHiding,
       behavior: HitTestBehavior.translucent,
       child: SizedBox(
-        height: NoteView.outerHeight,
-        width: NoteView.outerHeight,
+        height: NoteView.height,
+        width: NoteView.height,
         child: controller.isHidden
             ? Icon(Icons.keyboard_double_arrow_right_outlined, size: 24)
             : Icon(Icons.keyboard_double_arrow_left_outlined, size: 18),
@@ -143,8 +143,8 @@ class _DrumIcon extends StatelessWidget {
     final color = Theme.of(context).iconTheme.color!;
     final theme = ColorFilter.mode(color, BlendMode.srcIn);
     return SizedBox(
-      height: NoteView.outerHeight,
-      width: NoteView.outerHeight,
+      height: NoteView.height,
+      width: NoteView.height,
       child: SvgPicture.asset(asset, colorFilter: theme, fit: BoxFit.none),
     );
   }
@@ -162,8 +162,8 @@ class _RemoveDrumButton extends StatelessWidget {
       onTap: () => drumSet.remove(drum),
       behavior: HitTestBehavior.translucent,
       child: SizedBox(
-        height: NoteView.outerHeight,
-        width: NoteView.outerHeight,
+        height: NoteView.height,
+        width: NoteView.height,
         child: Icon(Icons.close_outlined, size: 15),
       ),
     );

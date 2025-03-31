@@ -9,7 +9,7 @@ class FixHeightRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: NoteView.outerHeight,
+      height: NoteView.height,
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

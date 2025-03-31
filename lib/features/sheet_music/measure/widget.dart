@@ -74,8 +74,8 @@ class _ControlPanel extends StatelessWidget {
           onTap: () => sheetMusic.removeMeasure(measure),
           behavior: HitTestBehavior.translucent,
           child: SizedBox(
-            height: NoteView.outerHeight,
-            width: NoteView.outerHeight,
+            height: NoteView.height,
+            width: NoteView.height,
             child: Icon(Icons.close_outlined, size: 20),
           ),
         ),
