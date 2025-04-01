@@ -1,6 +1,7 @@
-import 'package:drums/models/drum_set.dart';
-import 'package:drums/shared/fix_height_row.dart';
-import 'package:drums/shared/text_with_icon.dart';
+import 'package:drums/features/sheet_music/drum_set/model.dart';
+import 'package:drums/features/sheet_music/note/widget.dart';
+import 'package:drums/shared/widgets/fix_height_row.dart';
+import 'package:drums/shared/widgets/text_with_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -19,7 +20,7 @@ class DrumSetWidget extends StatelessWidget {
             children: [
               _ControlPanel(drumSet: drumSet, controller: controller),
               ...drumSet.selected.map(
-                (Drums drum) => _SelectedDrumRow(
+                (Drum drum) => _SelectedDrumRow(
                   drumSet: drumSet,
                   drum: drum,
                   isHidden: controller.isHidden,
@@ -59,16 +60,16 @@ class _SelectNewDrumButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton<Drums>(
+    return PopupMenuButton<Drum>(
       child: TextWithIcon(
         icon: SizedBox(
-          height: FixHeightRow.height,
-          width: FixHeightRow.height,
+          height: NoteView.height,
+          width: NoteView.height,
           child: Icon(Icons.add_outlined),
         ),
         text: "More",
       ),
-      onSelected: (Drums drum) => drumSet.add(drum),
+      onSelected: (Drum drum) => drumSet.add(drum),
       itemBuilder: (BuildContext context) {
         return drumSet.unselected
             .map(
@@ -97,8 +98,8 @@ class _HidingToggle extends StatelessWidget {
       onTap: controller.toggleHiding,
       behavior: HitTestBehavior.translucent,
       child: SizedBox(
-        height: FixHeightRow.height,
-        width: FixHeightRow.height,
+        height: NoteView.height,
+        width: NoteView.height,
         child: controller.isHidden
             ? Icon(Icons.keyboard_double_arrow_right_outlined, size: 24)
             : Icon(Icons.keyboard_double_arrow_left_outlined, size: 18),
@@ -115,7 +116,7 @@ class _SelectedDrumRow extends StatelessWidget {
   });
 
   final DrumSetModel drumSet;
-  final Drums drum;
+  final Drum drum;
   final bool isHidden;
 
   @override
@@ -142,8 +143,8 @@ class _DrumIcon extends StatelessWidget {
     final color = Theme.of(context).iconTheme.color!;
     final theme = ColorFilter.mode(color, BlendMode.srcIn);
     return SizedBox(
-      height: FixHeightRow.height,
-      width: FixHeightRow.height,
+      height: NoteView.height,
+      width: NoteView.height,
       child: SvgPicture.asset(asset, colorFilter: theme, fit: BoxFit.none),
     );
   }
@@ -153,7 +154,7 @@ class _RemoveDrumButton extends StatelessWidget {
   const _RemoveDrumButton({required this.drumSet, required this.drum});
 
   final DrumSetModel drumSet;
-  final Drums drum;
+  final Drum drum;
 
   @override
   Widget build(BuildContext context) {
@@ -161,8 +162,8 @@ class _RemoveDrumButton extends StatelessWidget {
       onTap: () => drumSet.remove(drum),
       behavior: HitTestBehavior.translucent,
       child: SizedBox(
-        height: FixHeightRow.height,
-        width: FixHeightRow.height,
+        height: NoteView.height,
+        width: NoteView.height,
         child: Icon(Icons.close_outlined, size: 15),
       ),
     );

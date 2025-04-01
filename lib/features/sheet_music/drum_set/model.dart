@@ -1,8 +1,6 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 
-enum Drums {
+enum Drum {
   crash(order: 0, name: "Crash", icon: "crash.svg"),
   hiHat(order: 1, name: "Hi-Hat", icon: "hi_hat.svg"),
   ride(order: 2, name: "Ride", icon: "ride.svg"),
@@ -12,7 +10,7 @@ enum Drums {
   tom3(order: 6, name: "Tom 3", icon: "tom_3.svg"),
   kick(order: 7, name: "Kick", icon: "kick.svg");
 
-  const Drums({
+  const Drum({
     required this.order,
     required this.name,
     required String icon,
@@ -24,36 +22,31 @@ enum Drums {
 }
 
 class DrumSetPanelController extends ChangeNotifier {
-  bool _isHidden = true;
-
-  bool get isHidden => _isHidden;
+  bool isHidden = true;
 
   void toggleHiding() {
-    _isHidden = !_isHidden;
+    isHidden = !isHidden;
     notifyListeners();
   }
 }
 
 class DrumSetModel extends ChangeNotifier {
-  DrumSetModel({
-    List<Drums> selected = const [Drums.hiHat, Drums.snare, Drums.kick],
-  }) : _selected = selected.toList();
+  DrumSetModel({List<Drum>? selected})
+      : selected = selected ?? [Drum.hiHat, Drum.snare, Drum.kick];
 
-  final List<Drums> _selected;
+  final List<Drum> selected;
 
-  UnmodifiableListView<Drums> get selected => UnmodifiableListView(_selected);
+  List<Drum> get unselected =>
+      Drum.values.where((Drum drum) => !selected.contains(drum)).toList();
 
-  UnmodifiableListView<Drums> get unselected => UnmodifiableListView(
-      Drums.values.where((Drums drum) => !_selected.contains(drum)));
-
-  void add(Drums drum) {
-    _selected.add(drum);
-    _selected.sort((a, b) => a.order.compareTo(b.order));
+  void add(Drum drum) {
+    selected.add(drum);
+    selected.sort((a, b) => a.order.compareTo(b.order));
     notifyListeners();
   }
 
-  void remove(Drums drum) {
-    _selected.remove(drum);
+  void remove(Drum drum) {
+    selected.remove(drum);
     notifyListeners();
   }
 }

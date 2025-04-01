@@ -1,8 +1,10 @@
 import 'dart:math';
 
-import 'package:drums/models/drum_set.dart';
-import 'package:drums/models/sheet_music.dart';
-import 'package:drums/widgets/sheet_music.dart';
+import 'package:drums/features/actions/editing/model.dart';
+import 'package:drums/features/sheet_music/drum_set/model.dart';
+import 'package:drums/features/sheet_music/model.dart';
+import 'package:drums/features/actions/widget.dart';
+import 'package:drums/features/sheet_music/widget.dart';
 import 'package:drums/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,7 +31,7 @@ class Application extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'DrumScribes',
+      title: 'NoterDrums',
       theme: darkTheme,
       home: const MainWindow(),
     );
@@ -44,37 +46,34 @@ class MainWindow extends StatefulWidget {
 }
 
 class _MainWindowState extends State<MainWindow> {
-  late final double _notchSize = MediaQuery.of(context).padding.left;
-  late final double _leftPadding = max(_notchSize, 80);
-  static const double _otherPadding = 25;
-
-  static const double _appBarHeight = 60;
-  late final double _bodyHeight =
-      MediaQuery.of(context).size.height - _appBarHeight - _otherPadding * 2;
-  late final double _bodyWidth =
-      MediaQuery.of(context).size.width - _leftPadding - _otherPadding;
-
   @override
   Widget build(BuildContext context) {
-    final sheetMusic = SheetMusicModel();
+    final notchSize = MediaQuery.of(context).padding.left;
+    final leftPadding = max(notchSize, 80.0);
+    final bodyPadding = 25.0;
+    final appBarHeight = 60.0;
+    final actionsPadding = 20.0;
+    final actionsSize = 50.0;
+
+    final sheetMusic = SheetMusic.generate();
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(_appBarHeight),
+        preferredSize: Size.fromHeight(appBarHeight),
         child: AppBar(
-          titleSpacing: _leftPadding - _notchSize,
-          title: Text("NewGroove"),
+          titleSpacing: leftPadding - notchSize,
+          title: Text(sheetMusic.name),
           actions: [
             IconButton(
               icon: const Icon(Icons.save_outlined),
-              onPressed: () {},
+              onPressed: null,
             ),
             IconButton(
               icon: const Icon(Icons.folder_outlined),
-              onPressed: () {},
+              onPressed: null,
             ),
             IconButton(
               icon: const Icon(Icons.settings_outlined),
-              onPressed: () {},
+              onPressed: null,
             ),
           ],
         ),
@@ -83,26 +82,40 @@ class _MainWindowState extends State<MainWindow> {
         providers: [
           ChangeNotifierProvider.value(value: sheetMusic),
           ChangeNotifierProvider(create: (_) => DrumSetPanelController()),
+          ChangeNotifierProvider(create: (_) => NotesEditingController()),
         ],
-        child: InteractiveViewer(
-          clipBehavior: Clip.antiAlias,
-          constrained: false,
-          panAxis: PanAxis.aligned,
-          child: Padding(
-            padding: EdgeInsets.only(
-              left: _leftPadding,
-              top: _otherPadding,
-              right: _otherPadding,
-              bottom: _otherPadding,
-            ),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: _bodyHeight,
-                minWidth: _bodyWidth,
+        child: Stack(
+          children: [
+            InteractiveViewer(
+              clipBehavior: Clip.antiAlias,
+              constrained: false,
+              panAxis: PanAxis.aligned,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: leftPadding,
+                  top: bodyPadding,
+                  right: bodyPadding + actionsPadding + actionsSize,
+                  bottom: bodyPadding + actionsPadding + actionsSize,
+                ),
+                child: Container(
+                  constraints: BoxConstraints(
+                    minHeight: MediaQuery.of(context).size.height -
+                        appBarHeight -
+                        bodyPadding * 2,
+                    minWidth: MediaQuery.of(context).size.width -
+                        leftPadding -
+                        bodyPadding,
+                  ),
+                  child: SheetMusicWidget(),
+                ),
               ),
-              child: SheetMusicWidget(),
             ),
-          ),
+            Positioned(
+              right: actionsPadding,
+              bottom: actionsPadding,
+              child: ActionsPanel(),
+            ),
+          ],
         ),
       ),
     );

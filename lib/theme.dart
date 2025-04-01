@@ -23,7 +23,8 @@ final ThemeData darkTheme = ThemeData(
     surface: Color(0xFF1F1F1F),
     onSurface: Color(0xFFEEEEEE),
     secondaryContainer: Color(0xFF181818),
-    onSecondaryContainer: Color(0xFF373737),
+    onSecondaryContainer: Color(0xFF454545),
+    error: Colors.red,
   ),
   appBarTheme: AppBarTheme(
     backgroundColor: Color(0xFF1F1F1F),
@@ -32,5 +33,10 @@ final ThemeData darkTheme = ThemeData(
   popupMenuTheme: PopupMenuThemeData(
     color: Color(0xFF181818),
     labelTextStyle: WidgetStatePropertyAll(textTheme.bodyMedium),
+  ),
+  dividerTheme: DividerThemeData(
+    color: Color(0xFF454545),
+    indent: 10,
+    endIndent: 10,
   ),
 );

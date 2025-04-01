@@ -1,7 +1,7 @@
-import 'package:drums/models/sheet_music.dart';
-import 'package:drums/models/sheet_music_bar.dart';
-import 'package:drums/widgets/bar.dart';
-import 'package:drums/widgets/drum_set.dart';
+import 'package:drums/features/sheet_music/measure/model.dart';
+import 'package:drums/features/sheet_music/measure/widget.dart';
+import 'package:drums/features/sheet_music/model.dart';
+import 'package:drums/features/sheet_music/drum_set/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,12 +10,11 @@ class SheetMusicWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<SheetMusicModel>(
-      builder: (BuildContext context, SheetMusicModel sheetMusic, _) {
-        final sheetMusicBars = sheetMusic.bars;
+    return Consumer<SheetMusic>(
+      builder: (BuildContext context, SheetMusic sheetMusic, _) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: sheetMusicBars.map((SheetMusicBarModel bar) {
+          children: sheetMusic.measures.map((SheetMusicMeasure measure) {
             return Padding(
               padding: EdgeInsets.symmetric(vertical: 10),
               child: Row(
@@ -25,16 +24,16 @@ class SheetMusicWidget extends StatelessWidget {
                     child: const DrumSetWidget(),
                   ),
                   ChangeNotifierProvider.value(
-                    value: bar,
+                    value: measure,
                     child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 25),
-                      child: BarWidget(),
+                      padding: EdgeInsets.symmetric(horizontal: 15),
+                      child: SheetMusicMeasureWidget(),
                     ),
                   ),
-                  if (bar == sheetMusicBars.last)
+                  if (measure == sheetMusic.measures.last)
                     IconButton(
                       icon: const Icon(Icons.add_outlined),
-                      onPressed: sheetMusic.addNewBar,
+                      onPressed: sheetMusic.addNewMeasure,
                     ),
                 ],
               ),
