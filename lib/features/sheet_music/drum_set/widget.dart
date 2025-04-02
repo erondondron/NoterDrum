@@ -11,8 +11,8 @@ class DrumSetWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<DrumSetModel, DrumSetPanelController>(
-      builder: (BuildContext context, DrumSetModel drumSet,
+    return Consumer2<DrumSet, DrumSetPanelController>(
+      builder: (BuildContext context, DrumSet drumSet,
           DrumSetPanelController controller, _) {
         return IntrinsicWidth(
           child: Column(
@@ -40,7 +40,7 @@ class _ControlPanel extends StatelessWidget {
     required this.controller,
   });
 
-  final DrumSetModel drumSet;
+  final DrumSet drumSet;
   final DrumSetPanelController controller;
 
   @override
@@ -56,7 +56,7 @@ class _ControlPanel extends StatelessWidget {
 class _SelectNewDrumButton extends StatelessWidget {
   const _SelectNewDrumButton({required this.drumSet});
 
-  final DrumSetModel drumSet;
+  final DrumSet drumSet;
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +115,7 @@ class _SelectedDrumRow extends StatelessWidget {
     required this.isHidden,
   });
 
-  final DrumSetModel drumSet;
+  final DrumSet drumSet;
   final Drum drum;
   final bool isHidden;
 
@@ -153,7 +153,7 @@ class _DrumIcon extends StatelessWidget {
 class _RemoveDrumButton extends StatelessWidget {
   const _RemoveDrumButton({required this.drumSet, required this.drum});
 
-  final DrumSetModel drumSet;
+  final DrumSet drumSet;
   final Drum drum;
 
   @override

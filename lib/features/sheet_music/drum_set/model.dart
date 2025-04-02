@@ -30,8 +30,8 @@ class DrumSetPanelController extends ChangeNotifier {
   }
 }
 
-class DrumSetModel extends ChangeNotifier {
-  DrumSetModel({List<Drum>? selected})
+class DrumSet extends ChangeNotifier {
+  DrumSet({List<Drum>? selected})
       : selected = selected ?? [Drum.hiHat, Drum.snare, Drum.kick];
 
   final List<Drum> selected;
@@ -49,4 +49,14 @@ class DrumSetModel extends ChangeNotifier {
     selected.remove(drum);
     notifyListeners();
   }
+
+  DrumSet.fromJson(Map<String, dynamic> json)
+      : selected = (json["selected"] as List<String>)
+            .map((selected) =>
+                Drum.values.firstWhere((drum) => drum.name == selected))
+            .toList();
+
+  Map<String, dynamic> toJson() => {
+        "selected": selected.map((drum) => drum.name).toList(),
+      };
 }

@@ -74,4 +74,17 @@ class Note extends ChangeNotifier {
     isSelected = !isSelected;
     notifyListeners();
   }
+
+  Note.fromJson(Map<String, dynamic> json)
+      : value = NoteValue.values.firstWhere(
+          (value) => value.part == json["value"] as int,
+        ),
+        type = StrokeType.values.firstWhere(
+          (type) => type.name == json["type"] as String,
+        );
+
+  Map<String, dynamic> toJson() => {
+        "value": value.part,
+        "type": type.name,
+      };
 }

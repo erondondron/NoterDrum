@@ -4,6 +4,8 @@ import 'package:drums/features/sheet_music/time_signature/model.dart';
 import 'package:flutter/material.dart';
 
 class SheetMusic extends ChangeNotifier {
+  static const int version = 1;
+
   SheetMusic({
     required this.name,
     required this.drumSet,
@@ -13,7 +15,7 @@ class SheetMusic extends ChangeNotifier {
   }
 
   factory SheetMusic.generate({String name = "NewGroove"}) {
-    var drumSet = DrumSetModel();
+    var drumSet = DrumSet();
     var measure = SheetMusicMeasure.generate(
       timeSignature: sixteenSixteenths,
       drums: drumSet.selected,
@@ -28,7 +30,7 @@ class SheetMusic extends ChangeNotifier {
   }
 
   final String name;
-  final DrumSetModel drumSet;
+  final DrumSet drumSet;
   final List<SheetMusicMeasure> measures;
 
   void addNewMeasure() {
@@ -58,4 +60,19 @@ class SheetMusic extends ChangeNotifier {
       measure.updateDrumLines(drumSet.selected);
     }
   }
+
+  SheetMusic.fromJson(Map<String, dynamic> json)
+      : name = json["name"] as String,
+        drumSet = DrumSet.fromJson(
+          json["drum_set"] as Map<String, dynamic>,
+        ),
+        measures = (json["measures"] as List<Map<String, dynamic>>)
+            .map((measure) => SheetMusicMeasure.fromJson(measure))
+            .toList();
+
+  Map<String, dynamic> toJson() => {
+        "name": name,
+        "drum_set": drumSet.toJson(),
+        "measures": measures.map((measure) => measure.toJson()).toList(),
+      };
 }
