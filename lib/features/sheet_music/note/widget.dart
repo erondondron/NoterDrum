@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:drums/features/actions/editing/model.dart';
+import 'package:drums/features/sheet_music/actions/editing/model.dart';
 import 'package:drums/features/sheet_music/measure/model.dart';
 import 'package:drums/features/sheet_music/measure_unit_line/model.dart';
 import 'package:drums/features/sheet_music/note/model.dart';
