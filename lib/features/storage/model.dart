@@ -18,4 +18,9 @@ class Storage extends ChangeNotifier {
   StorageFolder? selectedFolder;
 
   bool get disabled => !saveMode && !viewMode;
+
+  void view() {
+    viewMode = !viewMode;
+    notifyListeners();
+  }
 }

@@ -108,11 +108,14 @@ class MainWindow extends StatelessWidget {
                     ),
                   ),
                 ),
-                Positioned(
-                  right: actionsPadding,
-                  bottom: actionsPadding,
-                  child: ActionsPanel(),
-                ),
+                if (storage.disabled)
+                  Positioned(
+                    right: actionsPadding,
+                    bottom: actionsPadding,
+                    child: ActionsPanel(),
+                  ),
+                if (storage.viewMode)
+                  StorageFolderWidget(),
               ],
             ),
           ),
