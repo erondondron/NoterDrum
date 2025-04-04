@@ -13,7 +13,7 @@ class StorageActions extends StatelessWidget {
       builder: (BuildContext context, Storage storage, _) {
         return Row(
           children: [
-            if (!storage.disabled) ...[
+            if (storage.viewMode) ...[
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 5),
                 child: IconButton(
@@ -25,7 +25,7 @@ class StorageActions extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 5),
                 child: IconButton(
                   icon: const Icon(Icons.create_new_folder_outlined, size: 30),
-                  onPressed: null,
+                  onPressed: storage.toggleNewFolderMode,
                 ),
               ),
             ],
@@ -37,59 +37,23 @@ class StorageActions extends StatelessWidget {
                   onPressed: null,
                 ),
               ),
-            if (!storage.saveMode)
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 5),
-                child: IconButton(
-                  icon: Icon(
+            if (!storage.newGrooveMode)
+              GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: storage.viewMode ? storage.close : storage.openFolder,
+                child: SizedBox(
+                  height: 60,
+                  width: 60,
+                  child: Icon(
                     Icons.folder_outlined,
                     color: storage.viewMode ? selectedColor : null,
                     size: 30,
                   ),
-                  onPressed: storage.view,
                 ),
               ),
           ],
         );
       },
-    );
-  }
-}
-
-class StorageFolderWidget extends StatelessWidget {
-  const StorageFolderWidget({super.key, this.child});
-
-  final Widget? child;
-
-  @override
-  Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-
-    final blackoutColor = Theme.of(context).colorScheme.secondaryContainer;
-    final folderColor = Theme.of(context).colorScheme.surface;
-
-    return Row(
-      children: [
-        child != null
-            ? SizedBox(
-                width: width * 2 / 3,
-                child: child,
-              )
-            : Container(
-                width: width * 2 / 3,
-                color: blackoutColor.withValues(alpha: 0.8),
-              ),
-        Container(
-          width: width / 3,
-          decoration: BoxDecoration(
-            color: folderColor,
-            border: Border(
-              top: BorderSide(color: blackoutColor, width: 2),
-              left: BorderSide(color: blackoutColor, width: 2),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

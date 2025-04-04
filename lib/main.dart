@@ -4,8 +4,9 @@ import 'package:drums/features/sheet_music/actions/editing/model.dart';
 import 'package:drums/features/sheet_music/drum_set/model.dart';
 import 'package:drums/features/sheet_music/actions/widget.dart';
 import 'package:drums/features/sheet_music/widget.dart';
+import 'package:drums/features/storage/actions.dart';
+import 'package:drums/features/storage/explorer.dart';
 import 'package:drums/features/storage/model.dart';
-import 'package:drums/features/storage/widgets.dart';
 import 'package:drums/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -61,17 +62,20 @@ class MainWindow extends StatelessWidget {
             preferredSize: Size.fromHeight(appBarHeight),
             child: AppBar(
               titleSpacing: leftPadding - notchSize,
-              title: Text(storage.selectedGroove.name),
+              title: Text(
+                storage.viewMode
+                    ? storage.selectedFolder!.relativePath
+                    : storage.selectedGroove.name,
+              ),
               actions: [
                 StorageActions(),
-                if (storage.disabled)
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 5),
-                    child: IconButton(
-                      icon: Icon(Icons.settings_outlined, size: 30),
-                      onPressed: null,
-                    ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  child: IconButton(
+                    icon: Icon(Icons.settings_outlined, size: 30),
+                    onPressed: storage.viewMode ? null : null,
                   ),
+                ),
                 SizedBox(width: actionsPadding),
               ],
             ),
@@ -108,14 +112,13 @@ class MainWindow extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (storage.disabled)
-                  Positioned(
-                    right: actionsPadding,
-                    bottom: actionsPadding,
-                    child: ActionsPanel(),
-                  ),
-                if (storage.viewMode)
-                  StorageFolderWidget(),
+                storage.viewMode
+                    ? StorageExplorerWidget()
+                    : Positioned(
+                        right: actionsPadding,
+                        bottom: actionsPadding,
+                        child: ActionsPanel(),
+                      ),
               ],
             ),
           ),
