@@ -29,6 +29,8 @@ class SheetMusic extends ChangeNotifier {
     super.dispose();
   }
 
+  String? storagePath;
+
   final String name;
   final DrumSet drumSet;
   final List<SheetMusicMeasure> measures;

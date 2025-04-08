@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'metronome/widget.dart';
 
 class ActionsPanel extends StatelessWidget {
+  static const double size = 50;
+
   const ActionsPanel({super.key});
 
   @override
