@@ -18,6 +18,12 @@ class StorageExplorerWidget extends StatelessWidget {
                 entity: folder,
               ),
             ),
+            ...storage.grooves.map(
+              (groove) => _StorageExplorerRowWidget(
+                storage: storage,
+                entity: groove,
+              ),
+            ),
           ],
         );
       },
@@ -39,8 +45,12 @@ class _StorageExplorerRowWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final borderColor = Theme.of(context).colorScheme.onSecondaryContainer;
+    var isFile = entity.endsWith(".pbnd");
+
     return GestureDetector(
-      onTap: () => storage.openFolder(name: entity),
+      onTap: isFile
+          ? () => storage.openGroove(name: entity)
+          : () => storage.openFolder(name: entity),
       child: Container(
         height: height,
         decoration: BoxDecoration(
@@ -50,7 +60,7 @@ class _StorageExplorerRowWidget extends StatelessWidget {
           padding: EdgeInsets.only(left: 20),
           child: Row(
             children: [
-              Icon(Icons.folder_outlined),
+              Icon(isFile ? Icons.queue_music_outlined : Icons.folder_outlined),
               SizedBox(width: 10),
               Expanded(
                 child: Text(
@@ -63,7 +73,7 @@ class _StorageExplorerRowWidget extends StatelessWidget {
                 itemBuilder: (BuildContext context) {
                   return [
                     PopupMenuItem(
-                      onTap: () => storage.removeFolder(name: entity),
+                      onTap: () => storage.removeFileSystemEntity(name: entity),
                       child: Text("Remove"),
                     ),
                   ];

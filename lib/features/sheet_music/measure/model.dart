@@ -58,12 +58,12 @@ class SheetMusicMeasure extends ChangeNotifier {
       : timeSignature = TimeSignature.fromJson(
           json["time_signature"] as Map<String, dynamic>,
         ),
-        units = (json["units"] as List<Map<String, dynamic>>)
-            .map((unit) => MeasureUnit.fromJson(unit))
+        units = (json["units"] as List<dynamic>)
+            .map((unit) => MeasureUnit.fromJson(unit as Map<String, dynamic>))
             .toList(),
-        drums = (json["drums"] as List<String>)
-            .map((selected) =>
-                Drum.values.firstWhere((drum) => drum.name == selected))
+        drums = (json["drums"] as List<dynamic>)
+            .map((selected) => Drum.values
+                .firstWhere((drum) => drum.name == selected as String))
             .toList();
 
   Map<String, dynamic> toJson() => {

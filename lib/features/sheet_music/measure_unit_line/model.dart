@@ -26,8 +26,8 @@ class MeasureUnitDrumLine extends ChangeNotifier {
       : drum = Drum.values.firstWhere(
           (drum) => drum.name == json["drum"] as String,
         ),
-        notes = (json["notes"] as List<Map<String, dynamic>>)
-            .map((note) => Note.fromJson(note))
+        notes = (json["notes"] as List<dynamic>)
+            .map((note) => Note.fromJson(note as Map<String, dynamic>))
             .toList();
 
   Map<String, dynamic> toJson() => {

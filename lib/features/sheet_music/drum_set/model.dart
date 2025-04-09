@@ -51,9 +51,9 @@ class DrumSet extends ChangeNotifier {
   }
 
   DrumSet.fromJson(Map<String, dynamic> json)
-      : selected = (json["selected"] as List<String>)
-            .map((selected) =>
-                Drum.values.firstWhere((drum) => drum.name == selected))
+      : selected = (json["selected"] as List<dynamic>)
+            .map((selected) => Drum.values
+                .firstWhere((drum) => drum.name == selected as String))
             .toList();
 
   Map<String, dynamic> toJson() => {

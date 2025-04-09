@@ -51,7 +51,7 @@ class TimeSignature extends ChangeNotifier {
       : noteValue = NoteValue.values.firstWhere(
           (note) => note.part == json["note_value"] as int,
         ),
-        measures = json["measures"] as List<int>;
+        measures = (json["measures"] as List<dynamic>).cast<int>();
 
   Map<String, dynamic> toJson() => {
         "note_value": noteValue.part,

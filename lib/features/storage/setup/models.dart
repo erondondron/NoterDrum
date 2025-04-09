@@ -5,3 +5,9 @@ class StorageNewFolder extends StorageSetupEntity {
 
   String name;
 }
+
+class StorageNewGroove extends StorageSetupEntity {
+  StorageNewGroove({this.name = "NewGroove"});
+
+  String name;
+}

@@ -61,8 +61,10 @@ class MeasureUnit extends ChangeNotifier {
   }
 
   MeasureUnit.fromJson(Map<String, dynamic> json)
-      : drumLines = (json["drum_lines"] as List<Map<String, dynamic>>)
-            .map((line) => MeasureUnitDrumLine.fromJson(line))
+      : drumLines = (json["drum_lines"] as List<dynamic>)
+            .map((line) => MeasureUnitDrumLine.fromJson(
+                  line as Map<String, dynamic>,
+                ))
             .toList(),
         noteValue = NoteValue.values.firstWhere(
           (note) => note.part == json["note_value"] as int,

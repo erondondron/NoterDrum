@@ -2,8 +2,8 @@ import 'package:drums/features/storage/model.dart';
 import 'package:drums/features/storage/setup/models.dart';
 import 'package:flutter/material.dart';
 
-class NewFolderSetupWindow extends StatelessWidget {
-  const NewFolderSetupWindow({
+class NewFolderSetupWidget extends StatelessWidget {
+  const NewFolderSetupWidget({
     super.key,
     required this.storage,
     required this.newFolder,

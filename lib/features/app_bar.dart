@@ -5,7 +5,7 @@ import 'package:drums/features/storage/setup/models.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class NoterDrumAppBar extends StatelessWidget {
+class NoterDrumAppBar extends StatefulWidget {
   static const double height = 60;
   static const double leftPadding = 80;
   static const double rightPadding = 25;
@@ -14,20 +14,37 @@ class NoterDrumAppBar extends StatelessWidget {
   const NoterDrumAppBar({super.key});
 
   @override
+  State<NoterDrumAppBar> createState() => _NoterDrumAppBarState();
+}
+
+class _NoterDrumAppBarState extends State<NoterDrumAppBar> {
+  final _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var notchSize = MediaQuery.of(context).padding.left;
-    var padding = max(notchSize, leftPadding) - notchSize;
+    var padding = max(notchSize, NoterDrumAppBar.leftPadding) - notchSize;
 
     return Consumer<Storage>(
       builder: (BuildContext context, Storage storage, _) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+        });
+
         return PreferredSize(
-          preferredSize: Size.fromHeight(height),
+          preferredSize: Size.fromHeight(NoterDrumAppBar.height),
           child: AppBar(
             titleSpacing: padding,
-            title: Text(
-              storage.isActive
-                  ? storage.displayedPath
-                  : storage.selectedGroove.name,
+            title: SingleChildScrollView(
+              controller: _scrollController,
+              scrollDirection: Axis.horizontal,
+              child: Text(storage.displayedTitle, overflow: TextOverflow.fade),
             ),
             actions: [
               _ReturnBackButton(storage: storage),
@@ -35,7 +52,7 @@ class NoterDrumAppBar extends StatelessWidget {
               _SaveGrooveButton(storage: storage),
               _ExplorerButton(storage: storage),
               _SettingsButton(storage: storage),
-              SizedBox(width: rightPadding),
+              SizedBox(width: NoterDrumAppBar.rightPadding),
             ],
           ),
         );
@@ -52,7 +69,6 @@ class _SettingsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final disabledColor = Theme.of(context).colorScheme.onSecondaryContainer;
-
     return SizedBox(
       height: NoterDrumAppBar.height,
       width: NoterDrumAppBar.height,
@@ -72,17 +88,26 @@ class _ExplorerButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selectedColor = Theme.of(context).colorScheme.primary;
+    GestureTapCallback? onTap = storage.openFolder;
+    Color? color;
+
+    if (storage.newGroove != null) {
+      color = Theme.of(context).colorScheme.onSecondaryContainer;
+      onTap = null;
+    } else if (storage.isActive) {
+      color = Theme.of(context).colorScheme.primary;
+      onTap = storage.close;
+    }
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
-      onTap: storage.isActive ? storage.close : storage.openFolder,
+      onTap: onTap,
       child: SizedBox(
         height: NoterDrumAppBar.height,
         width: NoterDrumAppBar.height,
         child: Icon(
           Icons.folder_outlined,
-          color: storage.isActive ? selectedColor : null,
+          color: color,
           size: NoterDrumAppBar.buttonSize,
         ),
       ),
@@ -97,16 +122,27 @@ class _SaveGrooveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (storage.isActive) return SizedBox.shrink();
-    final disabledColor = Theme.of(context).colorScheme.onSecondaryContainer;
+    GestureTapCallback? onTap = storage.setupNewGroove;
+    Color? color;
 
-    return SizedBox(
-      height: NoterDrumAppBar.height,
-      width: NoterDrumAppBar.height,
-      child: Icon(
-        Icons.save_outlined,
-        size: NoterDrumAppBar.buttonSize,
-        color: disabledColor,
+    if (storage.newGroove != null) {
+      color = Theme.of(context).colorScheme.primary;
+      onTap = storage.close;
+    } else if (storage.isActive) {
+      return SizedBox.shrink();
+    }
+
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: onTap,
+      child: SizedBox(
+        height: NoterDrumAppBar.height,
+        width: NoterDrumAppBar.height,
+        child: Icon(
+          Icons.save_outlined,
+          color: color,
+          size: NoterDrumAppBar.buttonSize,
+        ),
       ),
     );
   }

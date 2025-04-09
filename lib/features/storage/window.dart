@@ -5,6 +5,7 @@ import 'package:drums/features/storage/explorer.dart';
 import 'package:drums/features/storage/model.dart';
 import 'package:drums/features/storage/setup/models.dart';
 import 'package:drums/features/storage/setup/new_folder.dart';
+import 'package:drums/features/storage/setup/new_groove.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -23,12 +24,20 @@ class StorageWindow extends StatelessWidget {
 
     return Consumer<Storage>(
       builder: (BuildContext context, Storage storage, _) {
+        var setupWidget = switch (storage.setupEntity) {
+          StorageNewFolder() => NewFolderSetupWidget(
+              storage: storage,
+              newFolder: storage.setupEntity as StorageNewFolder,
+            ),
+          _ => storage.newGroove != null ? NewGrooveSetupWidget() : null
+        };
+
         return Row(
           children: [
             Container(
               width: width * 2 / 3,
               height: double.infinity,
-              decoration: storage.setupIsActive
+              decoration: setupWidget != null
                   ? BoxDecoration(
                       color: folderColor,
                       border: Border(
@@ -36,16 +45,10 @@ class StorageWindow extends StatelessWidget {
                         right: BorderSide(color: borderColor, width: 1),
                       ),
                     )
-                  : BoxDecoration(color: blackoutColor.withValues(alpha: 0.8)),
+                  : BoxDecoration(color: blackoutColor.withValues(alpha: 0.85)),
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: setupPadding),
-                child: switch (storage.setupEntity) {
-                  StorageNewFolder() => NewFolderSetupWindow(
-                      storage: storage,
-                      newFolder: storage.setupEntity as StorageNewFolder,
-                    ),
-                  _ => null,
-                },
+                child: setupWidget,
               ),
             ),
             Container(
