@@ -3,7 +3,7 @@ import 'package:drums/features/sheet_music/actions/editing/model.dart';
 import 'package:drums/features/sheet_music/drum_set/model.dart';
 import 'package:drums/features/sheet_music/widget.dart';
 import 'package:drums/features/storage/model.dart';
-import 'package:drums/features/storage/widget.dart';
+import 'package:drums/features/storage/window.dart';
 import 'package:drums/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -61,7 +61,7 @@ class MainWindow extends StatelessWidget {
             child: Stack(
               children: [
                 SheetMusicWindow(),
-                if (storage.explorer.isActive) StorageWindow(),
+                if (storage.isActive) StorageWindow(),
               ],
             ),
           ),

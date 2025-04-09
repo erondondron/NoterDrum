@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:drums/features/storage/model.dart';
+import 'package:drums/features/storage/setup/models.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,8 +25,8 @@ class NoterDrumAppBar extends StatelessWidget {
           child: AppBar(
             titleSpacing: padding,
             title: Text(
-              storage.explorer.isActive
-                  ? storage.explorer.displayedPath
+              storage.isActive
+                  ? storage.displayedPath
                   : storage.selectedGroove.name,
             ),
             actions: [
@@ -75,13 +76,13 @@ class _ExplorerButton extends StatelessWidget {
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
-      onTap: storage.explorer.isActive ? storage.close : storage.open,
+      onTap: storage.isActive ? storage.close : storage.openFolder,
       child: SizedBox(
         height: NoterDrumAppBar.height,
         width: NoterDrumAppBar.height,
         child: Icon(
           Icons.folder_outlined,
-          color: storage.explorer.isActive ? selectedColor : null,
+          color: storage.isActive ? selectedColor : null,
           size: NoterDrumAppBar.buttonSize,
         ),
       ),
@@ -96,7 +97,7 @@ class _SaveGrooveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (storage.explorer.isActive) return SizedBox.shrink();
+    if (storage.isActive) return SizedBox.shrink();
     final disabledColor = Theme.of(context).colorScheme.onSecondaryContainer;
 
     return SizedBox(
@@ -118,10 +119,10 @@ class _NewFolderButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!storage.explorer.isActive) return SizedBox.shrink();
+    if (!storage.isActive) return SizedBox.shrink();
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
-      onTap: storage.createFolder,
+      onTap: () => storage.setup(entity: StorageNewFolder()),
       child: SizedBox(
         height: NoterDrumAppBar.height,
         width: NoterDrumAppBar.height,
@@ -141,13 +142,10 @@ class _ReturnBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!storage.explorer.isActive) return SizedBox.shrink();
+    if (!storage.isActive) return SizedBox.shrink();
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
-      onTap: () async {
-        await storage.explorer.closeFolder();
-        if (!storage.explorer.isActive) storage.closeSetup();
-      },
+      onTap: storage.returnBack,
       child: SizedBox(
         height: NoterDrumAppBar.height,
         width: NoterDrumAppBar.height,

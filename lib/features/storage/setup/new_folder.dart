@@ -34,7 +34,7 @@ class NewFolderSetupWindow extends StatelessWidget {
             SizedBox(width: 10),
             OutlinedButton(
               onPressed: () async {
-                storage.explorer.createFolder(name: newFolder.name);
+                storage.createFolder(name: newFolder.name);
                 storage.closeSetup();
               },
               child: Text("Accept"),

@@ -1,4 +1,4 @@
-import 'package:drums/features/storage/explorer/model.dart';
+import 'package:drums/features/storage/model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as path;
@@ -8,13 +8,13 @@ class StorageExplorerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<StorageExplorer>(
-      builder: (BuildContext context, StorageExplorer explorer, _) {
+    return Consumer<Storage>(
+      builder: (BuildContext context, Storage storage, _) {
         return ListView(
           children: [
-            ...explorer.folders.map(
+            ...storage.folders.map(
               (folder) => _StorageExplorerRowWidget(
-                explorer: explorer,
+                storage: storage,
                 entity: folder,
               ),
             ),
@@ -29,18 +29,18 @@ class _StorageExplorerRowWidget extends StatelessWidget {
   static const double height = 50;
 
   const _StorageExplorerRowWidget({
-    required this.explorer,
+    required this.storage,
     required this.entity,
   });
 
-  final StorageExplorer explorer;
+  final Storage storage;
   final String entity;
 
   @override
   Widget build(BuildContext context) {
     final borderColor = Theme.of(context).colorScheme.onSecondaryContainer;
     return GestureDetector(
-      onTap: () => explorer.openFolder(name: entity),
+      onTap: () => storage.openFolder(name: entity),
       child: Container(
         height: height,
         decoration: BoxDecoration(
@@ -63,7 +63,7 @@ class _StorageExplorerRowWidget extends StatelessWidget {
                 itemBuilder: (BuildContext context) {
                   return [
                     PopupMenuItem(
-                      onTap: () => explorer.removeFolder(name: entity),
+                      onTap: () => storage.removeFolder(name: entity),
                       child: Text("Remove"),
                     ),
                   ];
