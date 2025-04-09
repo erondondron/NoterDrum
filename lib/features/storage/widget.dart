@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:drums/features/app_bar.dart';
 import 'package:drums/features/storage/explorer/widget.dart';
 import 'package:drums/features/storage/model.dart';
+import 'package:drums/features/storage/setup/models.dart';
 import 'package:drums/features/storage/setup/new_folder.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -38,9 +39,13 @@ class StorageWindow extends StatelessWidget {
                   : BoxDecoration(color: blackoutColor.withValues(alpha: 0.8)),
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: setupPadding),
-                child: storage.newFolder != null
-                    ? NewFolderSetupWindow(storage: storage)
-                    : null,
+                child: switch (storage.setupEntity) {
+                  StorageNewFolder() => NewFolderSetupWindow(
+                    storage: storage,
+                    newFolder: storage.setupEntity as StorageNewFolder,
+                  ),
+                  _ => null,
+                },
               ),
             ),
             Container(

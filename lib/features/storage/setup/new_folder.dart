@@ -1,10 +1,16 @@
 import 'package:drums/features/storage/model.dart';
+import 'package:drums/features/storage/setup/models.dart';
 import 'package:flutter/material.dart';
 
 class NewFolderSetupWindow extends StatelessWidget {
-  const NewFolderSetupWindow({super.key, required this.storage});
+  const NewFolderSetupWindow({
+    super.key,
+    required this.storage,
+    required this.newFolder,
+  });
 
   final Storage storage;
+  final StorageNewFolder newFolder;
 
   @override
   Widget build(BuildContext context) {
@@ -14,8 +20,8 @@ class NewFolderSetupWindow extends StatelessWidget {
         Text("New folder:"),
         SizedBox(height: 15),
         TextFormField(
-          initialValue: storage.newFolder,
-          onChanged: (value) => storage.newFolder = value,
+          initialValue: newFolder.name,
+          onChanged: (value) => newFolder.name = value,
         ),
         SizedBox(height: 30),
         Row(
@@ -28,7 +34,7 @@ class NewFolderSetupWindow extends StatelessWidget {
             SizedBox(width: 10),
             OutlinedButton(
               onPressed: () async {
-                storage.explorer.createFolder(name: storage.newFolder!);
+                storage.explorer.createFolder(name: newFolder.name);
                 storage.closeSetup();
               },
               child: Text("Accept"),

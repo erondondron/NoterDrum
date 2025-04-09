@@ -1,5 +1,6 @@
 import 'package:drums/features/sheet_music/model.dart';
 import 'package:drums/features/storage/explorer/model.dart';
+import 'package:drums/features/storage/setup/models.dart';
 import 'package:flutter/material.dart';
 
 class Storage extends ChangeNotifier {
@@ -10,7 +11,7 @@ class Storage extends ChangeNotifier {
   StorageExplorer explorer = StorageExplorer();
   SheetMusic selectedGroove = SheetMusic.generate();
 
-  String? newFolder;
+  StorageSetupEntity? setupEntity;
 
   @override
   void dispose() {
@@ -18,11 +19,11 @@ class Storage extends ChangeNotifier {
     super.dispose();
   }
 
-  bool get setupIsActive => newFolder != null;
+  bool get setupIsActive => setupEntity != null;
 
   void createFolder() {
     closeSetup();
-    newFolder = "NewFolder";
+    setupEntity = StorageNewFolder();
     notifyListeners();
   }
 
@@ -31,7 +32,7 @@ class Storage extends ChangeNotifier {
   }
 
   void closeSetup() {
-    newFolder = null;
+    setupEntity = null;
     notifyListeners();
   }
 
