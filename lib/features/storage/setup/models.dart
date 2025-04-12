@@ -1,13 +1,23 @@
 class StorageSetupEntity {}
 
-class StorageNewFolder extends StorageSetupEntity {
-  StorageNewFolder({this.name = "NewFolder"});
+class NewFolderSetup extends StorageSetupEntity {
+  NewFolderSetup({required this.name});
 
   String name;
 }
 
-class StorageNewGroove extends StorageSetupEntity {
-  StorageNewGroove({this.name = "NewGroove"});
+class NewGrooveSetup extends StorageSetupEntity {
+  NewGrooveSetup({required this.name});
 
   String name;
+}
+
+class RenameEntitySetup extends StorageSetupEntity {
+  RenameEntitySetup({
+    required this.entityPath,
+    required this.newName,
+  });
+
+  String entityPath;
+  String newName;
 }

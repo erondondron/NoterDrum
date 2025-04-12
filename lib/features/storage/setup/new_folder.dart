@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 class NewFolderSetupWidget extends StatefulWidget {
   const NewFolderSetupWidget({super.key, required this.newFolder});
 
-  final StorageNewFolder newFolder;
+  final NewFolderSetup newFolder;
 
   @override
   State<StatefulWidget> createState() => _NewFolderSetupWidgetState();

@@ -21,7 +21,10 @@ class SheetMusic extends ChangeNotifier {
   }
 
   factory SheetMusic.generate({String name = "NewGroove"}) {
-    var relativePath = path.join(Storage.baseFolder, "$name.pbnd");
+    var relativePath = path.join(
+      Storage.baseFolder,
+      name + Storage.grooveExtension,
+    );
     var drumSet = DrumSet();
     var measure = SheetMusicMeasure.generate(
       timeSignature: sixteenSixteenths,

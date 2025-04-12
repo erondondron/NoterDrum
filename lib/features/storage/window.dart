@@ -6,6 +6,7 @@ import 'package:drums/features/storage/model.dart';
 import 'package:drums/features/storage/setup/models.dart';
 import 'package:drums/features/storage/setup/new_folder.dart';
 import 'package:drums/features/storage/setup/new_groove.dart';
+import 'package:drums/features/storage/setup/rename_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,9 +26,13 @@ class StorageWindow extends StatelessWidget {
     return Consumer<Storage>(
       builder: (BuildContext context, Storage storage, _) {
         var setupWidget = switch (storage.setupEntity) {
-          StorageNewFolder() => NewFolderSetupWidget(
-              newFolder: storage.setupEntity as StorageNewFolder,
+          NewFolderSetup() => NewFolderSetupWidget(
+              newFolder: storage.setupEntity as NewFolderSetup,
             ),
+          RenameEntitySetup() => RenameEntitySetupWidget(
+            renameEntity: storage.setupEntity as RenameEntitySetup,
+            storage: storage,
+          ),
           _ => storage.newGroove != null ? NewGrooveSetupWidget() : null
         };
 

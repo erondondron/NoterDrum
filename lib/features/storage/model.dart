@@ -18,6 +18,7 @@ class StorageEntityAlreadyExistsError implements Exception {
 
 class Storage extends ChangeNotifier {
   static const String baseFolder = "NoterDrum";
+  static const String grooveExtension = ".pbnd";
 
   String relativePath = "";
 
@@ -25,7 +26,7 @@ class Storage extends ChangeNotifier {
   List<String> grooves = [];
 
   SheetMusic selectedGroove = SheetMusic.generate();
-  StorageNewGroove? newGroove;
+  NewGrooveSetup? newGroove;
   StorageSetupEntity? setupEntity;
 
   bool get isActive => relativePath.isNotEmpty;
@@ -43,7 +44,7 @@ class Storage extends ChangeNotifier {
   }
 
   FileSystemEntity _getFileSystemEntity(String entityPath) {
-    return path.extension(entityPath) == ".pbnd"
+    return path.extension(entityPath) == Storage.grooveExtension
         ? File(entityPath)
         : Directory(entityPath);
   }
@@ -62,6 +63,36 @@ class Storage extends ChangeNotifier {
         .map((entity) => path.basename(entity.path))
         .toList();
     notifyListeners();
+  }
+
+  void setupRenameEntity({required String name}) {
+    setupEntity = RenameEntitySetup(
+      entityPath: path.join(relativePath, name),
+      newName: path.basenameWithoutExtension(name),
+    );
+    notifyListeners();
+  }
+
+  Future<void> renameEntity({bool force = false}) async {
+    if (setupEntity is! RenameEntitySetup) return;
+    var renameEntity = setupEntity as RenameEntitySetup;
+    var extension = path.extension(renameEntity.entityPath);
+    var newName = renameEntity.newName + extension;
+    var newPath = path.join(relativePath, newName);
+    if (newPath == renameEntity.entityPath) return closeSetup();
+
+    var root = await getApplicationDocumentsDirectory();
+    var existingEntity = _getFileSystemEntity(path.join(root.path, newPath));
+    if (existingEntity.existsSync()) {
+      if (!force) throw StorageEntityAlreadyExistsError(newPath);
+      existingEntity.deleteSync(recursive: true);
+    }
+
+    var entityPath = path.join(root.path, renameEntity.entityPath);
+    var entity = _getFileSystemEntity(entityPath);
+    entity.renameSync(path.join(root.path, newPath));
+    await _sync();
+    return closeSetup();
   }
 
   Future<void> removeFileSystemEntity({required String name}) async {
@@ -86,7 +117,7 @@ class Storage extends ChangeNotifier {
   }
 
   void setupNewFolder() {
-    setupEntity = StorageNewFolder(name: getNewFolderName());
+    setupEntity = NewFolderSetup(name: getNewFolderName());
     notifyListeners();
   }
 
@@ -103,8 +134,8 @@ class Storage extends ChangeNotifier {
   }
 
   Future<void> saveNewFolder() async {
-    if (setupEntity is! StorageNewFolder) return;
-    var newFolder = setupEntity as StorageNewFolder;
+    if (setupEntity is! NewFolderSetup) return;
+    var newFolder = setupEntity as NewFolderSetup;
     var root = await getApplicationDocumentsDirectory();
     var folderPath = path.join(relativePath, newFolder.name);
     var folder = Directory(path.join(root.path, folderPath));
@@ -125,7 +156,7 @@ class Storage extends ChangeNotifier {
 
   Future<void> setupNewGroove() async {
     await openFolder(name: path.dirname(selectedGroove.relativePath));
-    newGroove = StorageNewGroove(name: getNewGrooveName());
+    newGroove = NewGrooveSetup(name: getNewGrooveName());
     notifyListeners();
   }
 
@@ -144,7 +175,7 @@ class Storage extends ChangeNotifier {
   Future<void> saveNewGroove({bool force = false}) async {
     if (newGroove == null) return;
     var root = await getApplicationDocumentsDirectory();
-    var name = "${newGroove!.name}.pbnd";
+    var name = newGroove!.name + Storage.grooveExtension;
     var groovePath = path.join(relativePath, name);
     var file = File(path.join(root.path, groovePath));
     if (file.existsSync() && !force) {

@@ -45,7 +45,7 @@ class _StorageExplorerRowWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final borderColor = Theme.of(context).colorScheme.onSecondaryContainer;
-    var isFile = entity.endsWith(".pbnd");
+    var isFile = entity.endsWith(Storage.grooveExtension);
 
     return GestureDetector(
       onTap: isFile
@@ -72,6 +72,10 @@ class _StorageExplorerRowWidget extends StatelessWidget {
               PopupMenuButton(
                 itemBuilder: (BuildContext context) {
                   return [
+                    PopupMenuItem(
+                      onTap: () => storage.setupRenameEntity(name: entity),
+                      child: Text("Rename"),
+                    ),
                     PopupMenuItem(
                       onTap: () => storage.removeFileSystemEntity(name: entity),
                       child: Text("Remove"),
