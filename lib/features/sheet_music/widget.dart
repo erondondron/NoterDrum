@@ -6,6 +6,7 @@ import 'package:drums/features/sheet_music/measure/model.dart';
 import 'package:drums/features/sheet_music/measure/widget.dart';
 import 'package:drums/features/sheet_music/model.dart';
 import 'package:drums/features/sheet_music/drum_set/widget.dart';
+import 'package:drums/features/sheet_music/note/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -20,6 +21,7 @@ class SheetMusicWindow extends StatelessWidget {
     var leftPadding = max(notchSize, NoterDrumAppBar.leftPadding);
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
+    var actionPanelSize = bodyPadding * 2 + ActionsPanel.size;
 
     return Stack(
       children: [
@@ -30,14 +32,13 @@ class SheetMusicWindow extends StatelessWidget {
           child: Padding(
             padding: EdgeInsets.only(
               left: leftPadding,
-              top: bodyPadding,
-              right: bodyPadding * 2 + ActionsPanel.size,
-              bottom: bodyPadding * 2 + ActionsPanel.size,
+              right: actionPanelSize,
+              bottom: actionPanelSize,
             ),
             child: Container(
               constraints: BoxConstraints(
-                minHeight: height - NoterDrumAppBar.height - bodyPadding * 2,
-                minWidth: width - leftPadding - bodyPadding,
+                minHeight: height - NoterDrumAppBar.height - actionPanelSize,
+                minWidth: width - leftPadding - actionPanelSize,
               ),
               child: _SheetMusicMeasuresWidget(),
             ),
@@ -64,6 +65,7 @@ class _SheetMusicMeasuresWidget extends StatelessWidget {
             return Padding(
               padding: EdgeInsets.symmetric(vertical: 10),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
                   ChangeNotifierProvider.value(
                     value: sheetMusic.drumSet,
@@ -77,9 +79,13 @@ class _SheetMusicMeasuresWidget extends StatelessWidget {
                     ),
                   ),
                   if (measure == sheetMusic.measures.last)
-                    IconButton(
-                      icon: const Icon(Icons.add_outlined),
-                      onPressed: sheetMusic.addNewMeasure,
+                    SizedBox(
+                      height: (sheetMusic.drumSet.selected.length + 1) *
+                          NoteView.height,
+                      child: IconButton(
+                        icon: const Icon(Icons.add_outlined),
+                        onPressed: sheetMusic.addNewMeasure,
+                      ),
                     ),
                 ],
               ),

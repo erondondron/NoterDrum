@@ -1,5 +1,6 @@
 import 'package:drums/features/sheet_music/measure/model.dart';
 import 'package:drums/features/sheet_music/actions/editing/selector.dart';
+import 'package:drums/features/sheet_music/staff/painter.dart';
 import 'package:drums/features/sheet_music/measure_unit/widget.dart';
 import 'package:drums/features/sheet_music/model.dart';
 import 'package:drums/features/sheet_music/note/widget.dart';
@@ -20,6 +21,7 @@ class SheetMusicMeasureWidget extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              StaffWidget(),
               _ControlPanel(measure: measure),
               _UnitsPanel(measure: measure),
             ],
