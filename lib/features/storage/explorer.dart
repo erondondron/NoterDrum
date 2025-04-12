@@ -77,6 +77,10 @@ class _StorageExplorerRowWidget extends StatelessWidget {
                       child: Text("Rename"),
                     ),
                     PopupMenuItem(
+                      onTap: () => storage.setupMoveEntity(name: entity),
+                      child: Text("Move"),
+                    ),
+                    PopupMenuItem(
                       onTap: () => storage.removeFileSystemEntity(name: entity),
                       child: Text("Remove"),
                     ),

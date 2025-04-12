@@ -75,7 +75,7 @@ class _RenameEntitySetupWidgetState extends State<RenameEntitySetupWidget> {
                   if (!context.mounted) return;
                   var replace = await showDialog<bool>(
                     context: context,
-                    builder: (_) => _ReplaceGrooveDialog(entity: entity),
+                    builder: (_) => _ReplaceEntityDialog(entity: entity),
                   );
                   if (replace != true) return;
                   await widget.storage.renameEntity(force: true);
@@ -90,8 +90,8 @@ class _RenameEntitySetupWidgetState extends State<RenameEntitySetupWidget> {
   }
 }
 
-class _ReplaceGrooveDialog extends StatelessWidget {
-  const _ReplaceGrooveDialog({required this.entity});
+class _ReplaceEntityDialog extends StatelessWidget {
+  const _ReplaceEntityDialog({required this.entity});
 
   final String entity;
 

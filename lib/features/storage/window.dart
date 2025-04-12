@@ -4,6 +4,7 @@ import 'package:drums/features/app_bar.dart';
 import 'package:drums/features/storage/explorer.dart';
 import 'package:drums/features/storage/model.dart';
 import 'package:drums/features/storage/setup/models.dart';
+import 'package:drums/features/storage/setup/move_entity.dart';
 import 'package:drums/features/storage/setup/new_folder.dart';
 import 'package:drums/features/storage/setup/new_groove.dart';
 import 'package:drums/features/storage/setup/rename_entity.dart';
@@ -30,9 +31,10 @@ class StorageWindow extends StatelessWidget {
               newFolder: storage.setupEntity as NewFolderSetup,
             ),
           RenameEntitySetup() => RenameEntitySetupWidget(
-            renameEntity: storage.setupEntity as RenameEntitySetup,
-            storage: storage,
-          ),
+              renameEntity: storage.setupEntity as RenameEntitySetup,
+              storage: storage,
+            ),
+          MoveEntitySetup() => MoveEntitySetupWidget(),
           _ => storage.newGroove != null ? NewGrooveSetupWidget() : null
         };
 

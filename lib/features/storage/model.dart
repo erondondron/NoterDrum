@@ -76,21 +76,63 @@ class Storage extends ChangeNotifier {
   Future<void> renameEntity({bool force = false}) async {
     if (setupEntity is! RenameEntitySetup) return;
     var renameEntity = setupEntity as RenameEntitySetup;
+
     var extension = path.extension(renameEntity.entityPath);
     var newName = renameEntity.newName + extension;
     var newPath = path.join(relativePath, newName);
     if (newPath == renameEntity.entityPath) return closeSetup();
 
     var root = await getApplicationDocumentsDirectory();
+    var entityPath = path.join(root.path, renameEntity.entityPath);
+    var entity = _getFileSystemEntity(entityPath);
+    if (!entity.existsSync()) return closeSetup();
+
     var existingEntity = _getFileSystemEntity(path.join(root.path, newPath));
     if (existingEntity.existsSync()) {
       if (!force) throw StorageEntityAlreadyExistsError(newPath);
       existingEntity.deleteSync(recursive: true);
     }
 
-    var entityPath = path.join(root.path, renameEntity.entityPath);
-    var entity = _getFileSystemEntity(entityPath);
     entity.renameSync(path.join(root.path, newPath));
+    await _sync();
+    return closeSetup();
+  }
+
+  void setupMoveEntity({required String name}) {
+    setupEntity = MoveEntitySetup(
+      entityPath: path.join(relativePath, name),
+      newPath: path.join(relativePath, name),
+    );
+    notifyListeners();
+  }
+
+  Future<void> moveEntity({bool force = false}) async {
+    if (setupEntity is! MoveEntitySetup) return;
+    var moveEntity = setupEntity as MoveEntitySetup;
+    if (moveEntity.newPath == moveEntity.entityPath) return closeSetup();
+
+    var root = await getApplicationDocumentsDirectory();
+    var entityPath = path.join(root.path, moveEntity.entityPath);
+    var entity = _getFileSystemEntity(entityPath);
+    if (!entity.existsSync()) return closeSetup();
+
+    Directory? tempDirectory;
+    var newPath = path.join(root.path, moveEntity.newPath);
+    var existingEntity = _getFileSystemEntity(newPath);
+    if (existingEntity.existsSync()) {
+      if (!force) throw StorageEntityAlreadyExistsError(moveEntity.newPath);
+
+      var tempRoot = await getTemporaryDirectory();
+      entityPath = path.join(tempRoot.path, moveEntity.entityPath);
+      tempDirectory = Directory(path.dirname(entityPath));
+      tempDirectory.createSync(recursive: true);
+      entity.renameSync(entityPath);
+      existingEntity.deleteSync(recursive: true);
+    }
+
+    entity = _getFileSystemEntity(entityPath);
+    entity.renameSync(newPath);
+    tempDirectory?.deleteSync(recursive: true);
     await _sync();
     return closeSetup();
   }

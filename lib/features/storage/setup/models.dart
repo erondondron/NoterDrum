@@ -21,3 +21,13 @@ class RenameEntitySetup extends StorageSetupEntity {
   String entityPath;
   String newName;
 }
+
+class MoveEntitySetup extends StorageSetupEntity {
+  MoveEntitySetup({
+    required this.entityPath,
+    required this.newPath,
+  });
+
+  String entityPath;
+  String newPath;
+}
