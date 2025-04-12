@@ -31,13 +31,15 @@ class Storage extends ChangeNotifier {
   bool get isActive => relativePath.isNotEmpty;
 
   String get displayedTitle {
-    var title = isActive
-        ? relativePath
-        : selectedGroove.relativePath;
-    if (path.extension(title) == ".pbnd"){
-      title = title.substring(0, title.length - ".pbnd".length);
-    }
-    return title.replaceAll("/", " / ");
+    var entityPath = isActive ? relativePath : selectedGroove.relativePath;
+    var entityName = path.basenameWithoutExtension(entityPath);
+    var parentPath = path.dirname(entityPath);
+    if (parentPath == ".") return entityName;
+
+    var parentName = path.basename(parentPath);
+    var result = path.join(parentName, entityName);
+    if (isActive && parentName != parentPath) result = "... $result";
+    return result.replaceAll("/", " / ");
   }
 
   FileSystemEntity _getFileSystemEntity(String entityPath) {
@@ -83,18 +85,34 @@ class Storage extends ChangeNotifier {
     return _sync();
   }
 
-  void setup({required StorageSetupEntity entity}) {
-    entity is StorageNewGroove ? newGroove = entity : setupEntity = entity;
+  void setupNewFolder() {
+    setupEntity = StorageNewFolder(name: getNewFolderName());
     notifyListeners();
   }
 
-  Future<void> createFolder({required String name}) async {
+  String getNewFolderName() {
+    var folderNumber = 0;
+    var folderPattern = RegExp(r"^Folder (\d+)$");
+    for (var folder in folders) {
+      var match = folderPattern.firstMatch(folder);
+      if (match == null) continue;
+      var existingFolderNumber = int.parse(match.group(1)!);
+      folderNumber = max(folderNumber, existingFolderNumber);
+    }
+    return 'Folder ${folderNumber + 1}';
+  }
+
+  Future<void> saveNewFolder() async {
+    if (setupEntity is! StorageNewFolder) return;
+    var newFolder = setupEntity as StorageNewFolder;
     var root = await getApplicationDocumentsDirectory();
-    var folder = Directory(path.join(root.path, relativePath, name));
+    var folderPath = path.join(relativePath, newFolder.name);
+    var folder = Directory(path.join(root.path, folderPath));
     if (!folder.existsSync()) {
       folder.createSync();
-      return _sync();
+      await _sync();
     }
+    return closeSetup();
   }
 
   Future<void> openGroove({required String name}) async {

@@ -16,6 +16,7 @@ class _NewGrooveSetupWidgetState extends State<NewGrooveSetupWidget> {
   @override
   void dispose() {
     _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 

@@ -1,47 +1,70 @@
 import 'package:drums/features/storage/model.dart';
 import 'package:drums/features/storage/setup/models.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class NewFolderSetupWidget extends StatelessWidget {
-  const NewFolderSetupWidget({
-    super.key,
-    required this.storage,
-    required this.newFolder,
-  });
+class NewFolderSetupWidget extends StatefulWidget {
+  const NewFolderSetupWidget({super.key, required this.newFolder});
 
-  final Storage storage;
   final StorageNewFolder newFolder;
 
   @override
+  State<StatefulWidget> createState() => _NewFolderSetupWidgetState();
+}
+
+class _NewFolderSetupWidgetState extends State<NewFolderSetupWidget> {
+  final _controller = TextEditingController();
+  final _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        SizedBox(height: 60),
-        Text("New folder:"),
-        SizedBox(height: 15),
-        TextFormField(
-          initialValue: newFolder.name,
-          onChanged: (value) => newFolder.name = value,
-        ),
-        SizedBox(height: 30),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+    return Consumer<Storage>(
+      builder: (BuildContext context, Storage storage, _) {
+        widget.newFolder.name = storage.getNewFolderName();
+        _controller.text = widget.newFolder.name;
+        return ListView(
           children: [
-            OutlinedButton(
-              onPressed: storage.closeSetup,
-              child: Text("Cancel"),
-            ),
-            SizedBox(width: 10),
-            OutlinedButton(
-              onPressed: () async {
-                storage.createFolder(name: newFolder.name);
-                storage.closeSetup();
+            SizedBox(height: 60),
+            Text("Save your folder as:"),
+            SizedBox(height: 15),
+            TextFormField(
+              focusNode: _focusNode,
+              controller: _controller,
+              onChanged: (_) => widget.newFolder.name = _controller.text,
+              onTapOutside: (_) => FocusScope.of(context).unfocus(),
+              onTap: () {
+                if (_focusNode.hasFocus) return;
+                _controller.selection = TextSelection(
+                  baseOffset: 0,
+                  extentOffset: _controller.value.text.length,
+                );
               },
-              child: Text("Accept"),
+            ),
+            SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                OutlinedButton(
+                  onPressed: storage.closeSetup,
+                  child: Text("Cancel"),
+                ),
+                SizedBox(width: 10),
+                OutlinedButton(
+                  onPressed: storage.saveNewFolder,
+                  child: Text("Accept"),
+                ),
+              ],
             ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 }

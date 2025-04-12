@@ -26,7 +26,6 @@ class StorageWindow extends StatelessWidget {
       builder: (BuildContext context, Storage storage, _) {
         var setupWidget = switch (storage.setupEntity) {
           StorageNewFolder() => NewFolderSetupWidget(
-              storage: storage,
               newFolder: storage.setupEntity as StorageNewFolder,
             ),
           _ => storage.newGroove != null ? NewGrooveSetupWidget() : null

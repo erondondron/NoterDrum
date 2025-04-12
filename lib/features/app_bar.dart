@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:drums/features/storage/model.dart';
-import 'package:drums/features/storage/setup/models.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -158,7 +157,7 @@ class _NewFolderButton extends StatelessWidget {
     if (!storage.isActive) return SizedBox.shrink();
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
-      onTap: () => storage.setup(entity: StorageNewFolder()),
+      onTap: storage.setupNewFolder,
       child: SizedBox(
         height: NoterDrumAppBar.height,
         width: NoterDrumAppBar.height,
