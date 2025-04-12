@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+class ThemeColors {
+  static const white = Color(0xFFEEEEEE);
+  static const orange = Color(0xFFE28C52);
+  static const grey = Color(0xFF1F1F1F);
+  static const lightGrey = Color(0xFF454545);
+  static const darkGrey = Color(0xFF181818);
+  static const red = Colors.red;
+}
+
 final textTheme = GoogleFonts.baloo2TextTheme(ThemeData.dark().textTheme)
-    .apply(bodyColor: const Color(0xFFEEEEEE))
+    .apply(bodyColor: ThemeColors.white)
     .copyWith(
       titleLarge: GoogleFonts.baloo2(
         fontSize: 30,
@@ -17,26 +26,49 @@ final textTheme = GoogleFonts.baloo2TextTheme(ThemeData.dark().textTheme)
 final ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
   textTheme: textTheme,
-  scaffoldBackgroundColor: const Color(0xFF1F1F1F),
+  scaffoldBackgroundColor: ThemeColors.grey,
   colorScheme: const ColorScheme.dark(
-    primary: Color(0xFFE28C52),
-    surface: Color(0xFF1F1F1F),
-    onSurface: Color(0xFFEEEEEE),
-    secondaryContainer: Color(0xFF181818),
-    onSecondaryContainer: Color(0xFF454545),
-    error: Colors.red,
+    primary: ThemeColors.orange,
+    surface: ThemeColors.grey,
+    onSurface: ThemeColors.white,
+    secondaryContainer: ThemeColors.darkGrey,
+    onSecondaryContainer: ThemeColors.lightGrey,
+    error: ThemeColors.red,
   ),
   appBarTheme: AppBarTheme(
-    backgroundColor: Color(0xFF1F1F1F),
+    backgroundColor: ThemeColors.grey,
     titleTextStyle: textTheme.titleLarge,
   ),
   popupMenuTheme: PopupMenuThemeData(
-    color: Color(0xFF181818),
+    color: ThemeColors.darkGrey,
     labelTextStyle: WidgetStatePropertyAll(textTheme.bodyMedium),
   ),
   dividerTheme: DividerThemeData(
-    color: Color(0xFF454545),
+    color: ThemeColors.lightGrey,
     indent: 10,
     endIndent: 10,
+  ),
+  inputDecorationTheme: InputDecorationTheme(
+    filled: true,
+    fillColor: ThemeColors.darkGrey,
+    contentPadding: EdgeInsets.all(10),
+    enabledBorder: UnderlineInputBorder(
+      borderSide: BorderSide(
+        color: ThemeColors.lightGrey,
+        width: 1.5,
+      ),
+    ),
+  ),
+  outlinedButtonTheme: OutlinedButtonThemeData(
+    style: ButtonStyle(
+      backgroundColor: WidgetStatePropertyAll(ThemeColors.darkGrey),
+      foregroundColor: WidgetStatePropertyAll(ThemeColors.white),
+      side: WidgetStatePropertyAll(
+        BorderSide(
+          color: ThemeColors.lightGrey,
+          width: 1.5,
+        ),
+      ),
+    ),
   ),
 );

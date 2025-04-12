@@ -59,4 +59,21 @@ class MeasureUnit extends ChangeNotifier {
       }
     }
   }
+
+  MeasureUnit.fromJson(Map<String, dynamic> json)
+      : drumLines = (json["drum_lines"] as List<dynamic>)
+            .map((line) => MeasureUnitDrumLine.fromJson(
+                  line as Map<String, dynamic>,
+                ))
+            .toList(),
+        noteValue = NoteValue.values.firstWhere(
+          (note) => note.part == json["note_value"] as int,
+        ),
+        length = json["length"] as int;
+
+  Map<String, dynamic> toJson() => {
+        "drum_lines": drumLines.map((line) => line.toJson()).toList(),
+        "note_value": noteValue.part,
+        "length": length,
+      };
 }

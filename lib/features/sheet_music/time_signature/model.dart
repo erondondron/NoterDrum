@@ -46,6 +46,17 @@ class TimeSignature extends ChangeNotifier {
     measures.add(unitLength);
     notifyListeners();
   }
+
+  TimeSignature.fromJson(Map<String, dynamic> json)
+      : noteValue = NoteValue.values.firstWhere(
+          (note) => note.part == json["note_value"] as int,
+        ),
+        measures = (json["measures"] as List<dynamic>).cast<int>();
+
+  Map<String, dynamic> toJson() => {
+        "note_value": noteValue.part,
+        "measures": measures,
+      };
 }
 
 final sixEights = TimeSignature(
