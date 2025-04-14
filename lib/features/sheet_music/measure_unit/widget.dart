@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MeasureUnitWidget extends StatelessWidget {
+  static const double padding = 13;
+
   const MeasureUnitWidget({super.key});
 
   @override
@@ -11,7 +13,7 @@ class MeasureUnitWidget extends StatelessWidget {
     return Consumer<MeasureUnit>(
       builder: (BuildContext context, MeasureUnit unit, _) {
         return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 5),
+          padding: EdgeInsets.symmetric(horizontal: padding),
           child: Column(
             key: unit.key,
             children: unit.drumLines

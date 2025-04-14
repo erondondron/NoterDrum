@@ -1,9 +1,18 @@
+import 'dart:math';
+
 import 'package:drums/features/sheet_music/drum_set/model.dart';
 import 'package:drums/features/sheet_music/measure_unit_line/model.dart';
 import 'package:drums/features/sheet_music/note/model.dart';
 import 'package:flutter/material.dart';
 
 class MeasureUnit extends ChangeNotifier {
+  GlobalKey key = GlobalKey();
+  double width = 0;
+
+  List<MeasureUnitDrumLine> drumLines;
+  NoteValue noteValue;
+  int length;
+
   MeasureUnit({
     required this.noteValue,
     required this.length,
@@ -27,12 +36,6 @@ class MeasureUnit extends ChangeNotifier {
     );
   }
 
-  GlobalKey key = GlobalKey();
-
-  List<MeasureUnitDrumLine> drumLines;
-  NoteValue noteValue;
-  int length;
-
   void updateDrumLines(List<Drum> drums) {
     drumLines.removeWhere((drumLine) => !drums.contains(drumLine.drum));
 
@@ -43,6 +46,7 @@ class MeasureUnit extends ChangeNotifier {
     drumLines.addAll(newLines);
 
     drumLines.sort((a, b) => a.drum.order.compareTo(b.drum.order));
+    calculateNotesWidth();
     notifyListeners();
   }
 
@@ -53,10 +57,13 @@ class MeasureUnit extends ChangeNotifier {
         .value;
 
     for (var line in drumLines) {
+      var lineWidth = 0.0;
       for (var note in line.notes) {
         var relative = minNoteValue.part / note.value.part;
         note.width = relative * Note.minWidth;
+        lineWidth += note.width;
       }
+      width = max(width, lineWidth);
     }
   }
 

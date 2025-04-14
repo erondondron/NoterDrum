@@ -49,7 +49,7 @@ class _UnitsPanel extends StatelessWidget {
                   child: MeasureUnitWidget(),
                 ),
               )
-              .expand((widget) => [widget, VerticalDivider()])
+              .expand((widget) => [widget, VerticalDivider(width: 0)])
               .toList()
             ..removeLast(),
         ),
