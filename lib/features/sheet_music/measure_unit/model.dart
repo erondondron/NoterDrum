@@ -19,6 +19,9 @@ class MeasureUnit extends ChangeNotifier {
     required this.drumLines,
   }) {
     calculateNotesWidth();
+    for (var line in drumLines) {
+      line.addListener(notifyListeners);
+    }
   }
 
   factory MeasureUnit.generate({
@@ -36,16 +39,41 @@ class MeasureUnit extends ChangeNotifier {
     );
   }
 
+  @override
+  void dispose() {
+    for (var line in drumLines) {
+      line.removeListener(notifyListeners);
+    }
+    super.dispose();
+  }
+
+  void addDrumLine(MeasureUnitDrumLine newLine) {
+    newLine.addListener(notifyListeners);
+    var idx = drumLines.indexWhere(
+      (selected) => selected.drum.order > newLine.drum.order,
+    );
+    idx > 0 ? drumLines.insert(idx, newLine) : drumLines.add(newLine);
+  }
+
+  void removeDrumLine(MeasureUnitDrumLine line) {
+    line.removeListener(notifyListeners);
+    drumLines.remove(line);
+  }
+
   void updateDrumLines(List<Drum> drums) {
-    drumLines.removeWhere((drumLine) => !drums.contains(drumLine.drum));
+    for (var line in drumLines) {
+      if (drums.contains(line.drum)) continue;
+      removeDrumLine(line);
+    }
 
     final unitDrums = drumLines.map((drumLine) => drumLine.drum).toSet();
     final newDrums = drums.toSet().difference(unitDrums);
-    final newLines = newDrums.map((drum) => MeasureUnitDrumLine.generate(
-        drum: drum, noteValue: noteValue, length: length));
-    drumLines.addAll(newLines);
+    for (var drum in newDrums) {
+      var newLine = MeasureUnitDrumLine.generate(
+          drum: drum, noteValue: noteValue, length: length);
+      addDrumLine(newLine);
+    }
 
-    drumLines.sort((a, b) => a.drum.order.compareTo(b.drum.order));
     calculateNotesWidth();
     notifyListeners();
   }

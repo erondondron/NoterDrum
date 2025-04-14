@@ -8,13 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class NoteWidget extends StatelessWidget {
-  const NoteWidget({super.key});
+  const NoteWidget({super.key, required this.note});
+
+  final Note note;
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<Note, NotesEditingController>(
-      builder: (BuildContext context, Note note,
-          NotesEditingController controller, _) {
+    return Consumer<NotesEditingController>(
+      builder: (BuildContext context, NotesEditingController controller, _) {
         return SizedBox(
           width: note.width,
           child: Align(

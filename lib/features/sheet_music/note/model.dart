@@ -1,4 +1,5 @@
 import 'package:drums/features/sheet_music/drum_set/model.dart';
+import 'package:drums/features/sheet_music/measure_unit_line/model.dart';
 import 'package:flutter/material.dart';
 
 const Set<Drum> snareAndToms = {Drum.snare, Drum.tom1, Drum.tom2, Drum.tom3};
@@ -12,15 +13,15 @@ enum NoteValue {
   sixteenthTriplet(part: 24, count: 3),
   thirtySecond(part: 32, count: 1);
 
-  const NoteValue({
-    required this.part,
-    required this.count,
-  });
-
   final int part;
   final int count;
 
   int get duration => part ~/ count;
+
+  const NoteValue({
+    required this.part,
+    required this.count,
+  });
 }
 
 enum StrokeType {
@@ -37,24 +38,19 @@ enum StrokeType {
   foot(name: "Foot", drums: {Drum.hiHat}),
   off(name: "Off");
 
-  const StrokeType({
-    required this.name,
-    this.drums,
-  });
-
   final String name;
   final Set<Drum>? drums;
 
   Set<Drum> get filter => drums ?? Drum.values.toSet();
+
+  const StrokeType({
+    required this.name,
+    this.drums,
+  });
 }
 
 class Note extends ChangeNotifier {
   static const double minWidth = 35;
-
-  Note({
-    required this.value,
-    this.type = StrokeType.off,
-  });
 
   GlobalKey key = GlobalKey();
   bool isSelected = false;
@@ -63,6 +59,11 @@ class Note extends ChangeNotifier {
 
   NoteValue value;
   StrokeType type;
+
+  Note({
+    required this.value,
+    this.type = StrokeType.off,
+  });
 
   void changeStroke({StrokeType? strokeType}) {
     type = strokeType ??

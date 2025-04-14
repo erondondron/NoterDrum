@@ -6,24 +6,22 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MeasureUnitLineWidget extends StatelessWidget {
-  const MeasureUnitLineWidget({super.key});
+  const MeasureUnitLineWidget({super.key, required this.unitLine});
+
+  final MeasureUnitDrumLine unitLine;
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MeasureUnitDrumLine>(
-      builder: (BuildContext context, MeasureUnitDrumLine measureUnitLine, _) {
-        return FixHeightRow(
-          key: measureUnitLine.key,
-          children: measureUnitLine.notes
-              .map(
-                (Note note) => ChangeNotifierProvider.value(
-                  value: note,
-                  child: NoteWidget(),
-                ),
-              )
-              .toList(),
-        );
-      },
+    return FixHeightRow(
+      key: unitLine.key,
+      children: unitLine.notes
+          .map(
+            (Note note) => ChangeNotifierProvider.value(
+              value: note,
+              child: NoteWidget(note: note),
+            ),
+          )
+          .toList(),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:drums/features/sheet_music/measure/model.dart';
 import 'package:drums/features/sheet_music/measure_unit/model.dart';
 import 'package:drums/features/sheet_music/measure_unit/widget.dart';
+import 'package:drums/features/sheet_music/note/model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -51,7 +52,7 @@ class MeasureUnitStaffWidget extends StatelessWidget {
       builder: (BuildContext context, MeasureUnit unit, _) {
         return CustomPaint(
           size: Size(unit.width + padding, 40),
-          painter: MeasureUnitPainter(color: staffColor),
+          painter: MeasureUnitPainter(unit: unit, color: staffColor),
         );
       },
     );
@@ -92,12 +93,26 @@ class StaffPainter extends CustomPainter {
 class MeasureUnitPainter extends CustomPainter {
   static const double noteRadius = 5;
 
-  MeasureUnitPainter({required this.color});
-
+  final MeasureUnit unit;
   final Color color;
+
+  MeasureUnitPainter({
+    required this.unit,
+    required this.color,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
+    var isEmpty = true;
+    for (var drumLine in unit.drumLines){
+      for (var note in drumLine.notes){
+        if (note.type != StrokeType.off){
+          isEmpty = false;
+        }
+      }
+    }
+    if (isEmpty) return;
+
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.fill;

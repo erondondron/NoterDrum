@@ -20,7 +20,7 @@ class MeasureUnitWidget extends StatelessWidget {
                 .map(
                   (unitLine) => ChangeNotifierProvider.value(
                     value: unitLine,
-                    child: MeasureUnitLineWidget(),
+                    child: MeasureUnitLineWidget(unitLine: unitLine),
                   ),
                 )
                 .toList(),

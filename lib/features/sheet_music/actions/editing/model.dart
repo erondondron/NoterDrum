@@ -104,7 +104,7 @@ class NotesEditingController extends ChangeNotifier {
       for (var note in selectedNotes) {
         duration += NoteValue.values.last.part / note.value.part;
         idx = drumLineNotes.key.notes.indexOf(note);
-        drumLineNotes.key.notes.remove(note);
+        drumLineNotes.key.removeNote(note);
 
         note.isValid = true;
         note.isSelected = false;
@@ -130,7 +130,7 @@ class NotesEditingController extends ChangeNotifier {
         availableDuration -= noteDuration;
         for (int i = 0; i < noteValue.count; i++) {
           var note = Note(value: noteValue);
-          drumLineNotes.key.notes.insert(idx++, note);
+          drumLineNotes.key.addNote(idx++, note);
 
           note.isValid = isValid;
           note.isSelected = true;

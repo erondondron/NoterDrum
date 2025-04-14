@@ -4,6 +4,10 @@ import 'package:drums/features/sheet_music/time_signature/model.dart';
 import 'package:flutter/material.dart';
 
 class SheetMusicMeasure extends ChangeNotifier {
+  TimeSignature timeSignature;
+  List<MeasureUnit> units;
+  List<Drum> drums;
+
   SheetMusicMeasure({
     required this.timeSignature,
     required this.drums,
@@ -28,10 +32,6 @@ class SheetMusicMeasure extends ChangeNotifier {
           .toList(),
     );
   }
-
-  TimeSignature timeSignature;
-  List<MeasureUnit> units;
-  List<Drum> drums;
 
   void updateDrumLines(List<Drum> drums) {
     this.drums = drums;
