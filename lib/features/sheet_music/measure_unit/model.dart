@@ -61,8 +61,8 @@ class MeasureUnit extends ChangeNotifier {
   }
 
   void updateDrumLines(List<Drum> drums) {
-    for (var line in drumLines) {
-      if (drums.contains(line.drum)) continue;
+    for (var line
+        in drumLines.where((line) => !drums.contains(line.drum)).toList()) {
       removeDrumLine(line);
     }
 

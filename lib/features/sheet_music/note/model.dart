@@ -1,5 +1,4 @@
 import 'package:drums/features/sheet_music/drum_set/model.dart';
-import 'package:drums/features/sheet_music/measure_unit_line/model.dart';
 import 'package:flutter/material.dart';
 
 const Set<Drum> snareAndToms = {Drum.snare, Drum.tom1, Drum.tom2, Drum.tom3};
