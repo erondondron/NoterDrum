@@ -1,4 +1,4 @@
-import 'package:drums/features/sheet_music/note/model.dart';
+import 'package:drums/features/sheet_music/note/models.dart';
 import 'package:flutter/material.dart';
 
 class TimeSignature extends ChangeNotifier {
@@ -19,8 +19,8 @@ class TimeSignature extends ChangeNotifier {
     if (noteValue == NoteValue.values.last) return;
     var idx = NoteValue.values.indexOf(noteValue);
     noteValue = NoteValue.values[idx + 1];
-    var unitLength = noteValue.part ~/ NoteValue.quarter.part;
-    measures = List.generate(4, (_) => unitLength);
+    var beatLength = noteValue.part ~/ NoteValue.quarter.part;
+    measures = List.generate(4, (_) => beatLength);
     notifyListeners();
   }
 
@@ -28,12 +28,12 @@ class TimeSignature extends ChangeNotifier {
     if (noteValue == NoteValue.values.first) return;
     var idx = NoteValue.values.indexOf(noteValue);
     noteValue = NoteValue.values[idx - 1];
-    var unitLength = noteValue.part ~/ NoteValue.quarter.part;
-    measures = List.generate(4, (_) => unitLength);
+    var beatLength = noteValue.part ~/ NoteValue.quarter.part;
+    measures = List.generate(4, (_) => beatLength);
     notifyListeners();
   }
 
-  void changeUnitLength(int unitIndex, int changeValue) {
+  void changeBeatLength(int unitIndex, int changeValue) {
     var newLength = measures[unitIndex] + changeValue;
     newLength > 0
         ? measures[unitIndex] = newLength
@@ -41,9 +41,9 @@ class TimeSignature extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addUnit() {
-    var unitLength = noteValue.part ~/ NoteValue.quarter.part;
-    measures.add(unitLength);
+  void addBeat() {
+    var beatLength = noteValue.part ~/ NoteValue.quarter.part;
+    measures.add(beatLength);
     notifyListeners();
   }
 

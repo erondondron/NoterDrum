@@ -40,7 +40,7 @@ class SheetMusicWindow extends StatelessWidget {
                 minHeight: height - NoterDrumAppBar.height - actionPanelSize,
                 minWidth: width - leftPadding - actionPanelSize,
               ),
-              child: _SheetMusicMeasuresWidget(),
+              child: _GrooveMeasuresWidget(),
             ),
           ),
         ),
@@ -54,37 +54,37 @@ class SheetMusicWindow extends StatelessWidget {
   }
 }
 
-class _SheetMusicMeasuresWidget extends StatelessWidget {
+class _GrooveMeasuresWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<SheetMusic>(
-      builder: (BuildContext context, SheetMusic sheetMusic, _) {
+    return Consumer<Groove>(
+      builder: (BuildContext context, Groove groove, _) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: sheetMusic.measures.map((SheetMusicMeasure measure) {
+          children: groove.measures.map((GrooveMeasure measure) {
             return Padding(
               padding: EdgeInsets.symmetric(vertical: 10),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
                   ChangeNotifierProvider.value(
-                    value: sheetMusic.drumSet,
+                    value: groove.drumSet,
                     child: const DrumSetWidget(),
                   ),
                   ChangeNotifierProvider.value(
                     value: measure,
                     child: const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 15),
-                      child: SheetMusicMeasureWidget(),
+                      child: GrooveMeasureWidget(),
                     ),
                   ),
-                  if (measure == sheetMusic.measures.last)
+                  if (measure == groove.measures.last)
                     SizedBox(
-                      height: (sheetMusic.drumSet.selected.length + 1) *
+                      height: (groove.drumSet.selected.length + 1) *
                           NoteView.height,
                       child: IconButton(
                         icon: const Icon(Icons.add_outlined),
-                        onPressed: sheetMusic.addNewMeasure,
+                        onPressed: groove.addNewMeasure,
                       ),
                     ),
                 ],

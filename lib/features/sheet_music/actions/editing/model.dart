@@ -1,13 +1,16 @@
-import 'package:drums/features/sheet_music/measure/model.dart';
-import 'package:drums/features/sheet_music/measure_unit_line/model.dart';
-import 'package:drums/features/sheet_music/note/model.dart';
+import 'package:drums/features/sheet_music/beat/models.dart';
+import 'package:drums/features/sheet_music/drum_set/model.dart';
+import 'package:drums/features/sheet_music/note/models.dart';
 import 'package:flutter/material.dart';
 
 class NotesEditingController extends ChangeNotifier {
+  NotesEditingController({required this.drumSet});
+
+  final DrumSet drumSet;
+
   bool isActive = false;
 
-  Map<MeasureUnitDrumLine, Set<Note>> selectedNotes = {};
-  SheetMusicMeasure? selectedMeasure;
+  Map<Beat, Set<SingleNote>> selectedNotes = {};
 
   void toggleActiveStatus() {
     isActive = !isActive;
@@ -15,132 +18,146 @@ class NotesEditingController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void unselect() => updateSelectedNoteGroups(null, {});
+  void unselect() => updateSelectedNoteGroups({});
 
-  void updateSelectedNote(
-    SheetMusicMeasure measure,
-    MeasureUnitDrumLine drumLine,
-    Note note,
-  ) {
-    var group = {note};
+  void updateSelectedNote(Beat beat, SingleNote note) {
+    var newSelectedGroup = {note};
     var oldSelection = selectedNotes.values.expand((group) => group).toSet();
     var newSelection = oldSelection.contains(note)
-        ? <MeasureUnitDrumLine, Set<Note>>{}
-        : {drumLine: group};
-    updateSelectedNoteGroups(measure, newSelection);
+        ? <Beat, Set<SingleNote>>{}
+        : {beat: newSelectedGroup};
+    updateSelectedNoteGroups(newSelection);
   }
 
-  void updateSelectedNoteGroups(
-    SheetMusicMeasure? measure,
-    Map<MeasureUnitDrumLine, Set<Note>> lineNotes,
-  ) {
-    var oldSelection = selectedNotes.values.expand((g) => g).toSet();
-    for (var note in oldSelection) {
-      note.isValid = true;
+  void updateSelectedNoteGroups(Map<Beat, Set<SingleNote>> beatNotes) {
+    var updatedBeats = beatNotes.keys.toSet();
+    updatedBeats.addAll(selectedNotes.keys);
+    for (var beat in updatedBeats) {
+      beat.selectNotes(newSelection: beatNotes[beat] ?? {});
     }
-    var newSelection = lineNotes.values.expand((group) => group).toSet();
-    var intersection = oldSelection.intersection(newSelection);
-    var union = oldSelection.union(newSelection);
-    for (var note in union.difference(intersection)) {
-      note.changeSelection();
-    }
-    selectedNotes = lineNotes;
-    selectedMeasure = measure;
+    selectedNotes = beatNotes;
   }
 
   List<StrokeType> possibleStrokes() {
     if (selectedNotes.isEmpty) return <StrokeType>[];
-    var drums = selectedNotes.keys.map((line) => line.drum).toSet();
+    var beatNotes = selectedNotes.entries.first;
+    var lines = <BeatLine>{};
+    for (var note in beatNotes.value) {
+      lines.add(note.beatLine);
+    }
+    var selectedDrums = lines
+        .map((line) => beatNotes.key.notesGrid.indexOf(line))
+        .map((index) => drumSet.selected[index])
+        .toSet();
+
     return StrokeType.values
-        .where((stroke) => drums.difference(stroke.filter).isEmpty)
+        .where((stroke) => selectedDrums.difference(stroke.filter).isEmpty)
         .toList();
   }
 
   void changeSelectedStrokeTypes(StrokeType stroke) {
-    var notes = selectedNotes.values.expand((notes) => notes).toList();
-    if (notes.isEmpty) return;
-    for (var note in notes) {
-      note.changeStroke(strokeType: stroke);
+    for (var beatNotes in selectedNotes.entries) {
+      for (var note in beatNotes.value) {
+        note.stroke = stroke;
+      }
+      beatNotes.key.generateDivisions();
     }
   }
 
   List<NoteValue> possibleNoteValues() {
     if (selectedNotes.isEmpty) return <NoteValue>[];
-    var minDuration = NoteValue.values.last.duration;
-    for (var group in selectedNotes.values) {
-      var wholeNote = 0.0;
-      for (var note in group) {
-        wholeNote += 1 / note.value.part;
+    var shortestPart = NoteValue.values.last.part;
+    for (var beatNotes in selectedNotes.values) {
+      var lines = <BeatLine, Set<SingleNote>>{};
+      for (var note in beatNotes) {
+        lines.putIfAbsent(note.beatLine, () => <SingleNote>{}).add(note);
       }
-      var noteValuePart = (1 / wholeNote).ceil();
-      if (noteValuePart < minDuration) {
-        minDuration = noteValuePart;
+      for (var lineNotes in lines.values) {
+        var wholeNote = 0.0;
+        for (var note in lineNotes) {
+          wholeNote += 1 / note.value.part;
+        }
+        var noteValuePart = (1 / wholeNote).ceil();
+        if (noteValuePart < shortestPart) {
+          shortestPart = noteValuePart;
+        }
       }
     }
     return NoteValue.values
-        .where((note) => note.duration >= minDuration)
+        .where((note) => note.unit.part >= shortestPart)
         .toList();
   }
 
   void changeSelectedNotesValues(NoteValue newNoteValue) {
-    for (var drumLineNotes in selectedNotes.entries) {
-      var triplets = drumLineNotes.key.notes
-          .where((note) => note.value.count == 3)
-          .toList();
-
-      var selectedNotes = drumLineNotes.value.toSet();
-      for (int i = 0; i < triplets.length; i += 3) {
-        var tripletNotes = triplets.sublist(i, (i + 3)).toSet();
-        var selectedTriples = tripletNotes.intersection(drumLineNotes.value);
-        if (selectedTriples.isEmpty || selectedTriples.length == 3) continue;
-        for (var note in selectedTriples) {
-          note.isValid = false;
-          selectedNotes.remove(note);
-        }
+    var newSelection = <Beat, Set<SingleNote>>{};
+    for (var beatNotes in selectedNotes.entries) {
+      var lines = <BeatLine, Set<SingleNote>>{};
+      for (var note in beatNotes.value) {
+        lines.putIfAbsent(note.beatLine, () => <SingleNote>{}).add(note);
       }
-
-      var duration = 0.0;
-      var idx = -1;
-      for (var note in selectedNotes) {
-        duration += NoteValue.values.last.part / note.value.part;
-        idx = drumLineNotes.key.notes.indexOf(note);
-        drumLineNotes.key.removeNote(note);
-
-        note.isValid = true;
-        note.isSelected = false;
-        drumLineNotes.value.remove(note);
+      for (var lineNotes in lines.entries) {
+        changeLineNotesValues(lineNotes.key, lineNotes.value, newNoteValue);
       }
-      if (idx < 0) continue;
+      beatNotes.key.generateDivisions();
+      newSelection[beatNotes.key] = beatNotes.key.notesGrid
+          .expand((line) => line.singleNotes)
+          .where((note) => note.isSelected)
+          .toSet();
+    }
+    selectedNotes = newSelection;
+  }
 
-      var isValid = true;
-      var noteValue = newNoteValue;
-      var availableDuration = duration.round();
-      while (availableDuration > 0) {
-        var noteDuration = NoteValue.values.last.part ~/ noteValue.duration;
-        if (noteDuration > availableDuration) {
-          var possibleNoteValue = NoteValue.values.firstWhere(
-            (note) => note.duration > noteValue.duration,
-            orElse: () => noteValue,
-          );
-          if (noteValue == possibleNoteValue) break;
-          noteValue = possibleNoteValue;
-          isValid = false;
-        }
-
-        availableDuration -= noteDuration;
-        for (int i = 0; i < noteValue.count; i++) {
-          var note = Note(value: noteValue);
-          drumLineNotes.key.addNote(idx++, note);
-
-          note.isValid = isValid;
-          note.isSelected = true;
-          drumLineNotes.value.add(note);
-        }
+  void changeLineNotesValues(
+    BeatLine beatLine,
+    Set<Note> selectedNotes,
+    NoteValue newNoteValue,
+  ) {
+    var toProcess = selectedNotes.cast<Note>();
+    for (var triplet in beatLine.notes.whereType<Triplet>()) {
+      var selected = triplet.notes.toSet().intersection(toProcess);
+      toProcess = toProcess.difference(selected);
+      if (selected.isEmpty || selected.length == 3) {
+        toProcess.add(triplet);
+        continue;
+      }
+      for (var note in selected) {
+        note.isValid = false;
       }
     }
-    for (var unit in selectedMeasure!.units) {
-      unit.calculateNotesWidth();
+
+    var duration = 0.0;
+    var idx = -1;
+    for (var note in toProcess) {
+      duration += NoteValue.values.last.part / note.value.unit.part;
+      idx = beatLine.notes.indexOf(note);
+      beatLine.notes.removeAt(idx);
     }
-    selectedMeasure!.notifyListeners();
+    if (idx < 0) return;
+
+    var isValid = true;
+    var noteValue = newNoteValue;
+    var availableDuration = duration.round();
+    while (availableDuration > 0) {
+      var noteDuration = NoteValue.values.last.part ~/ noteValue.unit.part;
+      if (noteDuration > availableDuration) {
+        var possibleNoteValue = NoteValue.values.firstWhere(
+          (note) => note.unit.part > noteValue.unit.part,
+          orElse: () => noteValue,
+        );
+        if (noteValue == possibleNoteValue) break;
+        noteValue = possibleNoteValue;
+        isValid = false;
+        continue;
+      }
+
+      availableDuration -= noteDuration;
+      var note = Note.generate(value: noteValue)..beatLine = beatLine;
+      var singleNotes = note is Triplet ? note.notes : [note as SingleNote];
+      for (var singleNote in singleNotes) {
+        singleNote.isValid = isValid;
+        singleNote.isSelected = true;
+      }
+      beatLine.notes.insert(idx++, note);
+    }
   }
 }

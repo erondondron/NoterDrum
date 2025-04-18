@@ -25,7 +25,7 @@ class Storage extends ChangeNotifier {
   List<String> folders = [];
   List<String> grooves = [];
 
-  SheetMusic selectedGroove = SheetMusic.generate();
+  Groove selectedGroove = Groove.generate();
   NewGrooveSetup? newGroove;
   StorageSetupEntity? setupEntity;
 
@@ -190,7 +190,7 @@ class Storage extends ChangeNotifier {
 
   Future<void> openGroove({required String name}) async {
     var groovePath = path.join(relativePath, name);
-    var groove = await SheetMusic.parseFile(groovePath);
+    var groove = await Groove.parseFile(groovePath);
     if (groove == null) return;
     selectedGroove = groove;
     return close();

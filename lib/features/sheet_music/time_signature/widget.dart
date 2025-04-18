@@ -9,8 +9,8 @@ class TimeSignatureWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<SheetMusicMeasure>(
-      builder: (BuildContext context, SheetMusicMeasure measure, _) {
+    return Consumer<GrooveMeasure>(
+      builder: (BuildContext context, GrooveMeasure measure, _) {
         return PopupMenuButton<TimeSignature>(
           child: Text(measure.timeSignature.label),
           itemBuilder: (BuildContext context) {

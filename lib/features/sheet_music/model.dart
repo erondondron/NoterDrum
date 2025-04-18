@@ -9,28 +9,34 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
-class SheetMusic extends ChangeNotifier {
+class Groove extends ChangeNotifier {
   static const int version = 1;
 
-  SheetMusic({
+  final DrumSet drumSet;
+  final List<GrooveMeasure> measures;
+
+  String relativePath;
+
+  Groove({
     required this.relativePath,
     required this.drumSet,
     required this.measures,
   }) {
-    drumSet.addListener(_updateMeasureDrumLines);
+    drumSet.newDrumCallback = addNewMeasuresLine;
+    drumSet.removedDrumCallback = removeMeasuresLine;
   }
 
-  factory SheetMusic.generate({String name = "NewGroove"}) {
+  factory Groove.generate({String name = "NewGroove"}) {
     var relativePath = path.join(
       Storage.baseFolder,
       name + Storage.grooveExtension,
     );
     var drumSet = DrumSet();
-    var measure = SheetMusicMeasure.generate(
+    var measure = GrooveMeasure.generate(
       timeSignature: sixteenSixteenths,
-      drums: drumSet.selected,
+      drumSet: drumSet,
     );
-    return SheetMusic(
+    return Groove(
       relativePath: relativePath,
       drumSet: drumSet,
       measures: [measure],
@@ -39,30 +45,26 @@ class SheetMusic extends ChangeNotifier {
 
   @override
   void dispose() {
-    drumSet.removeListener(_updateMeasureDrumLines);
+    drumSet.newDrumCallback = null;
+    drumSet.removedDrumCallback = null;
     super.dispose();
   }
 
-  String relativePath;
-
-  final DrumSet drumSet;
-  final List<SheetMusicMeasure> measures;
-
   void addNewMeasure() {
     measures.add(
-      SheetMusicMeasure.generate(
+      GrooveMeasure.generate(
         timeSignature: measures.last.timeSignature,
-        drums: drumSet.selected,
+        drumSet: drumSet,
       ),
     );
     notifyListeners();
   }
 
-  void removeMeasure(SheetMusicMeasure measure) {
+  void removeMeasure(GrooveMeasure measure) {
     if (measures.length == 1) {
-      final newMeasure = SheetMusicMeasure.generate(
+      final newMeasure = GrooveMeasure.generate(
         timeSignature: measures.last.timeSignature,
-        drums: drumSet.selected,
+        drumSet: drumSet,
       );
       measures.insert(0, newMeasure);
     }
@@ -70,25 +72,33 @@ class SheetMusic extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _updateMeasureDrumLines() {
-    for (SheetMusicMeasure measure in measures) {
-      measure.updateDrumLines(drumSet.selected);
+  void addNewMeasuresLine(int idx) {
+    for (var measure in measures) {
+      measure.addNewBeatsLine(idx);
     }
   }
 
-  static Future<SheetMusic?> parseFile(String relativePath) async {
+  void removeMeasuresLine(int idx) {
+    for (var measure in measures) {
+      measure.removeBeatsLine(idx);
+    }
+  }
+
+  static Future<Groove?> parseFile(String relativePath) async {
     var root = await getApplicationDocumentsDirectory();
     var file = File(path.join(root.path, relativePath));
     if (!file.existsSync()) return null;
     var jsonString = await file.readAsString();
     var content = jsonDecode(jsonString) as Map<String, dynamic>;
-    return SheetMusic(
+    var drumSet = DrumSet.fromJson(
+      content["drum_set"] as Map<String, dynamic>,
+    );
+    return Groove(
       relativePath: relativePath,
-      drumSet: DrumSet.fromJson(
-        content["drum_set"] as Map<String, dynamic>,
-      ),
+      drumSet: drumSet,
       measures: (content["measures"] as List<dynamic>)
-          .map((measure) => SheetMusicMeasure.fromJson(
+          .map((measure) => GrooveMeasure.fromJson(
+                drumSet,
                 measure as Map<String, dynamic>,
               ))
           .toList(),

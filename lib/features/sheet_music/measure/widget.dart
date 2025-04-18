@@ -1,29 +1,27 @@
-import 'package:drums/features/sheet_music/measure/model.dart';
 import 'package:drums/features/sheet_music/actions/editing/selector.dart';
-import 'package:drums/features/sheet_music/staff/five_lines.dart';
-import 'package:drums/features/sheet_music/measure_unit/widget.dart';
-import 'package:drums/features/sheet_music/model.dart';
+import 'package:drums/features/sheet_music/beat/widget.dart';
+import 'package:drums/features/sheet_music/measure/model.dart';
 import 'package:drums/features/sheet_music/note/widget.dart';
+import 'package:drums/features/sheet_music/model.dart';
 import 'package:drums/shared/widgets/fix_height_row.dart';
 import 'package:drums/features/sheet_music/time_signature/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class SheetMusicMeasureWidget extends StatelessWidget {
-  const SheetMusicMeasureWidget({super.key});
+class GrooveMeasureWidget extends StatelessWidget {
+  const GrooveMeasureWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<SheetMusicMeasure>(
-      builder: (BuildContext context, SheetMusicMeasure measure, _) {
+    return Consumer<GrooveMeasure>(
+      builder: (BuildContext context, GrooveMeasure measure, _) {
         return IntrinsicWidth(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              StaffWidget(),
               _ControlPanel(measure: measure),
-              _UnitsPanel(measure: measure),
+              _BeatsPanel(measure: measure),
             ],
           ),
         );
@@ -32,21 +30,21 @@ class SheetMusicMeasureWidget extends StatelessWidget {
   }
 }
 
-class _UnitsPanel extends StatelessWidget {
-  const _UnitsPanel({required this.measure});
+class _BeatsPanel extends StatelessWidget {
+  const _BeatsPanel({required this.measure});
 
-  final SheetMusicMeasure measure;
+  final GrooveMeasure measure;
 
   @override
   Widget build(BuildContext context) {
     return IntrinsicHeight(
       child: NotesSelector(
         child: Row(
-          children: measure.units
+          children: measure.beats
               .map(
-                (unit) => ChangeNotifierProvider.value(
-                  value: unit,
-                  child: MeasureUnitWidget(),
+                (beat) => ChangeNotifierProvider.value(
+                  value: beat,
+                  child: BeatWidget(),
                 ),
               )
               .expand((widget) => [widget, VerticalDivider(width: 0)])
@@ -61,11 +59,11 @@ class _UnitsPanel extends StatelessWidget {
 class _ControlPanel extends StatelessWidget {
   const _ControlPanel({required this.measure});
 
-  final SheetMusicMeasure measure;
+  final GrooveMeasure measure;
 
   @override
   Widget build(BuildContext context) {
-    final sheetMusic = Provider.of<SheetMusic>(context, listen: false);
+    final groove = Provider.of<Groove>(context, listen: false);
     return FixHeightRow(
       children: [
         Padding(
@@ -73,7 +71,7 @@ class _ControlPanel extends StatelessWidget {
           child: TimeSignatureWidget(),
         ),
         GestureDetector(
-          onTap: () => sheetMusic.removeMeasure(measure),
+          onTap: () => groove.removeMeasure(measure),
           behavior: HitTestBehavior.translucent,
           child: SizedBox(
             height: NoteView.height,

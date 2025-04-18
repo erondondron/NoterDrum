@@ -1,29 +1,33 @@
 import 'dart:math';
 
 import 'package:drums/features/sheet_music/actions/editing/model.dart';
-import 'package:drums/features/sheet_music/measure/model.dart';
-import 'package:drums/features/sheet_music/measure_unit_line/model.dart';
-import 'package:drums/features/sheet_music/note/model.dart';
+import 'package:drums/features/sheet_music/beat/models.dart';
+import 'package:drums/features/sheet_music/note/models.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class NoteWidget extends StatelessWidget {
-  const NoteWidget({super.key, required this.note});
+  const NoteWidget({
+    super.key,
+    required this.beat,
+    required this.note,
+  });
 
-  final Note note;
+  final Beat beat;
+  final SingleNote note;
 
   @override
   Widget build(BuildContext context) {
     return Consumer<NotesEditingController>(
       builder: (BuildContext context, NotesEditingController controller, _) {
         return SizedBox(
-          width: note.width,
+          width: note.viewSize,
           child: Align(
             alignment: Alignment.centerLeft,
             child: GestureDetector(
               onTap: controller.isActive
-                  ? () => select(note, controller, context)
-                  : note.changeStroke,
+                  ? () => controller.updateSelectedNote(beat, note)
+                  : () => beat.changeNoteStroke(note: note),
               behavior: HitTestBehavior.translucent,
               child: NoteView(note: note),
             ),
@@ -32,17 +36,6 @@ class NoteWidget extends StatelessWidget {
       },
     );
   }
-
-  void select(
-    Note note,
-    NotesEditingController controller,
-    BuildContext context,
-  ) =>
-      controller.updateSelectedNote(
-        Provider.of<SheetMusicMeasure>(context, listen: false),
-        Provider.of<MeasureUnitDrumLine>(context, listen: false),
-        note,
-      );
 }
 
 class NoteView extends StatelessWidget {
@@ -53,13 +46,13 @@ class NoteView extends StatelessWidget {
 
   const NoteView({super.key, required this.note});
 
-  final Note note;
+  final SingleNote note;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       key: note.key,
-      width: Note.minWidth,
+      width: Note.minViewSize,
       height: height,
       child: Center(
         child: Container(
@@ -105,7 +98,7 @@ class NoteView extends StatelessWidget {
   }
 
   Widget _noteStrokeView(BuildContext context) {
-    switch (note.type) {
+    switch (note.stroke) {
       case (StrokeType.off):
         return SizedBox.shrink();
       case StrokeType.plain:

@@ -1,4 +1,4 @@
-import 'package:drums/features/sheet_music/note/model.dart';
+import 'package:drums/features/sheet_music/note/models.dart';
 import 'package:drums/features/sheet_music/time_signature/model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -42,14 +42,14 @@ class _EditorWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ...timeSignature.measures.asMap().keys.map(
-                (int index) => _MeasureUnitsLengthEditor(
+                (int index) => _BeatsLengthEditor(
                   timeSignature: timeSignature,
-                  unitIndex: index,
+                  beatIndex: index,
                 ),
               ),
           IconButton(
             icon: Icon(Icons.add_outlined),
-            onPressed: timeSignature.addUnit,
+            onPressed: timeSignature.addBeat,
           ),
           Padding(
             padding: EdgeInsets.only(left: 10, right: 20),
@@ -58,21 +58,21 @@ class _EditorWidget extends StatelessWidget {
               style: Theme.of(context).textTheme.headlineLarge,
             ),
           ),
-          _MeasureUnitsNoteValueEditor(timeSignature: timeSignature),
+          _BeatsNoteValueEditor(timeSignature: timeSignature),
         ],
       ),
     );
   }
 }
 
-class _MeasureUnitsLengthEditor extends StatelessWidget {
-  const _MeasureUnitsLengthEditor({
+class _BeatsLengthEditor extends StatelessWidget {
+  const _BeatsLengthEditor({
     required this.timeSignature,
-    required this.unitIndex,
+    required this.beatIndex,
   });
 
   final TimeSignature timeSignature;
-  final int unitIndex;
+  final int beatIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -81,26 +81,26 @@ class _MeasureUnitsLengthEditor extends StatelessWidget {
       children: [
         IconButton(
           icon: Icon(Icons.add_outlined),
-          onPressed: () => timeSignature.changeUnitLength(
-              unitIndex, timeSignature.noteValue.count),
+          onPressed: () => timeSignature.changeBeatLength(
+              beatIndex, timeSignature.noteValue.length),
         ),
         // TODO(erondondron): Add note symbols
         Text(
-          timeSignature.measures[unitIndex].toString(),
+          timeSignature.measures[beatIndex].toString(),
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         IconButton(
           icon: Icon(Icons.remove_outlined),
-          onPressed: () => timeSignature.changeUnitLength(
-              unitIndex, -timeSignature.noteValue.count),
+          onPressed: () => timeSignature.changeBeatLength(
+              beatIndex, -timeSignature.noteValue.length),
         ),
       ],
     );
   }
 }
 
-class _MeasureUnitsNoteValueEditor extends StatelessWidget {
-  const _MeasureUnitsNoteValueEditor({required this.timeSignature});
+class _BeatsNoteValueEditor extends StatelessWidget {
+  const _BeatsNoteValueEditor({required this.timeSignature});
 
   final TimeSignature timeSignature;
 

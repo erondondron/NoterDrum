@@ -56,7 +56,11 @@ class MainWindow extends StatelessWidget {
             providers: [
               ChangeNotifierProvider.value(value: storage.selectedGroove),
               ChangeNotifierProvider(create: (_) => DrumSetPanelController()),
-              ChangeNotifierProvider(create: (_) => NotesEditingController()),
+              ChangeNotifierProvider(
+                create: (_) => NotesEditingController(
+                  drumSet: storage.selectedGroove.drumSet,
+                ),
+              ),
             ],
             child: Stack(
               children: [

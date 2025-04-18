@@ -1,74 +1,74 @@
+import 'package:drums/features/sheet_music/beat/models.dart';
 import 'package:drums/features/sheet_music/drum_set/model.dart';
-import 'package:drums/features/sheet_music/measure_unit/model.dart';
 import 'package:drums/features/sheet_music/time_signature/model.dart';
 import 'package:flutter/material.dart';
 
-class SheetMusicMeasure extends ChangeNotifier {
+class GrooveMeasure extends ChangeNotifier {
   TimeSignature timeSignature;
-  List<MeasureUnit> units;
-  List<Drum> drums;
+  DrumSet drumSet;
+  List<Beat> beats;
 
-  SheetMusicMeasure({
+  GrooveMeasure({
     required this.timeSignature,
-    required this.drums,
-    required this.units,
+    required this.drumSet,
+    required this.beats,
   });
 
-  factory SheetMusicMeasure.generate({
+  factory GrooveMeasure.generate({
     required TimeSignature timeSignature,
-    required List<Drum> drums,
+    required DrumSet drumSet,
   }) {
-    return SheetMusicMeasure(
+    return GrooveMeasure(
       timeSignature: timeSignature,
-      drums: drums,
-      units: timeSignature.measures
+      drumSet: drumSet,
+      beats: timeSignature.measures
           .map(
-            (length) => MeasureUnit.generate(
+            (length) => Beat.generate(
               noteValue: timeSignature.noteValue,
               length: length,
-              drums: drums,
+              width: drumSet.selected.length,
             ),
           )
           .toList(),
     );
   }
 
-  void updateDrumLines(List<Drum> drums) {
-    this.drums = drums;
-    for (var unit in units) {
-      unit.updateDrumLines(drums);
+  void addNewBeatsLine(int idx) {
+    for (var beat in beats) {
+      beat.addLine(idx);
+    }
+  }
+
+  void removeBeatsLine(int idx) {
+    for (var beat in beats) {
+      beat.removeLine(idx);
     }
   }
 
   void updateTimeSignature(TimeSignature newSignature) {
     timeSignature = newSignature;
-    units = timeSignature.measures
+    beats = timeSignature.measures
         .map(
-          (length) => MeasureUnit.generate(
+          (length) => Beat.generate(
             noteValue: timeSignature.noteValue,
             length: length,
-            drums: drums,
+            width: drumSet.selected.length,
           ),
         )
         .toList();
     notifyListeners();
   }
 
-  SheetMusicMeasure.fromJson(Map<String, dynamic> json)
+  GrooveMeasure.fromJson(this.drumSet, Map<String, dynamic> json)
       : timeSignature = TimeSignature.fromJson(
           json["time_signature"] as Map<String, dynamic>,
         ),
-        units = (json["units"] as List<dynamic>)
-            .map((unit) => MeasureUnit.fromJson(unit as Map<String, dynamic>))
-            .toList(),
-        drums = (json["drums"] as List<dynamic>)
-            .map((selected) => Drum.values
-                .firstWhere((drum) => drum.name == selected as String))
+        beats = (json["beats"] as List<dynamic>)
+            .map((beat) => Beat.fromJson(beat as Map<String, dynamic>))
             .toList();
 
   Map<String, dynamic> toJson() => {
         "time_signature": timeSignature.toJson(),
-        "units": units.map((unit) => unit.toJson()).toList(),
-        "drums": drums.map((drum) => drum.name).toList(),
+        "beats": beats.map((beat) => beat.toJson()).toList(),
       };
 }
