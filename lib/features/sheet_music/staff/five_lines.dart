@@ -1,5 +1,5 @@
 import 'package:drums/features/sheet_music/measure/model.dart';
-import 'package:drums/features/sheet_music/staff/measure_unit.dart';
+import 'package:drums/features/sheet_music/staff/beat.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -11,8 +11,8 @@ class StaffWidget extends StatelessWidget {
     var staffColor = Theme.of(context).colorScheme.onSurface;
     return Padding(
       padding: EdgeInsets.only(top: 10, bottom: 10),
-      child: Consumer<SheetMusicMeasure>(
-        builder: (BuildContext context, SheetMusicMeasure measure, _) {
+      child: Consumer<GrooveMeasure>(
+        builder: (BuildContext context, GrooveMeasure measure, _) {
           return Stack(
             alignment: AlignmentDirectional.bottomStart,
             children: [
@@ -22,11 +22,11 @@ class StaffWidget extends StatelessWidget {
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
-                children: measure.units
+                children: measure.beats
                     .map(
-                      (unit) => ChangeNotifierProvider.value(
-                        value: unit,
-                        child: MeasureUnitStaffWidget(),
+                      (beat) => ChangeNotifierProvider.value(
+                        value: beat,
+                        child: BeatStaffWidget(),
                       ),
                     )
                     .toList(),

@@ -25,8 +25,8 @@ class GrooveMeasure extends ChangeNotifier {
           .map(
             (length) => Beat.generate(
               noteValue: timeSignature.noteValue,
+              drumSet: drumSet,
               length: length,
-              width: drumSet.selected.length,
             ),
           )
           .toList(),
@@ -35,7 +35,7 @@ class GrooveMeasure extends ChangeNotifier {
 
   void addNewBeatsLine(int idx) {
     for (var beat in beats) {
-      beat.addLine(idx);
+      beat.addLine(idx, drumSet.selected[idx]);
     }
   }
 
@@ -51,8 +51,8 @@ class GrooveMeasure extends ChangeNotifier {
         .map(
           (length) => Beat.generate(
             noteValue: timeSignature.noteValue,
+            drumSet: drumSet,
             length: length,
-            width: drumSet.selected.length,
           ),
         )
         .toList();

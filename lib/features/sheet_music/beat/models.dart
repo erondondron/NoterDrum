@@ -1,20 +1,23 @@
+import 'package:drums/features/sheet_music/drum_set/model.dart';
 import 'package:drums/features/sheet_music/note/models.dart';
 import 'package:flutter/material.dart';
 
 class BeatDivision {
   final Map<int, Note> notes = {};
+  late double position;
 }
 
 class BeatLine {
   final List<Note> notes;
 
   GlobalKey key = GlobalKey();
+  Drum drum;
 
   List<SingleNote> get singleNotes => notes
       .expand((note) => note is Triplet ? note.notes : [note as SingleNote])
       .toList();
 
-  BeatLine({required this.notes}) {
+  BeatLine({required this.notes, required this.drum}) {
     for (var note in notes) {
       note.beatLine = this;
     }
@@ -28,6 +31,7 @@ class Beat extends ChangeNotifier {
 
   GlobalKey key = GlobalKey();
   List<BeatDivision> divisions = [];
+  double viewSize = 0;
 
   Beat({
     required this.notesGrid,
@@ -38,24 +42,26 @@ class Beat extends ChangeNotifier {
   }
 
   factory Beat.generate({
+    required DrumSet drumSet,
     required NoteValue noteValue,
     required int length,
-    required int width,
   }) {
     noteGenerator(_) => Note.generate(value: noteValue);
-    lineGenerator(_) => BeatLine(
+    lineGenerator(int idx) => BeatLine(
           notes: List.generate(length ~/ noteValue.length, noteGenerator),
+          drum: drumSet.selected[idx],
         );
     return Beat(
       noteValue: noteValue,
       length: length,
-      notesGrid: List.generate(width, lineGenerator),
+      notesGrid: List.generate(drumSet.selected.length, lineGenerator),
     );
   }
 
   void generateDivisions() {
     if (notesGrid.isEmpty) {
       divisions = [];
+      viewSize = 0;
       return;
     }
     var notes = notesGrid.expand((line) => line.notes).toList();
@@ -85,13 +91,24 @@ class Beat extends ChangeNotifier {
         }
       }
     }
+
+    viewSize = notesGrid.first.notes
+        .map((note) => note.viewSize)
+        .reduce((a, b) => a + b);
+    var divWidth = viewSize / divCount;
+    for (var i = 0; i < divCount; i++) {
+      newDivisions[i].position = (i + 1 / 2) * divWidth;
+    }
     divisions = newDivisions;
     notifyListeners();
   }
 
-  void addLine(int idx) {
+  void addLine(int idx, Drum drum) {
     noteGenerator(_) => Note.generate(value: noteValue);
-    var newLine = BeatLine(notes: List.generate(length, noteGenerator));
+    var newLine = BeatLine(
+      notes: List.generate(length, noteGenerator),
+      drum: drum,
+    );
     notesGrid.insert(idx, newLine);
     generateDivisions();
   }

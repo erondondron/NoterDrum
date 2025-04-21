@@ -3,6 +3,7 @@ import 'package:drums/features/sheet_music/beat/widget.dart';
 import 'package:drums/features/sheet_music/measure/model.dart';
 import 'package:drums/features/sheet_music/note/widget.dart';
 import 'package:drums/features/sheet_music/model.dart';
+import 'package:drums/features/sheet_music/staff/five_lines.dart';
 import 'package:drums/shared/widgets/fix_height_row.dart';
 import 'package:drums/features/sheet_music/time_signature/widget.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ class GrooveMeasureWidget extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              StaffWidget(),
               _ControlPanel(measure: measure),
               _BeatsPanel(measure: measure),
             ],
