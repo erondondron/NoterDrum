@@ -29,6 +29,7 @@ class BeatStaffWidget extends StatelessWidget {
 class BeatPainter extends CustomPainter {
   static const double headRadius = 5;
   static const double stemWidth = 1;
+  static const double flagWidth = 10;
 
   static const double stemOffset = headRadius - stemWidth / 2;
 
@@ -51,32 +52,57 @@ class BeatPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     for (var division in beat.divisions) {
-      var positions = division.notes.values
-          .whereType<SingleNote>()
-          .where((note) => note.stroke != StrokeType.off)
-          .map((note) => Offset(
-                division.position,
-                getNoteStaffYPosition(note, note.beatLine.drum),
-              ))
-          .toList()
-        ..sort((a, b) => a.dy.compareTo(b.dy));
+      var positions = getNotePositions(division);
+      if (positions.isEmpty) {
+        var position = Offset(division.position, StaffPainter.height - 30);
+        canvas.drawCircle(position, headRadius * 2, paint);
+        continue;
+      }
 
-      var previousY = 0.0;
-      var dx = false;
       for (var position in positions) {
-        dx = position.dy - previousY < StaffPainter.linesGap ? !dx : false;
-        var notePosition = Offset(
-          dx ? position.dx + 2 * stemOffset : position.dx,
-          position.dy,
-        );
-        canvas.drawCircle(notePosition, headRadius, paint);
-        previousY = position.dy;
+        canvas.drawCircle(position, headRadius, paint);
+      }
+      var stemX = division.position + stemOffset;
+      var lowerNote = positions.reduce((a, b) => a.dy > b.dy ? a : b);
+      canvas.drawLine(Offset(stemX, 0), Offset(stemX, lowerNote.dy), paint);
 
-        var stemX = division.position + stemOffset;
-        var lowerNote = positions.reduce((a, b) => a.dy > b.dy ? a : b);
-        canvas.drawLine(Offset(stemX, 0), Offset(stemX, lowerNote.dy), paint);
+      var flagsCount = 0;
+      var flagValuePart = NoteValue.eighth.part;
+      while (division.noteValue.part >= flagValuePart) {
+        var start = Offset(stemX, flagWidth * flagsCount++);
+        var flag = getSingleNoteFlag(start);
+        canvas.drawPath(flag, paint);
+        flagValuePart *= 2;
       }
     }
+  }
+
+  List<Offset> getNotePositions(BeatDivision division) {
+    var positions = division.notes.values
+        .whereType<SingleNote>()
+        .where((note) => note.stroke != StrokeType.off)
+        .map((note) => Offset(
+              division.position,
+              getNoteStaffYPosition(note, note.beatLine.drum),
+            ))
+        .toList()
+      ..sort((a, b) => a.dy.compareTo(b.dy));
+
+    var previous = 0.0;
+    var offset = false;
+    for (var i = 0; i < positions.length; i++) {
+      var position = positions[i];
+      var isNear = position.dy - previous < StaffPainter.linesGap;
+      previous = position.dy;
+      offset = isNear ? !offset : false;
+      if (offset) {
+        positions[i] = Offset(
+          offset ? position.dx + 2 * stemOffset : position.dx,
+          position.dy,
+        );
+      }
+    }
+    return positions;
   }
 
   double getNoteStaffYPosition(SingleNote note, Drum drum) {
@@ -93,5 +119,26 @@ class BeatPainter extends CustomPainter {
       Drum.tom3 => StaffPainter.linesGapHalf * 5,
     };
     return StaffPainter.height - position;
+  }
+
+  Path getSingleNoteFlag(Offset stemTop) {
+    return Path()
+      ..moveTo(stemTop.dx, stemTop.dy)
+      ..cubicTo(
+        stemTop.dx,
+        stemTop.dy + flagWidth,
+        stemTop.dx + flagWidth * 1.5,
+        stemTop.dy + flagWidth * 1.25,
+        stemTop.dx + flagWidth * 0.5,
+        stemTop.dy + flagWidth * 2.6,
+      )
+      ..cubicTo(
+        stemTop.dx + flagWidth,
+        stemTop.dy + flagWidth * 1.5,
+        stemTop.dx + flagWidth * 0.4,
+        stemTop.dy + flagWidth,
+        stemTop.dx,
+        stemTop.dy + flagWidth,
+      );
   }
 }
