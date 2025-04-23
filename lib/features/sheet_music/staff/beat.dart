@@ -30,6 +30,8 @@ class BeatPainter extends CustomPainter {
   static const double headRadius = StaffPainter.linesGap / 2;
   static const double flagWidth = StaffPainter.linesGap;
   static const double stemWidth = 1;
+  static const double beamWidth = 4;
+  static const double singleBeamLength = StaffPainter.linesGap;
 
   static const double stemOffset = headRadius - stemWidth / 2;
 
@@ -57,29 +59,18 @@ class BeatPainter extends CustomPainter {
         drawRestSign(canvas, division.position, division.noteValue);
         continue;
       }
-
       for (var position in positions) {
         canvas.drawCircle(position, headRadius, paint);
       }
       var stemX = division.position + stemOffset;
       var lowerNote = positions.reduce((a, b) => a.dy > b.dy ? a : b);
       canvas.drawLine(Offset(stemX, 0), Offset(stemX, lowerNote.dy), paint);
-
-      var flagsCount = 0;
-      var flagValuePart = NoteValue.eighth.part;
-      while (division.noteValue.part >= flagValuePart) {
-        var start = Offset(stemX, flagWidth * flagsCount++);
-        var flag = getSingleNoteFlag(start);
-        canvas.drawPath(flag, paint);
-        flagValuePart *= 2;
-      }
     }
+    drawNotesBeam(canvas, beat.divisions);
   }
 
   List<Offset> getNotePositions(BeatDivision division) {
-    var positions = division.notes.values
-        .whereType<SingleNote>()
-        .where((note) => note.stroke != StrokeType.off)
+    var positions = division.notes
         .map((note) => Offset(
               division.position,
               getNoteStaffYPosition(note, note.beatLine.drum),
@@ -118,6 +109,142 @@ class BeatPainter extends CustomPainter {
       Drum.tom3 => StaffPainter.linesGapHalf * 5,
     };
     return StaffPainter.height - position;
+  }
+
+  void drawNotesBeam(Canvas canvas, List<BeatDivision> divisions) {
+    var eighthGroups = getBeamGroups(divisions, NoteValue.eighth);
+    for (var group in eighthGroups) {
+      group.length > 1
+          ? drawBeamGroup(canvas, group, NoteValue.eighth)
+          : drawSingleNoteFlags(canvas, group.first);
+    }
+  }
+
+  List<List<BeatDivision>> getBeamGroups(
+    List<BeatDivision> divisions,
+    NoteValue noteValue,
+  ) {
+    var rawBeamGroups = <List<BeatDivision>>[];
+    var beamGroup = <BeatDivision>[];
+    for (var division in divisions) {
+      if (division.noteValue.part >= noteValue.part) {
+        beamGroup.add(division);
+        continue;
+      }
+      if (beamGroup.isEmpty) continue;
+      rawBeamGroups.add(beamGroup);
+      beamGroup = [];
+    }
+    if (beamGroup.isNotEmpty) {
+      rawBeamGroups.add(beamGroup);
+    }
+
+    var beamGroups = <List<BeatDivision>>[];
+    for (var rawGroup in rawBeamGroups) {
+      int startIdx = rawGroup.indexWhere((div) => div.notes.isNotEmpty);
+      if (startIdx == -1) continue;
+
+      int endIdx = rawGroup.lastIndexWhere((div) => div.notes.isNotEmpty);
+      var group = rawGroup.sublist(startIdx, endIdx + 1);
+      beamGroups.add(group);
+    }
+    return beamGroups;
+  }
+
+  void drawBeamGroup(
+    Canvas canvas,
+    List<BeatDivision> beamGroup,
+    NoteValue noteValue,
+  ) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = beamWidth
+      ..style = PaintingStyle.fill;
+
+    var relative = noteValue.part.bitLength - NoteValue.eighth.part.bitLength;
+    var position = relative * StaffPainter.linesGap;
+    var startOffset = stemOffset - stemWidth / 2;
+    var endOffset = stemOffset + stemWidth / 2;
+    var beamStart = Offset(beamGroup.first.position + startOffset, position);
+    var beamEnd = Offset(beamGroup.last.position + endOffset, position);
+    canvas.drawLine(beamStart, beamEnd, paint);
+
+    if (noteValue == NoteValue.values.last) return;
+    drawNextBeamGroups(canvas, beamGroup, noteValue);
+  }
+
+  void drawNextBeamGroups(
+    Canvas canvas,
+    List<BeatDivision> beamGroup,
+    NoteValue noteValue,
+  ) {
+    var nextValue = NoteValue.values.firstWhere(
+      (note) => note.part == noteValue.part * 2,
+    );
+    var nextGroups = <BeatDivision, List<BeatDivision>>{
+      for (var group in getBeamGroups(beamGroup, nextValue)) group.first: group
+    };
+    var forwardDir = true;
+    var divIdx = 0;
+    while (divIdx < beamGroup.length) {
+      var division = beamGroup[divIdx++];
+      var group = nextGroups[division];
+      if (group == null) {
+        if (division.noteValue == nextValue) {
+          forwardDir = !forwardDir;
+        }
+        continue;
+      }
+      if (group.length > 1) {
+        drawBeamGroup(canvas, group, nextValue);
+        divIdx += group.length - 1;
+        continue;
+      }
+      if (divIdx == beamGroup.length) {
+        forwardDir = false;
+      }
+      drawSingleNoteBeam(canvas, division.position, nextValue, forwardDir);
+    }
+  }
+
+  void drawSingleNoteBeam(
+    Canvas canvas,
+    double position,
+    NoteValue noteValue,
+    bool forwardDirection,
+  ) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = beamWidth
+      ..style = PaintingStyle.fill;
+
+    var yRelative = noteValue.part.bitLength - NoteValue.eighth.part.bitLength;
+    var yAbsolute = yRelative * StaffPainter.linesGap;
+    var xDirection = forwardDirection ? 1 : -1;
+    var xStart = position + stemOffset - stemWidth / 2;
+    var xEnd = xStart + singleBeamLength * xDirection;
+    var beamStart = Offset(xStart, yAbsolute);
+    var beamEnd = Offset(xEnd, yAbsolute);
+    canvas.drawLine(beamStart, beamEnd, paint);
+  }
+
+  void drawSingleNoteFlags(Canvas canvas, BeatDivision division) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = stemWidth
+      ..style = PaintingStyle.fill;
+
+    var flagsCount = 0;
+    var flagValuePart = NoteValue.eighth.part;
+    while (division.noteValue.part >= flagValuePart) {
+      var position = Offset(
+        division.position + stemOffset,
+        flagWidth * flagsCount++,
+      );
+      var flag = getSingleNoteFlag(position);
+      canvas.drawPath(flag, paint);
+      flagValuePart *= 2;
+    }
   }
 
   Path getSingleNoteFlag(Offset stemTop) {

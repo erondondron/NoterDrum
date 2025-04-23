@@ -5,7 +5,8 @@ import 'package:drums/features/sheet_music/note/models.dart';
 import 'package:flutter/material.dart';
 
 class BeatDivision {
-  final Map<int, Note> notes = {};
+  final List<SingleNote> notes = [];
+  final List<Triplet> triplets = [];
   double position;
   NoteValue noteValue;
 
@@ -90,11 +91,12 @@ class Beat extends ChangeNotifier {
       ),
     );
 
-    for (var i = 0; i < notesGrid.length; i++) {
-      var gridLine = notesGrid[i];
+    for (var gridLine in notesGrid) {
       var divIdx = 0;
       for (var note in gridLine.notes) {
-        divisions[divIdx].notes[i] = note;
+        if (note is SingleNote && note.stroke != StrokeType.off){
+          divisions[divIdx].notes.add(note);
+        }
         divIdx += divValue.part ~/ note.value.unit.part;
       }
     }
@@ -128,12 +130,8 @@ class Beat extends ChangeNotifier {
     while (idx != divisions.length) {
       var division = divisions[idx];
       var previous = divisions[idx - 1];
-      var notes = division.notes.values
-          .whereType<SingleNote>()
-          .where((note) => note.stroke != StrokeType.off)
-          .toList();
 
-      if (notes.isNotEmpty ||
+      if (division.notes.isNotEmpty ||
           previous.noteValue != division.noteValue ||
           previous.noteValue == NoteValue.quarter) {
         idx++;
