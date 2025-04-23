@@ -27,9 +27,9 @@ class BeatStaffWidget extends StatelessWidget {
 }
 
 class BeatPainter extends CustomPainter {
-  static const double headRadius = 5;
+  static const double headRadius = StaffPainter.linesGap / 2;
+  static const double flagWidth = StaffPainter.linesGap;
   static const double stemWidth = 1;
-  static const double flagWidth = 10;
 
   static const double stemOffset = headRadius - stemWidth / 2;
 
@@ -54,8 +54,7 @@ class BeatPainter extends CustomPainter {
     for (var division in beat.divisions) {
       var positions = getNotePositions(division);
       if (positions.isEmpty) {
-        var position = Offset(division.position, StaffPainter.height - 30);
-        canvas.drawCircle(position, headRadius * 2, paint);
+        drawRestSign(canvas, division.position, division.noteValue);
         continue;
       }
 
@@ -140,5 +139,107 @@ class BeatPainter extends CustomPainter {
         stemTop.dx,
         stemTop.dy + flagWidth,
       );
+  }
+
+  void drawRestSign(Canvas canvas, double x, NoteValue noteValue) {
+    noteValue == NoteValue.quarter
+        ? drawQuarterRestSign(canvas, x)
+        : drawDivisionsRestSign(canvas, x, noteValue);
+  }
+
+  void drawQuarterRestSign(Canvas canvas, double x) {
+    var paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+    var point = Offset(x, StaffPainter.heightHalf + StaffPainter.linesGapHalf);
+    var template = StaffPainter.linesGapHalf;
+    var sign = Path()
+      ..moveTo(point.dx, point.dy)
+      ..cubicTo(
+        point.dx + template * 3.9,
+        point.dy + template * 3.2,
+        point.dx - template * 1.6,
+        point.dy + template * 1.3,
+        point.dx + template * 1.4,
+        point.dy + template * 4.7,
+      )
+      ..cubicTo(
+        point.dx - template * 0.2,
+        point.dy + template * 4.1,
+        point.dx - template * 0.3,
+        point.dy + template * 4.7,
+        point.dx,
+        point.dy + template * 5.9,
+      )
+      ..cubicTo(
+        point.dx - template * 0.9,
+        point.dy + template * 4.7,
+        point.dx - template * 1.7,
+        point.dy + template * 2.7,
+        point.dx + template * 1.4,
+        point.dy + template * 4.7,
+      )
+      ..cubicTo(
+        point.dx - template * 3.2,
+        point.dy + template * 0.7,
+        point.dx + template * 1.9,
+        point.dy + template * 3.3,
+        point.dx,
+        point.dy,
+      );
+    canvas.drawPath(sign, paint);
+  }
+
+  void drawDivisionsRestSign(Canvas canvas, double x, NoteValue noteValue) {
+    var paint = Paint()
+      ..color = color
+      ..strokeWidth = stemWidth * 2
+      ..style = PaintingStyle.stroke
+      ..strokeJoin = StrokeJoin.round;
+
+    var lineGapXOffset = StaffPainter.linesGap / 3.75;
+
+    var topX = x + lineGapXOffset;
+    var topY = StaffPainter.height - StaffPainter.linesGapHalf * 7;
+
+    var bottomX = x;
+    var bottomY = StaffPainter.height - StaffPainter.linesGap * 2;
+
+    var restHeadRadius = headRadius / 2;
+    var restHeads = [Offset(topX - headRadius, topY)];
+
+    if (noteValue.part > NoteValue.eighth.part) {
+      bottomX -= lineGapXOffset;
+      bottomY += StaffPainter.linesGap;
+      var headPosition = Offset(
+        topX - headRadius - lineGapXOffset,
+        topY + StaffPainter.linesGap,
+      );
+      restHeads.insert(0, headPosition);
+    }
+
+    if (noteValue.part > NoteValue.sixteenth.part) {
+      topX += lineGapXOffset;
+      topY -= StaffPainter.linesGap;
+      restHeads.add(Offset(topX - headRadius, topY));
+    }
+
+    var path = Path()
+      ..moveTo(bottomX, bottomY)
+      ..lineTo(topX, topY)
+      ..lineTo(topX - headRadius, topY);
+
+    for (var headIdx = 0; headIdx < restHeads.length - 1; headIdx++) {
+      var head = restHeads[headIdx];
+      path
+        ..moveTo(head.dx, head.dy)
+        ..lineTo(head.dx + headRadius, head.dy);
+    }
+
+    canvas.drawPath(path, paint);
+    for (var head in restHeads) {
+      paint = paint..style = PaintingStyle.fill;
+      canvas.drawCircle(head, restHeadRadius, paint);
+    }
   }
 }
