@@ -113,8 +113,6 @@ class NoteView extends StatelessWidget {
         return _rimShotView(context: context);
       case StrokeType.flam:
         return _flamStrokeView(context: context);
-      case StrokeType.buzz:
-        return _buzzStrokeView(context: context);
       case StrokeType.opened:
         return _rimShotView(context: context);
       case StrokeType.foot:
@@ -208,19 +206,6 @@ class NoteView extends StatelessWidget {
         child: Container(
           height: innerDiameter,
           width: 5,
-          color: containerColor,
-        ),
-      ),
-    );
-  }
-
-  Widget _buzzStrokeView({required BuildContext context}) {
-    final containerColor = Theme.of(context).colorScheme.secondaryContainer;
-    return _plainStrokeView(
-      context: context,
-      child: Center(
-        child: Icon(
-          Icons.menu_outlined,
           color: containerColor,
         ),
       ),

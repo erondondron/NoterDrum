@@ -59,7 +59,7 @@ class StaffPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     var paint = Paint()
-      ..color = color
+      ..color = color.withValues(alpha: 0.5)
       ..strokeWidth = lineWidth;
 
     for (int i = 1; i <= linesNumber; i++) {

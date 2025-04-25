@@ -14,7 +14,6 @@ enum StrokeType {
   ghost(name: "Ghost"),
   rimClick(name: "Rim click", drums: snareAndToms),
   rimShot(name: "Rim shot", drums: snareAndToms),
-  buzz(name: "Buzz", drums: snareAndToms),
   flam(name: "Flam"),
   foot(name: "Foot", drums: {Drum.hiHat}),
   off(name: "Off");
