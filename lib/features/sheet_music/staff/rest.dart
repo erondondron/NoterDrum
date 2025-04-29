@@ -3,119 +3,99 @@ import 'package:drums/features/sheet_music/staff/lines.dart';
 import 'package:flutter/material.dart';
 
 class RestPainter {
-  static const double linesWidth = StaffPainter.lineWidth * 4;
-  static const double restHeadRadius = StaffPainter.linesGapHalf / 2;
-  static const double restHeadOffset = StaffPainter.linesGapHalf;
+  static const double linesWidth = StaffPainter.lineWidth;
+  static const double linesGap = StaffPainter.linesGap;
+
+  static const double quarterRestPosition = -1.5 * linesGap;
+  static const double quarterRestScale = 0.5 * linesGap;
+
+  static const double divRestScale = linesGap;
+  static const double divRestStemWidth = 4 * linesWidth / divRestScale;
+  static const double divRestStemIncline = 0.27;
+  static const double divRestHeadRadius = 0.25;
+  static const double divRestHeadOffset = 0.5;
 
   final Color color;
   final Canvas canvas;
 
-  const RestPainter(
-    this.canvas,
-    this.color,
-  );
+  const RestPainter({
+    required this.color,
+    required this.canvas,
+  });
 
-  void drawRestSign(double xPosition, NoteValue noteValue) {
+  Paint get paint => Paint()
+    ..color = color
+    ..style = PaintingStyle.fill;
+
+  void drawRestSign(double x, NoteValue noteValue) {
     noteValue == NoteValue.quarter
-        ? drawQuarterRestSign(xPosition)
-        : drawDivisionsRestSign(xPosition, noteValue);
+        ? drawQuarterRestSign(x)
+        : drawDivisionsRestSign(x, noteValue);
   }
 
   void drawQuarterRestSign(double x) {
-    var point = Offset(x, StaffPainter.heightHalf + StaffPainter.linesGapHalf);
-    var template = StaffPainter.linesGapHalf;
-
     var sign = Path()
-      ..moveTo(point.dx, point.dy)
-      ..cubicTo(
-        point.dx + template * 3.9,
-        point.dy + template * 3.2,
-        point.dx - template * 1.6,
-        point.dy + template * 1.3,
-        point.dx + template * 1.4,
-        point.dy + template * 4.7,
-      )
-      ..cubicTo(
-        point.dx - template * 0.2,
-        point.dy + template * 4.1,
-        point.dx - template * 0.3,
-        point.dy + template * 4.7,
-        point.dx,
-        point.dy + template * 5.9,
-      )
-      ..cubicTo(
-        point.dx - template * 0.9,
-        point.dy + template * 4.7,
-        point.dx - template * 1.7,
-        point.dy + template * 2.7,
-        point.dx + template * 1.4,
-        point.dy + template * 4.7,
-      )
-      ..cubicTo(
-        point.dx - template * 3.2,
-        point.dy + template * 0.7,
-        point.dx + template * 1.9,
-        point.dy + template * 3.3,
-        point.dx,
-        point.dy,
-      );
+      ..cubicTo(3.9, 3.2, -1.6, 1.3, 1.4, 4.7)
+      ..cubicTo(-0.2, 4.1, -0.3, 4.7, 0, 5.9)
+      ..cubicTo(-0.9, 4.7, -1.7, 2.7, 1.4, 4.7)
+      ..cubicTo(-3.2, 0.7, 1.9, 3.3, 0, 0);
 
-    var paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill;
-
-    canvas.drawPath(sign, paint);
+    canvas
+      ..save()
+      ..translate(x, quarterRestPosition)
+      ..scale(quarterRestScale)
+      ..drawPath(sign, paint)
+      ..restore();
   }
 
   void drawDivisionsRestSign(double x, NoteValue noteValue) {
-    var lineGapXOffset = StaffPainter.linesGap / 3.75;
+    var topX = divRestStemIncline;
+    var topY = -0.5;
 
-    var topX = x + lineGapXOffset;
-    var topY = StaffPainter.height - StaffPainter.linesGapHalf * 7;
+    var bottomX = 0.0;
+    var bottomY = 1.0;
 
-    var bottomX = x;
-    var bottomY = StaffPainter.height - StaffPainter.linesGap * 2;
-
-    var restHeads = [Offset(topX - restHeadRadius * 2, topY)];
+    var restHeads = [Offset(topX - divRestHeadOffset, topY)];
 
     if (noteValue.part > NoteValue.eighth.part) {
-      bottomX -= lineGapXOffset;
-      bottomY += StaffPainter.linesGap;
-      var headPosition = Offset(
-        topX - restHeadOffset - lineGapXOffset,
-        topY + StaffPainter.linesGap,
-      );
-      restHeads.insert(0, headPosition);
+      bottomX -= divRestStemIncline;
+      bottomY += 1;
+      restHeads.insert(0, Offset(-divRestHeadOffset, topY + 1));
     }
 
     if (noteValue.part > NoteValue.sixteenth.part) {
-      topX += lineGapXOffset;
-      topY -= StaffPainter.linesGap;
-      restHeads.add(Offset(topX - restHeadOffset, topY));
+      topX += divRestStemIncline;
+      topY -= 1;
+      restHeads.add(Offset(topX - divRestHeadOffset, topY));
     }
 
     var path = Path()
       ..moveTo(bottomX, bottomY)
       ..lineTo(topX, topY)
-      ..lineTo(topX - restHeadOffset, topY);
+      ..lineTo(topX - divRestHeadOffset, topY);
 
     for (var headIdx = 0; headIdx < restHeads.length - 1; headIdx++) {
       var head = restHeads[headIdx];
       path
         ..moveTo(head.dx, head.dy)
-        ..lineTo(head.dx + restHeadOffset, head.dy);
+        ..lineTo(head.dx + divRestHeadOffset, head.dy);
     }
 
-    var paint = Paint()
-      ..color = color
-      ..strokeWidth = linesWidth
+    canvas
+      ..save()
+      ..translate(x, 0)
+      ..scale(divRestScale);
+
+    var restPaint = paint;
+    for (var head in restHeads) {
+      canvas.drawCircle(head, divRestHeadRadius, restPaint);
+    }
+
+    restPaint = restPaint
+      ..strokeWidth = divRestStemWidth
       ..style = PaintingStyle.stroke
       ..strokeJoin = StrokeJoin.round;
-
-    canvas.drawPath(path, paint);
-    for (var head in restHeads) {
-      paint = paint..style = PaintingStyle.fill;
-      canvas.drawCircle(head, restHeadRadius, paint);
-    }
+    canvas.drawPath(path, restPaint);
+    canvas.restore();
   }
 }

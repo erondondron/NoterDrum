@@ -7,35 +7,51 @@ import 'package:drums/features/sheet_music/staff/lines.dart';
 import 'package:flutter/material.dart';
 
 class NotePainter {
-  static const linesWidth = StaffPainter.lineWidth * 3;
-  static const double headRadius = StaffPainter.linesGapHalf;
+  static const double linesGap = StaffPainter.linesGap;
+  static const double linesWidth = 3 * StaffPainter.lineWidth;
+
+  static const double stemInclineDegrees = 5;
+  static const double stemIncline = 0.0875;
+  static const double stemWidth = linesWidth;
+  static const double stemOffset = headRadius - 0.5 * stemWidth;
+
+  static const double headRadius = 0.5 * linesGap;
+  static const double crossHeadRadius = 0.7 * headRadius;
+  static const double chokeOffset = linesGap;
+  static const double chokeRadius = 0.2 * linesGap;
+  static const double accentStartPosition = 3.5 * linesGap;
+  static const double accentStep = 0.25 * linesGap;
+  static const double ghostRadius = 2 * headRadius;
+  static const double rimShotLineOffset = 1.5 * headRadius;
+  static const double flamSignOffset = headRadius * 3;
+  static const double flamSignLength = linesGap * 3;
+  static const double flamSignScale = 0.65;
 
   final Color color;
   final Canvas canvas;
 
-  const NotePainter(
-    this.canvas,
-    this.color,
-  );
+  const NotePainter({
+    required this.canvas,
+    required this.color,
+  });
 
   Paint get paint => Paint()
     ..color = color
     ..strokeWidth = linesWidth
     ..style = PaintingStyle.fill;
 
-  static double getHeadYPosition(Drum drum, StrokeType stroke) {
-    return switch (drum) {
-      Drum.kick => StaffPainter.linesGapHalf * 3,
-      Drum.snare => StaffPainter.linesGapHalf * 7,
-      Drum.hiHat => stroke == StrokeType.foot
-          ? StaffPainter.linesGapHalf
-          : StaffPainter.linesGapHalf * 11,
-      Drum.crash => StaffPainter.linesGapHalf * 12,
-      Drum.ride => StaffPainter.linesGapHalf * 10,
-      Drum.tom1 => StaffPainter.linesGapHalf * 9,
-      Drum.tom2 => StaffPainter.linesGapHalf * 8,
-      Drum.tom3 => StaffPainter.linesGapHalf * 5,
+  static double getHeadStaffLinesPosition(Drum drum, StrokeType stroke) {
+    var relative = switch (drum) {
+      Drum.kick => 1.5,
+      Drum.snare => -0.5,
+      Drum.hiHat => stroke == StrokeType.foot ? 2.5 : -2.5,
+      Drum.crash => -3,
+      Drum.ride => -2,
+      Drum.tom1 => -1.5,
+      Drum.tom2 => -1,
+      Drum.tom3 => 0.5,
     };
+    return relative * linesGap;
   }
 
   void drawNoteHead(Offset position, Drum drum, StrokeType stroke) {
@@ -67,24 +83,15 @@ class NotePainter {
   void drawAccentHead(Drum drum, Offset position) {
     drawPlainHead(drum, position);
     var path = Path()
-      ..moveTo(
-        position.dx - headRadius,
-        StaffPainter.height + StaffPainter.linesGapHalf,
-      )
-      ..lineTo(
-        position.dx + headRadius,
-        StaffPainter.height + StaffPainter.linesGapHalf * 3 / 2,
-      )
-      ..lineTo(
-        position.dx - headRadius,
-        StaffPainter.height + StaffPainter.linesGap,
-      );
+      ..moveTo(position.dx - headRadius, accentStartPosition)
+      ..lineTo(position.dx + headRadius, accentStartPosition + accentStep)
+      ..lineTo(position.dx - headRadius, accentStartPosition + 2 * accentStep);
     canvas.drawPath(path, paint..style = PaintingStyle.stroke);
   }
 
   void drawGhostNote(Drum drum, Offset position) {
     drawPlainHead(drum, position);
-    var rect = Rect.fromCircle(center: position, radius: headRadius * 2);
+    var rect = Rect.fromCircle(center: position, radius: ghostRadius);
     var ghostPaint = paint..style = PaintingStyle.stroke;
     canvas.drawArc(rect, -pi / 4, pi / 2, false, ghostPaint);
     canvas.drawArc(rect, pi * 3 / 4, pi / 2, false, ghostPaint);
@@ -92,47 +99,41 @@ class NotePainter {
 
   void drawRimShotHead(Offset position) {
     drawCircleHead(position);
-    var offset = Offset(headRadius * 1.5, headRadius * 1.5);
+    var offset = Offset(rimShotLineOffset, rimShotLineOffset);
     canvas.drawLine(position - offset, position + offset, paint);
   }
 
   void drawFlamHead(Drum drum, Offset position) {
     drawPlainHead(drum, position);
 
-    var signPosition = Offset(position.dx - headRadius * 3, position.dy);
-    var flamSignRadius = headRadius / 1.5;
-    canvas.drawCircle(signPosition, flamSignRadius, paint);
+    canvas
+      ..save()
+      ..translate(position.dx - flamSignOffset, position.dy)
+      ..scale(flamSignScale);
 
-    var stemXPosition = signPosition.dx + flamSignRadius - linesWidth / 2;
-    var stemYEndPosition = signPosition.dy - StaffPainter.linesGap * 2;
-    var stemBottom = Offset(stemXPosition, signPosition.dy);
-    var stemTop = Offset(stemXPosition, stemYEndPosition);
-    canvas.drawLine(stemBottom, stemTop, paint);
+    var signPosition = Offset(0, 0);
+    drawCircleHead(signPosition);
 
-    var flagPainter = NoteFlagPainter(canvas, color);
-    flagPainter.drawSingleNoteFlag(
-      stemTop: stemTop,
-      size: StaffPainter.linesGap / 1.5,
+    var flagPainter = NoteFlagPainter(color: color, canvas: canvas);
+    flagPainter.drawFlags(
+      notePosition: signPosition,
+      noteValue: NoteValue.eighth,
+      stemLength: flamSignLength,
     );
 
-    var strokeLineStart = Offset(
-      stemTop.dx + headRadius,
-      stemTop.dy + headRadius,
-    );
-    var strokeLineEnd = Offset(
-      stemTop.dx - headRadius,
-      stemTop.dy + headRadius * 2.5,
-    );
-    canvas.drawLine(strokeLineStart, strokeLineEnd, paint);
+    var strokeLineStart = Offset(0, -flamSignLength + flamSignOffset);
+    var strokeLineEnd = Offset(flamSignOffset, -flamSignLength + headRadius);
+    canvas
+      ..drawLine(strokeLineStart, strokeLineEnd, paint)
+      ..restore();
   }
 
   void drawCrossHead(Offset position) {
-    var offset = headRadius * 0.7;
     var path = Path()
-      ..moveTo(position.dx - offset, position.dy - offset)
-      ..lineTo(position.dx + offset, position.dy + offset)
-      ..moveTo(position.dx - offset, position.dy + offset)
-      ..lineTo(position.dx + offset, position.dy - offset);
+      ..moveTo(position.dx - crossHeadRadius, position.dy - crossHeadRadius)
+      ..lineTo(position.dx + crossHeadRadius, position.dy + crossHeadRadius)
+      ..moveTo(position.dx - crossHeadRadius, position.dy + crossHeadRadius)
+      ..lineTo(position.dx + crossHeadRadius, position.dy - crossHeadRadius);
     canvas.drawPath(path, paint..style = PaintingStyle.stroke);
   }
 
@@ -154,7 +155,7 @@ class NotePainter {
 
   void drawChokeHead(Offset position) {
     drawCrossHead(position);
-    var pointPosition = Offset(position.dx, position.dy - headRadius * 2);
-    canvas.drawCircle(pointPosition, 2, paint);
+    var pointPosition = Offset(position.dx, position.dy - chokeOffset);
+    canvas.drawCircle(pointPosition, chokeRadius, paint);
   }
 }
