@@ -1,5 +1,6 @@
 import 'package:drums/features/sheet_music/measure/model.dart';
 import 'package:drums/features/sheet_music/staff/beat.dart';
+import 'package:drums/features/sheet_music/staff/configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,14 +11,14 @@ class StaffWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     var staffColor = Theme.of(context).colorScheme.onSurface;
     return Padding(
-      padding: EdgeInsets.only(top: 10, bottom: 10),
+      padding: EdgeInsets.only(bottom: 10),
       child: Consumer<GrooveMeasure>(
         builder: (BuildContext context, GrooveMeasure measure, _) {
           return Stack(
             alignment: AlignmentDirectional.bottomStart,
             children: [
               CustomPaint(
-                size: Size(double.infinity, StaffPainter.height),
+                size: Size(double.infinity, FiveLinesSettings.height),
                 painter: StaffPainter(color: staffColor),
               ),
               Row(
@@ -40,18 +41,9 @@ class StaffWidget extends StatelessWidget {
 }
 
 class StaffPainter extends CustomPainter {
-  static const double barLineWidth = 1;
-  static const double lineWidth = 0.5;
-  static const double linesGap = 10;
-  static const int linesNumber = 5;
-
-  static const double linesGapHalf = linesGap / 2;
-  static const double heightHalf = linesNumber * linesGap;
-  static const double height = heightHalf * 2;
+  final Color color;
 
   StaffPainter({required this.color});
-
-  final Color color;
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
@@ -60,19 +52,22 @@ class StaffPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     var paint = Paint()
       ..color = color.withValues(alpha: 0.5)
-      ..strokeWidth = lineWidth;
+      ..strokeWidth = LinesWidthSettings.base;
 
-    for (int i = 1; i <= linesNumber; i++) {
-      var y = height - i * linesGap;
+    for (int i = 0; i < FiveLinesSettings.number; i++) {
+      var y = FiveLinesSettings.bottom - i * FiveLinesSettings.gap;
       canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
     }
 
-    paint.strokeWidth = barLineWidth;
-    var start = height - linesGap;
-    canvas.drawLine(Offset(0, start), Offset(0, heightHalf), paint);
+    paint.strokeWidth = LinesWidthSettings.bar;
     canvas.drawLine(
-      Offset(size.width, start),
-      Offset(size.width, heightHalf),
+      Offset(0, FiveLinesSettings.top),
+      Offset(0, FiveLinesSettings.bottom),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(size.width, FiveLinesSettings.top),
+      Offset(size.width, FiveLinesSettings.bottom),
       paint,
     );
   }

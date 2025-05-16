@@ -1,20 +1,7 @@
-import 'dart:math';
-
 import 'package:drums/features/sheet_music/drum_set/model.dart';
 import 'package:drums/features/sheet_music/note/models.dart';
+import 'package:drums/features/sheet_music/staff/models.dart';
 import 'package:flutter/material.dart';
-
-class BeatDivision {
-  final List<SingleNote> notes = [];
-  final List<Triplet> triplets = [];
-  double position;
-  NoteValue noteValue;
-
-  BeatDivision({
-    required this.position,
-    required this.noteValue,
-  });
-}
 
 class BeatLine {
   final List<Note> notes;
@@ -39,7 +26,7 @@ class Beat extends ChangeNotifier {
   int length;
 
   GlobalKey key = GlobalKey();
-  List<BeatDivision> divisions = [];
+  late StaffBeat staffModel;
   double viewSize = 0;
 
   Beat({
@@ -68,43 +55,16 @@ class Beat extends ChangeNotifier {
   }
 
   void generateDivisions() {
-    if (notesGrid.isEmpty) {
-      divisions = [];
-      viewSize = 0;
-      return;
-    }
     calculateNotesWidth();
-
-    var beatDuration = NoteValue.values.last.part * length ~/ noteValue.part;
-    var shortestNoteUnit = notesGrid
-        .expand((line) => line.notes)
-        .reduce((a, b) => a.value.unit.part > b.value.unit.part ? a : b);
-    var divValue = shortestNoteUnit.value.unit;
-    var divCount = beatDuration * divValue.part ~/ NoteValue.values.last.part;
-    var divWidth = viewSize / divCount;
-
-    divisions = List.generate(
-      divCount,
-      (int idx) => BeatDivision(
-        position: (idx + 1 / 2) * divWidth,
-        noteValue: divValue,
-      ),
-    );
-
-    for (var gridLine in notesGrid) {
-      var divIdx = 0;
-      for (var note in gridLine.notes) {
-        if (note is SingleNote && note.stroke != StrokeType.off){
-          divisions[divIdx].notes.add(note);
-        }
-        divIdx += divValue.part ~/ note.value.unit.part;
-      }
-    }
-    optimizeDivisions();
+    staffModel = StaffConverter.convert(this);
     notifyListeners();
   }
 
   void calculateNotesWidth() {
+    if (notesGrid.isEmpty) {
+      viewSize = 0;
+      return;
+    }
     var shortestNote = notesGrid
         .expand((line) => line.notes)
         .reduce((a, b) => a.value.part > b.value.part ? a : b);
@@ -123,27 +83,6 @@ class Beat extends ChangeNotifier {
     viewSize = notesGrid.first.notes
         .map((note) => note.viewSize)
         .reduce((a, b) => a + b);
-  }
-
-  void optimizeDivisions() {
-    var idx = 1;
-    while (idx != divisions.length) {
-      var division = divisions[idx];
-      var previous = divisions[idx - 1];
-
-      if (division.notes.isNotEmpty ||
-          previous.noteValue != division.noteValue ||
-          previous.noteValue == NoteValue.quarter) {
-        idx++;
-        continue;
-      }
-
-      divisions.removeAt(idx);
-      previous.noteValue = NoteValue.values.firstWhere(
-        (note) => note.part == previous.noteValue.part ~/ 2,
-      );
-      idx = max(idx - 1, 1);
-    }
   }
 
   void addLine(int idx, Drum drum) {

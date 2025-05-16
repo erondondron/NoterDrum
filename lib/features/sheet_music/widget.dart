@@ -63,7 +63,7 @@ class _GrooveMeasuresWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: groove.measures.map((GrooveMeasure measure) {
             return Padding(
-              padding: EdgeInsets.symmetric(vertical: 10),
+              padding: EdgeInsets.only(bottom: 10),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[

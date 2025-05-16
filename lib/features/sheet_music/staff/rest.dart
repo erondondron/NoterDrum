@@ -1,20 +1,8 @@
 import 'package:drums/features/sheet_music/note/models.dart';
-import 'package:drums/features/sheet_music/staff/lines.dart';
+import 'package:drums/features/sheet_music/staff/configuration.dart';
 import 'package:flutter/material.dart';
 
 class RestPainter {
-  static const double linesWidth = StaffPainter.lineWidth;
-  static const double linesGap = StaffPainter.linesGap;
-
-  static const double quarterRestPosition = -1.5 * linesGap;
-  static const double quarterRestScale = 0.5 * linesGap;
-
-  static const double divRestScale = linesGap;
-  static const double divRestStemWidth = 4 * linesWidth / divRestScale;
-  static const double divRestStemIncline = 0.27;
-  static const double divRestHeadRadius = 0.25;
-  static const double divRestHeadOffset = 0.5;
-
   final Color color;
   final Canvas canvas;
 
@@ -35,64 +23,66 @@ class RestPainter {
 
   void drawQuarterRestSign(double x) {
     var sign = Path()
-      ..cubicTo(3.9, 3.2, -1.6, 1.3, 1.4, 4.7)
-      ..cubicTo(-0.2, 4.1, -0.3, 4.7, 0, 5.9)
-      ..cubicTo(-0.9, 4.7, -1.7, 2.7, 1.4, 4.7)
-      ..cubicTo(-3.2, 0.7, 1.9, 3.3, 0, 0);
+      ..cubicTo(19.5, 16.0, -8.0, 6.5, 7.0, 23.5)
+      ..cubicTo(-1.0, 20.5, -1.5, 23.5, 0.0, 29.5)
+      ..cubicTo(-4.5, 23.5, -8.5, 13.5, 7.0, 23.5)
+      ..cubicTo(-16.0, 3.5, 9.5, 16.5, 0.0, 0.0);
 
     canvas
       ..save()
-      ..translate(x, quarterRestPosition)
-      ..scale(quarterRestScale)
+      ..translate(x, -1.5 * FiveLinesSettings.gap)
       ..drawPath(sign, paint)
       ..restore();
   }
 
   void drawDivisionsRestSign(double x, NoteValue noteValue) {
-    var topX = divRestStemIncline;
+    var stemIncline = 0.27;
+    var headOffset = 0.5;
+
+    var topX = stemIncline;
     var topY = -0.5;
 
     var bottomX = 0.0;
     var bottomY = 1.0;
 
-    var restHeads = [Offset(topX - divRestHeadOffset, topY)];
+    var restHeads = [Offset(topX - headOffset, topY)];
 
     if (noteValue.part > NoteValue.eighth.part) {
-      bottomX -= divRestStemIncline;
+      bottomX -= stemIncline;
       bottomY += 1;
-      restHeads.insert(0, Offset(-divRestHeadOffset, topY + 1));
+      restHeads.insert(0, Offset(-headOffset, topY + 1));
     }
 
     if (noteValue.part > NoteValue.sixteenth.part) {
-      topX += divRestStemIncline;
+      topX += stemIncline;
       topY -= 1;
-      restHeads.add(Offset(topX - divRestHeadOffset, topY));
+      restHeads.add(Offset(topX - headOffset, topY));
     }
 
     var path = Path()
       ..moveTo(bottomX, bottomY)
       ..lineTo(topX, topY)
-      ..lineTo(topX - divRestHeadOffset, topY);
+      ..lineTo(topX - headOffset, topY);
 
     for (var headIdx = 0; headIdx < restHeads.length - 1; headIdx++) {
       var head = restHeads[headIdx];
       path
         ..moveTo(head.dx, head.dy)
-        ..lineTo(head.dx + divRestHeadOffset, head.dy);
+        ..lineTo(head.dx + headOffset, head.dy);
     }
 
     canvas
       ..save()
       ..translate(x, 0)
-      ..scale(divRestScale);
+      ..scale(FiveLinesSettings.gap);
 
     var restPaint = paint;
     for (var head in restHeads) {
-      canvas.drawCircle(head, divRestHeadRadius, restPaint);
+      canvas.drawCircle(head, 0.25, restPaint);
     }
 
     restPaint = restPaint
-      ..strokeWidth = divRestStemWidth
+      ..strokeWidth = 2 / FiveLinesSettings.gap
       ..style = PaintingStyle.stroke
       ..strokeJoin = StrokeJoin.round;
     canvas.drawPath(path, restPaint);
