@@ -1,10 +1,10 @@
 import 'package:drums/features/sheet_music/beat/models.dart';
 import 'package:drums/features/sheet_music/beat/widget.dart';
-import 'package:drums/features/sheet_music/staff/note_value.dart';
-import 'package:drums/features/sheet_music/staff/configuration.dart';
-import 'package:drums/features/sheet_music/staff/models.dart';
-import 'package:drums/features/sheet_music/staff/note.dart';
-import 'package:drums/features/sheet_music/staff/rest.dart';
+import 'package:drums/features/staff/configuration.dart';
+import 'package:drums/features/staff/models.dart';
+import 'package:drums/features/staff/note.dart';
+import 'package:drums/features/staff/note_value.dart';
+import 'package:drums/features/staff/rest.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -1,6 +1,6 @@
 import 'package:drums/features/sheet_music/drum_set/model.dart';
 import 'package:drums/features/sheet_music/note/models.dart';
-import 'package:drums/features/sheet_music/staff/models.dart';
+import 'package:drums/features/staff/models.dart';
 import 'package:flutter/material.dart';
 
 class BeatLine {

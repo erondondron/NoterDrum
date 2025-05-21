@@ -1,5 +1,5 @@
 import 'package:drums/features/sheet_music/note/models.dart';
-import 'package:drums/features/sheet_music/staff/configuration.dart';
+import 'package:drums/features/staff/configuration.dart';
 import 'package:flutter/material.dart';
 
 class RestPainter {

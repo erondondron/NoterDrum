@@ -1,6 +1,6 @@
 import 'package:drums/features/sheet_music/measure/model.dart';
-import 'package:drums/features/sheet_music/staff/beat.dart';
-import 'package:drums/features/sheet_music/staff/configuration.dart';
+import 'package:drums/features/staff/beat.dart';
+import 'package:drums/features/staff/configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
