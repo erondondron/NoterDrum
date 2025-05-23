@@ -1,5 +1,5 @@
-import 'package:drums/features/sheet_music/drum_set/model.dart';
-import 'package:drums/features/sheet_music/note/widget.dart';
+import 'package:drums/features/edit_grid/note.dart';
+import 'package:drums/features/models/drum_set.dart';
 import 'package:drums/shared/widgets/fix_height_row.dart';
 import 'package:drums/shared/widgets/text_with_icon.dart';
 import 'package:flutter/material.dart';

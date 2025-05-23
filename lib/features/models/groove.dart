@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:drums/features/sheet_music/drum_set/model.dart';
-import 'package:drums/features/sheet_music/measure/model.dart';
-import 'package:drums/features/sheet_music/time_signature/model.dart';
+import 'package:drums/features/models/drum_set.dart';
+import 'package:drums/features/models/measure.dart';
+import 'package:drums/features/models/time_signature.dart';
 import 'package:drums/features/storage/model.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;

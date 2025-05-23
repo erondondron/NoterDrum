@@ -1,6 +1,6 @@
-import 'package:drums/features/sheet_music/measure/model.dart';
-import 'package:drums/features/sheet_music/time_signature/custom.dart';
-import 'package:drums/features/sheet_music/time_signature/model.dart';
+import 'package:drums/features/edit_grid/time_signature_custom.dart';
+import 'package:drums/features/models/measure.dart';
+import 'package:drums/features/models/time_signature.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -1,6 +1,6 @@
-import 'package:drums/features/sheet_music/beat/models.dart';
-import 'package:drums/features/sheet_music/drum_set/model.dart';
-import 'package:drums/features/sheet_music/note/models.dart';
+import 'package:drums/features/models/beat.dart';
+import 'package:drums/features/models/drum_set.dart';
+import 'package:drums/features/models/note.dart';
 import 'package:flutter/material.dart';
 
 class NotesEditingController extends ChangeNotifier {

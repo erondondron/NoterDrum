@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:drums/features/sheet_music/model.dart';
+import 'package:drums/features/models/groove.dart';
 import 'package:drums/features/storage/setup/models.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';

@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:drums/features/sheet_music/actions/editing/model.dart';
-import 'package:drums/features/sheet_music/beat/models.dart';
-import 'package:drums/features/sheet_music/note/models.dart';
+import 'package:drums/features/actions/editing/model.dart';
+import 'package:drums/features/models/beat.dart';
+import 'package:drums/features/models/note.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

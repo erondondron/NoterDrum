@@ -1,11 +1,11 @@
-import 'package:drums/features/sheet_music/actions/editing/selector.dart';
-import 'package:drums/features/sheet_music/beat/widget.dart';
-import 'package:drums/features/sheet_music/measure/model.dart';
-import 'package:drums/features/sheet_music/note/widget.dart';
-import 'package:drums/features/sheet_music/model.dart';
+import 'package:drums/features/actions/editing/selector.dart';
+import 'package:drums/features/edit_grid/beat.dart';
+import 'package:drums/features/edit_grid/note.dart';
+import 'package:drums/features/edit_grid/time_signature.dart';
+import 'package:drums/features/models/measure.dart';
+import 'package:drums/features/models/groove.dart';
 import 'package:drums/features/staff/lines.dart';
 import 'package:drums/shared/widgets/fix_height_row.dart';
-import 'package:drums/features/sheet_music/time_signature/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

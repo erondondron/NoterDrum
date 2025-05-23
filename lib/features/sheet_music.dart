@@ -1,12 +1,12 @@
 import 'dart:math';
 
+import 'package:drums/features/actions/widget.dart';
 import 'package:drums/features/app_bar.dart';
-import 'package:drums/features/sheet_music/actions/widget.dart';
-import 'package:drums/features/sheet_music/measure/model.dart';
-import 'package:drums/features/sheet_music/measure/widget.dart';
-import 'package:drums/features/sheet_music/model.dart';
-import 'package:drums/features/sheet_music/drum_set/widget.dart';
-import 'package:drums/features/sheet_music/note/widget.dart';
+import 'package:drums/features/edit_grid/drum_set.dart';
+import 'package:drums/features/edit_grid/measure.dart';
+import 'package:drums/features/edit_grid/note.dart';
+import 'package:drums/features/models/measure.dart';
+import 'package:drums/features/models/groove.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

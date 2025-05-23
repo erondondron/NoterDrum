@@ -1,5 +1,5 @@
-import 'package:drums/features/sheet_music/beat/models.dart';
-import 'package:drums/features/sheet_music/drum_set/model.dart';
+import 'package:drums/features/models/beat.dart';
+import 'package:drums/features/models/drum_set.dart';
 import 'package:flutter/material.dart';
 
 const Set<Drum> cymbals = {Drum.crash, Drum.ride};

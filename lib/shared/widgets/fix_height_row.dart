@@ -1,4 +1,4 @@
-import 'package:drums/features/sheet_music/note/widget.dart';
+import 'package:drums/features/edit_grid/note.dart';
 import 'package:flutter/material.dart';
 
 class FixHeightRow extends StatelessWidget {

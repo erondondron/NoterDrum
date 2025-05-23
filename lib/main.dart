@@ -1,7 +1,7 @@
+import 'package:drums/features/actions/editing/model.dart';
 import 'package:drums/features/app_bar.dart';
-import 'package:drums/features/sheet_music/actions/editing/model.dart';
-import 'package:drums/features/sheet_music/drum_set/model.dart';
-import 'package:drums/features/sheet_music/widget.dart';
+import 'package:drums/features/sheet_music.dart';
+import 'package:drums/features/models/drum_set.dart';
 import 'package:drums/features/storage/model.dart';
 import 'package:drums/features/storage/window.dart';
 import 'package:drums/theme.dart';

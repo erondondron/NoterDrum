@@ -1,5 +1,5 @@
-import 'package:drums/features/sheet_music/beat/models.dart';
-import 'package:drums/features/sheet_music/beat/widget.dart';
+import 'package:drums/features/edit_grid/beat.dart';
+import 'package:drums/features/models/beat.dart';
 import 'package:drums/features/staff/configuration.dart';
 import 'package:drums/features/staff/models.dart';
 import 'package:drums/features/staff/note.dart';
