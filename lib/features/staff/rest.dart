@@ -1,4 +1,4 @@
-import 'package:drums/features/models/note.dart';
+import 'package:drums/features/models/note_value.dart';
 import 'package:drums/features/staff/configuration.dart';
 import 'package:flutter/material.dart';
 

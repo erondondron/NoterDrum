@@ -1,6 +1,7 @@
 import 'package:drums/features/models/beat.dart';
 import 'package:drums/features/models/drum_set.dart';
 import 'package:drums/features/models/note.dart';
+import 'package:drums/features/models/note_value.dart';
 import 'package:flutter/material.dart';
 
 class NotesEditingController extends ChangeNotifier {
@@ -66,25 +67,21 @@ class NotesEditingController extends ChangeNotifier {
 
   List<NoteValue> possibleNoteValues() {
     if (selectedNotes.isEmpty) return <NoteValue>[];
-    var shortestPart = NoteValue.values.last.part;
+    var availableDuration = NoteDuration();
     for (var beatNotes in selectedNotes.values) {
       var lines = <BeatLine, Set<SingleNote>>{};
       for (var note in beatNotes) {
         lines.putIfAbsent(note.beatLine, () => <SingleNote>{}).add(note);
       }
       for (var lineNotes in lines.values) {
-        var wholeNote = 0.0;
-        for (var note in lineNotes) {
-          wholeNote += 1 / note.value.part;
-        }
-        var noteValuePart = (1 / wholeNote).ceil();
-        if (noteValuePart < shortestPart) {
-          shortestPart = noteValuePart;
-        }
+        var lineDuration = lineNotes
+            .map((note) => note.value.duration)
+            .reduce((a, b) => a + b);
+        if (lineDuration > availableDuration) availableDuration = lineDuration;
       }
     }
     return NoteValue.values
-        .where((note) => note.unit.part >= shortestPart)
+        .where((note) => note.unit.duration <= availableDuration)
         .toList();
   }
 
@@ -125,10 +122,10 @@ class NotesEditingController extends ChangeNotifier {
       }
     }
 
-    var duration = 0.0;
+    var availableDuration = NoteDuration();
     var idx = -1;
     for (var note in toProcess) {
-      duration += NoteValue.values.last.part / note.value.unit.part;
+      availableDuration += note.value.duration;
       idx = beatLine.notes.indexOf(note);
       beatLine.notes.removeAt(idx);
     }
@@ -136,12 +133,11 @@ class NotesEditingController extends ChangeNotifier {
 
     var isValid = true;
     var noteValue = newNoteValue;
-    var availableDuration = duration.round();
-    while (availableDuration > 0) {
-      var noteDuration = NoteValue.values.last.part ~/ noteValue.unit.part;
+    while (availableDuration.value > 0) {
+      var noteDuration = noteValue.unit.duration;
       if (noteDuration > availableDuration) {
         var possibleNoteValue = NoteValue.values.firstWhere(
-          (note) => note.unit.part > noteValue.unit.part,
+          (note) => note < noteValue.unit,
           orElse: () => noteValue,
         );
         if (noteValue == possibleNoteValue) break;

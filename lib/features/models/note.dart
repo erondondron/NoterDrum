@@ -1,5 +1,6 @@
 import 'package:drums/features/models/beat.dart';
 import 'package:drums/features/models/drum_set.dart';
+import 'package:drums/features/models/note_value.dart';
 import 'package:flutter/material.dart';
 
 const Set<Drum> cymbals = {Drum.crash, Drum.ride};
@@ -29,57 +30,32 @@ enum StrokeType {
   });
 }
 
-enum NoteValue {
-  quarter(part: 4),
-  eighth(part: 8),
-  eighthTriplet(part: 12, length: 3),
-  sixteenth(part: 16),
-  sixteenthTriplet(part: 24, length: 3),
-  thirtySecond(part: 32);
-
-  final int part;
-  final int length;
-
-  NoteValue get unit {
-    return switch (this) {
-      NoteValue.eighthTriplet => NoteValue.quarter,
-      NoteValue.sixteenthTriplet => NoteValue.eighth,
-      _ => this,
-    };
-  }
-
-  const NoteValue({
-    required this.part,
-    this.length = 1,
-  });
-}
-
 abstract class Note {
-  static const double minViewSize = 35;
-
   final NoteValue value;
 
-  double viewSize = minViewSize;
   late BeatLine beatLine;
+  late double viewSize;
 
   Note({required this.value});
 
   factory Note.generate({required NoteValue value}) {
-    if (value.length == 1) return SingleNote(value: value);
-    return Triplet(
-      value: value,
-      first: TripletNote(value: value),
-      second: TripletNote(value: value),
-      third: TripletNote(value: value),
-    );
+    return value.length == 1
+        ? SingleNote(value: value)
+        : Triplet(
+            value: value,
+            first: TripletNote(value: value),
+            second: TripletNote(value: value),
+            third: TripletNote(value: value),
+          );
   }
 
   factory Note.fromJson(Map<String, dynamic> json) {
     var value = NoteValue.values.firstWhere(
-      (value) => value.part == json["value"] as int,
+      (value) => value.part == json["duration"] as int,
     );
-    if (value.length == 1) return SingleNote.fromJson(json);
-    return Triplet.fromJson(json);
+    return value.length == 1
+        ? Triplet.fromJson(json)
+        : SingleNote.fromJson(json);
   }
 }
 
@@ -101,12 +77,12 @@ class SingleNote extends Note {
         ),
         super(
           value: NoteValue.values.firstWhere(
-            (value) => value.part == json["value"] as int,
+            (value) => value.part == json["duration"] as int,
           ),
         );
 
   Map<String, dynamic> toJson() => {
-        "value": value.part,
+        "duration": value.part,
         "stroke": stroke.name,
       };
 }
@@ -125,7 +101,7 @@ class TripletNote extends SingleNote {
             (type) => type.name == json["stroke"] as String,
           ),
           value: NoteValue.values.firstWhere(
-            (value) => value.part == json["value"] as int,
+            (value) => value.part == json["duration"] as int,
           ),
         );
 }
@@ -139,7 +115,7 @@ class Triplet extends Note {
 
   @override
   set beatLine(BeatLine beatLine) {
-    for (var note in notes){
+    for (var note in notes) {
       note.beatLine = beatLine;
     }
   }
@@ -161,12 +137,12 @@ class Triplet extends Note {
         third = TripletNote.fromJson(json["third"] as Map<String, dynamic>),
         super(
           value: NoteValue.values.firstWhere(
-            (value) => value.part == json["value"] as int,
+            (value) => value.part == json["duration"] as int,
           ),
         );
 
   Map<String, dynamic> toJson() => {
-        "value": value.part,
+        "duration": value.part,
         "first": first.toJson(),
         "second": second.toJson(),
         "third": third.toJson(),

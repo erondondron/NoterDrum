@@ -1,4 +1,4 @@
-import 'package:drums/features/models/note.dart';
+import 'package:drums/features/models/note_value.dart';
 import 'package:drums/features/staff/configuration.dart';
 import 'package:drums/features/staff/models.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +17,7 @@ class NoteValuePainter {
     ..strokeWidth = LinesWidthSettings.stem
     ..style = PaintingStyle.fill;
 
-  void drawStem(StaffDivision division) {
+  void drawStem(StaffNoteStack division) {
     if (division.stemStart == null || division.stemEnd == null) return;
     canvas.drawLine(
       division.stemStart!.toOffset(),
@@ -26,7 +26,7 @@ class NoteValuePainter {
     );
   }
 
-  void drawSingleNoteFlag(StaffDivision division) {
+  void drawSingleNoteFlag(StaffNoteStack division) {
     if (division.noteValue.part < NoteValue.quarter.part) return;
     if (division.stemEnd == null) return;
     var flagsCount =
@@ -52,49 +52,51 @@ class NoteValuePainter {
     }
   }
 
-  void drawBeam(StaffBeat beat) {
-    if (beat.noteValue.part < NoteValue.eighth.part) return;
+  void drawBeam({required StaffNoteGroup group, int beamLevel = 0}) {
+    if (group.noteValue.part < NoteValue.eighth.part) return;
 
-    var startDiv = beat.divisions.first;
-    var endDiv = beat.divisions.last;
-    if (startDiv.stemEnd == null) return;
+    var startStack = group.stacks.first;
+    var endStack = group.stacks.last;
+    if (startStack.stemEnd == null) return;
 
-    var relativeOffset =
-        beat.noteValue.part.bitLength - NoteValue.eighth.part.bitLength;
     _drawBeamLine(
-      position: startDiv.stemEnd!,
-      relativeOffset: relativeOffset,
-      length: endDiv.position - startDiv.position + LinesWidthSettings.stem,
-      inclineDx: beat.beamInclineDx,
+      position: startStack.stemEnd!,
+      beamLevel: beamLevel,
+      length: endStack.x - startStack.x + LinesWidthSettings.stem,
+      inclineDx: group.beamInclineDx,
     );
 
-    for (var division in beat.singleNotes) {
+    if (group.noteValue.length == 3 && beamLevel == 0) {
+      _drawTripletSign(group);
+    }
+
+    for (var division in group.singleNotes) {
       if (division.stemEnd == null) continue;
       var singleBeamCount =
-          division.noteValue.part.bitLength - beat.noteValue.part.bitLength;
+          division.noteValue.part.bitLength - group.noteValue.part.bitLength;
       for (var i = 1; i <= singleBeamCount; i++) {
         _drawBeamLine(
           position: division.stemEnd!,
-          relativeOffset: relativeOffset + i,
-          inclineDx: beat.beamInclineDx,
+          beamLevel: beamLevel + i,
+          inclineDx: group.beamInclineDx,
           rightFlag: division.rightFlag,
         );
       }
     }
 
-    for (var group in beat.beamGroups) {
-      drawBeam(group);
+    for (var subgroup in group.subgroups.values) {
+      drawBeam(group: subgroup, beamLevel: beamLevel + 1);
     }
   }
 
   void _drawBeamLine({
     required StaffPoint position,
-    int relativeOffset = 0,
+    int beamLevel = 0,
     double length = NotesSettings.flagWidth,
     double inclineDx = NotesSettings.beamInclineDx,
     bool rightFlag = true,
   }) {
-    var topYOffset = relativeOffset * FiveLinesSettings.gap;
+    var topYOffset = beamLevel * FiveLinesSettings.gap;
     var topXOffset = topYOffset * NotesSettings.stemInclineDx;
     var topLeft = Offset(
       position.x - topXOffset,
@@ -126,5 +128,29 @@ class NoteValuePainter {
       ..lineTo(bottomLeft.dx, bottomLeft.dy)
       ..close();
     canvas.drawPath(path, paint);
+  }
+
+  void _drawTripletSign(StaffNoteGroup group) {
+    var startStack = group.stacks.first;
+    var endStack = group.stacks.last;
+    var signFont = NotesSettings.tripletSignFont;
+    var position = Offset(
+      (startStack.stemEnd!.x + endStack.stemEnd!.x - signFont / 2) / 2,
+      (startStack.stemEnd!.y + endStack.stemEnd!.y - 3 * signFont) / 2,
+    );
+    var textStyle = TextStyle(
+      color: color,
+      fontSize: NotesSettings.tripletSignFont,
+    );
+    var textSpan = TextSpan(text: "3", style: textStyle);
+    var textPainter = TextPainter(
+      text: textSpan,
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout(
+      minWidth: 0,
+      maxWidth: endStack.stemEnd!.x - startStack.stemEnd!.x,
+    );
+    textPainter.paint(canvas, position);
   }
 }

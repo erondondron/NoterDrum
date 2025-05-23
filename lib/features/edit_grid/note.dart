@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:drums/features/actions/editing/model.dart';
+import 'package:drums/features/edit_grid/configuration.dart';
 import 'package:drums/features/models/beat.dart';
 import 'package:drums/features/models/note.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,6 @@ class NoteWidget extends StatelessWidget {
 }
 
 class NoteView extends StatelessWidget {
-  static const double height = 40;
   static const double borderWidth = 1.5;
   static const double outerDiameter = 30;
   static const double innerDiameter = outerDiameter - borderWidth * 2;
@@ -52,8 +52,8 @@ class NoteView extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       key: note.key,
-      width: Note.minViewSize,
-      height: height,
+      width: EditGridConfiguration.noteWidth,
+      height: EditGridConfiguration.noteHeight,
       child: Center(
         child: Container(
           width: outerDiameter,

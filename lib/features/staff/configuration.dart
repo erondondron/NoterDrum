@@ -28,4 +28,5 @@ class NotesSettings {
   static const double flagWidth = FiveLinesSettings.gap;
   static const double beamThickness = 4;
   static const double beamInclineDx = 0.176 * 0.75;
+  static const double tripletSignFont = 15;
 }

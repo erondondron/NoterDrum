@@ -29,7 +29,7 @@ class BeatStaffWidget extends StatelessWidget {
 }
 
 class BeatPainter extends CustomPainter {
-  final StaffBeat beat;
+  final StaffNoteGroup beat;
   final Color color;
 
   BeatPainter({
@@ -47,21 +47,20 @@ class BeatPainter extends CustomPainter {
     var notesPainter = NotePainter(color: color, canvas: canvas);
     var noteValuePainter = NoteValuePainter(canvas: canvas, color: color);
     var restPainter = RestPainter(color: color, canvas: canvas);
-    for (var division in beat.divisions) {
-      if (division.notes.isEmpty) {
-        restPainter.drawRestSign(division.position, division.noteValue);
-        continue;
+    for (var stack in beat.stacks) {
+      if (stack.notes.isEmpty) {
+        restPainter.drawRestSign(stack.x, stack.noteValue);
       }
-      for (var note in division.notes) {
+      for (var note in stack.notes) {
         notesPainter.drawNoteHead(note);
       }
-      noteValuePainter.drawStem(division);
+      noteValuePainter.drawStem(stack);
     }
     for (var division in beat.singleNotes) {
       noteValuePainter.drawSingleNoteFlag(division);
     }
-    for (var group in beat.beamGroups) {
-      noteValuePainter.drawBeam(group);
+    for (var group in beat.subgroups.values) {
+      noteValuePainter.drawBeam(group: group);
     }
   }
 }

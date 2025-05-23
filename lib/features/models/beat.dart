@@ -1,5 +1,7 @@
+import 'package:drums/features/edit_grid/configuration.dart';
 import 'package:drums/features/models/drum_set.dart';
 import 'package:drums/features/models/note.dart';
+import 'package:drums/features/models/note_value.dart';
 import 'package:drums/features/staff/models.dart';
 import 'package:flutter/material.dart';
 
@@ -26,7 +28,7 @@ class Beat extends ChangeNotifier {
   int length;
 
   GlobalKey key = GlobalKey();
-  late StaffBeat staffModel;
+  late StaffNoteGroup staffModel;
   double viewSize = 0;
 
   Beat({
@@ -71,7 +73,7 @@ class Beat extends ChangeNotifier {
     for (var gridLine in notesGrid) {
       for (var note in gridLine.notes) {
         var relativeSize = shortestNote.value.part / note.value.unit.part;
-        note.viewSize = relativeSize * Note.minViewSize;
+        note.viewSize = relativeSize * EditGridConfiguration.noteWidth;
         if (note is Triplet) {
           var tripletNoteSize = note.viewSize / 3;
           for (var tripletNote in note.notes) {

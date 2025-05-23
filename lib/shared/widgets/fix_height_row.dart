@@ -1,4 +1,4 @@
-import 'package:drums/features/edit_grid/note.dart';
+import 'package:drums/features/edit_grid/configuration.dart';
 import 'package:flutter/material.dart';
 
 class FixHeightRow extends StatelessWidget {
@@ -9,7 +9,7 @@ class FixHeightRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: NoteView.height,
+      height: EditGridConfiguration.noteHeight,
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

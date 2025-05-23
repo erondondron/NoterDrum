@@ -2,9 +2,9 @@ import 'dart:math';
 
 import 'package:drums/features/actions/widget.dart';
 import 'package:drums/features/app_bar.dart';
+import 'package:drums/features/edit_grid/configuration.dart';
 import 'package:drums/features/edit_grid/drum_set.dart';
 import 'package:drums/features/edit_grid/measure.dart';
-import 'package:drums/features/edit_grid/note.dart';
 import 'package:drums/features/models/measure.dart';
 import 'package:drums/features/models/groove.dart';
 import 'package:flutter/material.dart';
@@ -81,7 +81,7 @@ class _GrooveMeasuresWidget extends StatelessWidget {
                   if (measure == groove.measures.last)
                     SizedBox(
                       height: (groove.drumSet.selected.length + 1) *
-                          NoteView.height,
+                          EditGridConfiguration.noteHeight,
                       child: IconButton(
                         icon: const Icon(Icons.add_outlined),
                         onPressed: groove.addNewMeasure,

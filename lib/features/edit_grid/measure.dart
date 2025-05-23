@@ -1,6 +1,6 @@
 import 'package:drums/features/actions/editing/selector.dart';
 import 'package:drums/features/edit_grid/beat.dart';
-import 'package:drums/features/edit_grid/note.dart';
+import 'package:drums/features/edit_grid/configuration.dart';
 import 'package:drums/features/edit_grid/time_signature.dart';
 import 'package:drums/features/models/measure.dart';
 import 'package:drums/features/models/groove.dart';
@@ -76,8 +76,8 @@ class _ControlPanel extends StatelessWidget {
           onTap: () => groove.removeMeasure(measure),
           behavior: HitTestBehavior.translucent,
           child: SizedBox(
-            height: NoteView.height,
-            width: NoteView.height,
+            height: EditGridConfiguration.noteHeight,
+            width: EditGridConfiguration.noteHeight,
             child: Icon(Icons.close_outlined, size: 20),
           ),
         ),
