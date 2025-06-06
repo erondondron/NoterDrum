@@ -113,7 +113,8 @@ class NotesEditingController extends ChangeNotifier {
     for (var triplet in beatLine.notes.whereType<Triplet>()) {
       var selected = triplet.notes.toSet().intersection(toProcess);
       toProcess = toProcess.difference(selected);
-      if (selected.isEmpty || selected.length == 3) {
+      if (selected.isEmpty) continue;
+      if (selected.length == 3) {
         toProcess.add(triplet);
         continue;
       }
@@ -125,7 +126,7 @@ class NotesEditingController extends ChangeNotifier {
     var availableDuration = NoteDuration();
     var idx = -1;
     for (var note in toProcess) {
-      availableDuration += note.value.duration;
+      availableDuration += note.value.unit.duration;
       idx = beatLine.notes.indexOf(note);
       beatLine.notes.removeAt(idx);
     }
@@ -137,7 +138,7 @@ class NotesEditingController extends ChangeNotifier {
       var noteDuration = noteValue.unit.duration;
       if (noteDuration > availableDuration) {
         var possibleNoteValue = NoteValue.values.firstWhere(
-          (note) => note < noteValue.unit,
+          (note) => note.unit < noteValue,
           orElse: () => noteValue,
         );
         if (noteValue == possibleNoteValue) break;
