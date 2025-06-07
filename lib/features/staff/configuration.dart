@@ -23,7 +23,7 @@ class NotesSettings {
   static const double stemInclineAngle = 0.08727;
   static const double stemInclineDx = 0.0875;
   static const double stemOffset = headRadius - 0.5 * LinesWidthSettings.stem;
-  static const double stemLength = 4 * FiveLinesSettings.gap;
+  static const double stemLength = 3 * FiveLinesSettings.gap;
 
   static const double flagWidth = FiveLinesSettings.gap;
   static const double beamThickness = 4;

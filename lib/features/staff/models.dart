@@ -20,16 +20,6 @@ class StaffPoint {
   Offset toOffset() => Offset(x, y);
 }
 
-class StaffLine {
-  Point start;
-  Point end;
-
-  StaffLine({
-    required this.start,
-    required this.end,
-  });
-}
-
 class StaffNote {
   final NoteDuration start;
   final StrokeType stroke;
@@ -57,7 +47,7 @@ class StaffTriplet {
 class StaffNoteStack {
   NoteDuration start;
   NoteValue noteValue;
-  List<StaffNote> notes = [];
+  List<StaffNote> notes;
 
   late double x;
   late double width;
@@ -71,36 +61,50 @@ class StaffNoteStack {
   StaffNoteStack({
     required this.start,
     this.noteValue = NoteValue.thirtySecond,
-  });
+    List<StaffNote>? notes,
+  }) : notes = notes ?? [];
 }
 
 class StaffNoteGroup {
   List<StaffNoteStack> stacks;
-  Map<NoteDuration, StaffNoteGroup> subgroups = {};
-  List<StaffNoteStack> singleNotes = [];
+  Map<NoteDuration, StaffNoteGroup> subgroups;
+  List<StaffNoteStack> singleNotes;
 
   NoteValue noteValue = NoteValue.quarter;
-  double beamInclineDx = NotesSettings.beamInclineDx;
+  double _beamInclineDx = NotesSettings.beamInclineDx;
 
   double get width => stacks.isNotEmpty ? stacks.last.x - stacks.first.x : 0;
 
   NoteDuration get duration =>
       stacks.isNotEmpty ? stacks.last.end - stacks.first.start : NoteDuration();
 
+  double get beamInclineDx => _beamInclineDx;
+
+  set beamInclineDx(double value) {
+    _beamInclineDx = value;
+    for (var subgroup in subgroups.values) {
+      subgroup.beamInclineDx = value;
+    }
+  }
+
   StaffNoteGroup({
     this.noteValue = NoteValue.quarter,
     List<StaffNoteStack>? stacks,
-  }) : stacks = stacks ?? [];
+    Map<NoteDuration, StaffNoteGroup>? subgroups,
+    List<StaffNoteStack>? singleNotes,
+  })  : stacks = stacks ?? [],
+        subgroups = subgroups ?? {},
+        singleNotes = singleNotes ?? [];
 }
 
 class StaffConverter {
-  static StaffNoteGroup convert(Beat grooveBeat) {
+  static StaffNoteGroup convertBeat(Beat grooveBeat) {
     var beat = StaffNoteGroup();
-    var beatDuration = _getBeatDuration(grooveBeat);
+    var beatDuration = getBeatDuration(grooveBeat);
 
-    var triplets = _convertTriplets(grooveBeat);
-    beat.subgroups = _mergeTriplets(triplets);
-    _fillRestStacks(beat, beatDuration);
+    var triplets = convertTriplets(grooveBeat);
+    beat.subgroups = mergeTriplets(triplets);
+    fillRestStacks(beat, beatDuration);
 
     var notes = _convertNotes(grooveBeat);
     _fitNotesToBeat(beat, notes);
@@ -116,14 +120,16 @@ class StaffConverter {
     return beat;
   }
 
-  static NoteDuration _getBeatDuration(Beat grooveBeat) {
+  @visibleForTesting
+  static NoteDuration getBeatDuration(Beat grooveBeat) {
     return NoteDuration.fromNoteValue(
       noteValue: grooveBeat.noteValue,
       count: grooveBeat.length,
     );
   }
 
-  static List<StaffTriplet> _convertTriplets(Beat grooveBeat) {
+  @visibleForTesting
+  static List<StaffTriplet> convertTriplets(Beat grooveBeat) {
     var triplets = <StaffTriplet>[];
     for (var gridLine in grooveBeat.notesGrid) {
       var lineDuration = NoteDuration();
@@ -157,48 +163,59 @@ class StaffConverter {
     return triplets;
   }
 
-  static Map<NoteDuration, StaffNoteGroup> _mergeTriplets(
+  @visibleForTesting
+  static Map<NoteDuration, StaffNoteGroup> mergeTriplets(
     List<StaffTriplet> triplets,
   ) {
     var groups = <NoteDuration, StaffNoteGroup>{};
     for (var noteValue in NoteValue.values.where((v) => v.length == 3)) {
-      var groupsToMerge = <NoteDuration, StaffNoteGroup>{};
-
       for (var triplet in triplets.where((t) => t.noteValue == noteValue)) {
-        var group = groupsToMerge[triplet.notes.first.start];
-        group ??= StaffNoteGroup(
-          noteValue: noteValue,
-          stacks: triplet.notes
-              .map((note) => StaffNoteStack(
-                    start: note.start,
-                    noteValue: noteValue,
-                  ))
-              .toList(),
-        );
-        for (var i = 0; i < noteValue.length; i++) {
-          var note = triplet.notes[i];
+        var tripletStart = triplet.notes.first.start;
+        if (!groups.containsKey(tripletStart)) {
+          groups[tripletStart] = createNoteGroup(
+            tripletStart,
+            noteValue,
+            withParents: true,
+          );
+        }
+        var group = groups[tripletStart]!;
+        for (var note in triplet.notes) {
           if (note.stroke == StrokeType.off) continue;
-          group.stacks[i].notes.add(note);
+          var stack = StaffNoteStack(
+            start: note.start,
+            noteValue: noteValue,
+            notes: [note],
+          );
+          mergeTripletWithStack(group, stack);
         }
-        groupsToMerge[triplet.notes.first.start] = group;
       }
+    }
 
-      for (var triplet in groupsToMerge.entries) {
-        var group = groups[triplet.key];
-        if (group == null) {
-          groups[triplet.key] = triplet.value;
-          continue;
-        }
-        for (var stack in triplet.value.stacks) {
-          _mergeTripletWithStack(group, stack);
+    var step = NoteDuration();
+    var toProcess = groups.entries.toList();
+    toProcess.sort((a, b) => a.key.value.compareTo(b.key.value));
+    while (true) {
+      toProcess = groups.entries.where((t) => t.key >= step).toList();
+      if (toProcess.length < 2) break;
+      var triplet = toProcess.first;
+      step = triplet.value.stacks.last.end;
+
+      var toMerge = toProcess.where((t) => t.key < step).toList();
+      toProcess = toProcess.sublist(toMerge.length);
+
+      for (var subTriplet in toMerge.sublist(1)) {
+        groups.remove(subTriplet.key);
+        for (var stack in subTriplet.value.stacks) {
+          mergeTripletWithStack(triplet.value, stack);
+          // TODO добавить обработку случаев, когда триоли пересекаются не полностью
         }
       }
     }
     return groups;
-    // TODO добавить обработку случаев, когда триоли пересекаются не полностью
   }
 
-  static bool _mergeTripletWithStack(
+  @visibleForTesting
+  static bool mergeTripletWithStack(
     StaffNoteGroup? triplet,
     StaffNoteStack stack,
   ) {
@@ -222,64 +239,82 @@ class StaffConverter {
     var tripletHalf = tripletStart + tripletDuration ~/ 2;
 
     var subTripletStart = tripletStart;
-    if (stack.start < tripletHalf) subTripletStart = tripletHalf;
+    if (stack.start >= tripletHalf) subTripletStart = tripletHalf;
     subTriplet = triplet.subgroups[subTripletStart];
-    subTriplet ??= _createSubTriplet(
-      subTripletStart,
-      triplet.noteValue,
-      tripletStacks,
-    );
+    if (subTriplet == null) {
+      var subTripletValue = triplet.noteValue.smaller;
+      if (subTripletValue == null) return false;
+      subTriplet = createNoteGroup(
+        subTripletStart,
+        subTripletValue,
+        stacks: tripletStacks,
+      );
+    }
 
-    var success = _mergeTripletWithStack(subTriplet, stack);
+    var success = mergeTripletWithStack(subTriplet, stack);
     if (!success) return false;
 
-    triplet.subgroups[subTripletStart] = subTriplet!;
-    _collectStacksFromSubgroups(triplet);
+    triplet.subgroups[subTripletStart] = subTriplet;
+    collectStacksFromSubgroups(triplet);
     return true;
   }
 
-  static StaffNoteGroup? _createSubTriplet(
+  @visibleForTesting
+  static StaffNoteGroup createNoteGroup(
     NoteDuration start,
-    NoteValue noteValue,
-    Map<NoteDuration, StaffNoteStack> stacks,
-  ) {
-    var newNoteValue = noteValue.smaller;
-    if (newNoteValue == null) return null;
-    var stackDuration = newNoteValue.duration;
-    var tripletStacks = <StaffNoteStack>[];
-    for (var i = 0; i < newNoteValue.length; i++) {
+    NoteValue noteValue, {
+    bool withParents = false,
+    Map<NoteDuration, StaffNoteStack>? stacks,
+  }) {
+    var stackDuration = noteValue.duration;
+    var groupStacks = <StaffNoteStack>[];
+    for (var i = 0; i < noteValue.length; i++) {
       var stackStart = start + stackDuration * i;
-      var stack = stacks[stackStart] ??
+      var stack = stacks?[stackStart] ??
           StaffNoteStack(
             start: stackStart,
-            noteValue: newNoteValue,
+            noteValue: noteValue,
           );
-      stack.noteValue = newNoteValue;
-      tripletStacks.add(stack);
+      stack.noteValue = noteValue;
+      groupStacks.add(stack);
     }
-    return StaffNoteGroup(
-      noteValue: newNoteValue,
-      stacks: tripletStacks,
+    var group = StaffNoteGroup(
+      noteValue: noteValue,
+      stacks: groupStacks,
     );
+    if (withParents) {
+      var nestedValue = noteValue.larger;
+      while (nestedValue != null) {
+        group = StaffNoteGroup(
+          noteValue: nestedValue,
+          stacks: groupStacks,
+          subgroups: {start: group},
+        );
+        nestedValue = nestedValue.larger;
+      }
+    }
+    return group;
   }
 
-  static void _collectStacksFromSubgroups(
-    StaffNoteGroup group,
-  ) {
-    if (group.subgroups.isEmpty) return;
+  @visibleForTesting
+  static void collectStacksFromSubgroups(StaffNoteGroup group) {
+    if (group.subgroups.isEmpty) {
+      group.stacks.sort((a, b) => a.start.value.compareTo(b.start.value));
+      return;
+    }
     var stacks = group.stacks.toSet();
     for (var subgroup in group.subgroups.values) {
-      _collectStacksFromSubgroups(subgroup);
+      collectStacksFromSubgroups(subgroup);
       stacks.addAll(subgroup.stacks);
     }
     group.stacks = stacks.toList();
     group.stacks.sort((a, b) => a.start.value.compareTo(b.start.value));
   }
 
-  static void _fillRestStacks(StaffNoteGroup beat, NoteDuration beatDuration) {
+  @visibleForTesting
+  static void fillRestStacks(StaffNoteGroup beat, NoteDuration beatDuration) {
     var subgroups = beat.subgroups.entries.toList()
-      ..sort((a, b) => a.key.value.compareTo(b.key.value))
-      ..reversed;
+      ..sort((a, b) => b.key.value.compareTo(a.key.value));
     var step = NoteDuration();
     while (step < beatDuration) {
       var stepEnd = beatDuration;
@@ -363,7 +398,7 @@ class StaffConverter {
 
       if (subgroup.noteValue.length == 3) {
         for (var stack in groupStacks) {
-          _mergeTripletWithStack(subgroup, stack);
+          mergeTripletWithStack(subgroup, stack);
         }
         continue;
       }
@@ -432,11 +467,14 @@ class StaffConverter {
     }
 
     for (var subgroup in nextValueGroups) {
-      int start = subgroup.stacks.indexWhere((s) => s.notes.isNotEmpty);
-      if (start == -1) continue;
+      if (group.noteValue == NoteValue.quarter) {
+        int start = subgroup.stacks.indexWhere((s) => s.notes.isNotEmpty);
+        if (start == -1) continue;
 
-      int end = subgroup.stacks.lastIndexWhere((s) => s.notes.isNotEmpty);
-      subgroup.stacks = subgroup.stacks.sublist(start, end + 1);
+        int end = subgroup.stacks.lastIndexWhere((s) => s.notes.isNotEmpty);
+        subgroup.stacks = subgroup.stacks.sublist(start, end + 1);
+      }
+
       if (subgroup.stacks.length == 1) {
         group.singleNotes.add(subgroup.stacks.first);
         continue;
@@ -448,7 +486,7 @@ class StaffConverter {
   }
 
   static void _unpackSubgroups(StaffNoteGroup beat) {
-    _collectStacksFromSubgroups(beat);
+    collectStacksFromSubgroups(beat);
     var subgroups = beat.subgroups.entries.toList();
     for (var group in subgroups) {
       if (group.value.noteValue.length == 3) continue;
@@ -538,7 +576,6 @@ class StaffConverter {
   }
 
   static void _setupSingleNoteStems(StaffNoteGroup beat) {
-    var stemEndOffset = NotesSettings.stemInclineDx * NotesSettings.stemLength;
     for (var stack in beat.singleNotes) {
       var lowerNote = stack.notes.last;
       stack.stemStart = StaffPoint(
@@ -547,9 +584,12 @@ class StaffConverter {
       );
 
       var upperNote = stack.notes.first;
+      var stemFlagLength = _getStemFlagLength(stack.noteValue);
+      var stemLength = NotesSettings.stemLength + stemFlagLength / 2;
+      var stemEndOffset = NotesSettings.stemInclineDx * stemLength;
       stack.stemEnd = StaffPoint(
         x: upperNote.position.x + NotesSettings.stemOffset + stemEndOffset,
-        y: upperNote.position.y - NotesSettings.stemLength,
+        y: upperNote.position.y - stemLength,
       );
     }
   }
@@ -567,21 +607,29 @@ class StaffConverter {
         : double.infinity;
 
     var previousStackPosition = startStack.x;
-    for (var division in group.stacks) {
-      var dx = division.x - previousStackPosition;
+    for (var stack in group.stacks) {
+      var dx = stack.x - previousStackPosition;
       endY -= NotesSettings.beamInclineDx * dx;
-      previousStackPosition = division.x;
-      if (division.notes.isEmpty) continue;
-      var upperNoteY = division.notes.first.position.y;
-      var noteStemEnd = upperNoteY - NotesSettings.stemLength;
-      if (noteStemEnd < endY) endY = noteStemEnd;
+      previousStackPosition = stack.x;
+
+      double stemEnd;
+      var stemFlagWidth = _getStemFlagLength(stack.noteValue);
+      if (stack.notes.isNotEmpty) {
+        var upperNoteY = stack.notes.first.position.y;
+        var stemLength = NotesSettings.stemLength + stemFlagWidth / 2;
+        stemEnd = upperNoteY - stemLength;
+      } else {
+        var upperLineY = -2 * FiveLinesSettings.gap;
+        stemEnd = upperLineY - stemFlagWidth;
+      }
+      if (stemEnd < endY) endY = stemEnd;
     }
 
     var endStack = group.stacks.last;
     var length = endStack.x - startStack.x;
     var startY = endY + length * NotesSettings.beamInclineDx;
-    if (endY < -FiveLinesSettings.center) {
-      group.beamInclineDx = (FiveLinesSettings.center + startY) / length;
+    if (endY < -FiveLinesSettings.top) {
+      group.beamInclineDx = (FiveLinesSettings.top + startY) / length;
     }
 
     for (var stack in group.stacks) {
@@ -599,18 +647,22 @@ class StaffConverter {
         continue;
       }
 
-      if (group.noteValue.length != 3) continue;
-
       var stemEndIncline = NotesSettings.stemInclineDx * -stemEndY;
       var stemEndOffset = NotesSettings.stemOffset + stemEndIncline;
       var stemEndX = stack.x + stemEndOffset;
       stack.stemEnd = StaffPoint(x: stemEndX, y: stemEndY);
 
-      var stemLength = NotesSettings.flagWidth;
+      var stemLength = _getStemFlagLength(stack.noteValue);
       var stemStartIncline = NotesSettings.stemInclineDx * stemLength;
       var stemStartX = stemEndX - stemStartIncline;
       var stemStartY = stemEndY + stemLength;
       stack.stemStart = StaffPoint(x: stemStartX, y: stemStartY);
     }
+  }
+
+  static double _getStemFlagLength(NoteValue noteValue) {
+    if (noteValue.length == 3) noteValue = noteValue.unit.smaller!;
+    var relative = noteValue.part.bitLength - NoteValue.quarter.part.bitLength;
+    return relative * NotesSettings.flagWidth;
   }
 }

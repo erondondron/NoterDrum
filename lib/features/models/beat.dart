@@ -58,7 +58,7 @@ class Beat extends ChangeNotifier {
 
   void generateDivisions() {
     calculateNotesWidth();
-    staffModel = StaffConverter.convert(this);
+    staffModel = StaffConverter.convertBeat(this);
     notifyListeners();
   }
 
@@ -67,13 +67,23 @@ class Beat extends ChangeNotifier {
       viewSize = 0;
       return;
     }
-    var shortestNote = notesGrid
-        .expand((line) => line.notes)
-        .reduce((a, b) => a.value.part > b.value.part ? a : b);
+    var notes = notesGrid.expand((line) => line.notes);
+    var values = notes.map((note) => note.value).toSet();
+    var shortest = values.reduce((a, b) => a.part > b.part ? a : b);
+    var dw = EditGridConfiguration.noteWidth / shortest.duration.value;
+
+    var tripletSpreaders = {NoteValue.thirtySecond, NoteValue.sixteenth};
+    if (values.contains(NoteValue.eighthTriplet)) {
+      tripletSpreaders.add(NoteValue.eighth);
+      if (values.intersection(tripletSpreaders).isNotEmpty) dw *= 2;
+    }
+    else if (values.contains(NoteValue.sixteenthTriplet)) {
+      if (values.intersection(tripletSpreaders).isNotEmpty) dw *= 2;
+    }
+
     for (var gridLine in notesGrid) {
       for (var note in gridLine.notes) {
-        var relativeSize = shortestNote.value.part / note.value.unit.part;
-        note.viewSize = relativeSize * EditGridConfiguration.noteWidth;
+        note.viewSize = note.value.unit.duration.value * dw;
         if (note is Triplet) {
           var tripletNoteSize = note.viewSize / 3;
           for (var tripletNote in note.notes) {

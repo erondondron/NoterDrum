@@ -62,7 +62,7 @@ class NoteValuePainter {
     _drawBeamLine(
       position: startStack.stemEnd!,
       beamLevel: beamLevel,
-      length: endStack.x - startStack.x + LinesWidthSettings.stem,
+      length: endStack.x - startStack.x,
       inclineDx: group.beamInclineDx,
     );
 
@@ -112,6 +112,7 @@ class NoteValuePainter {
 
     length *= rightFlag ? 1 : -1;
     var beamIncline = length * inclineDx;
+    length += beamIncline * NotesSettings.stemInclineDx;
     var topRight = Offset(
       topLeft.dx + length,
       topLeft.dy - beamIncline,
@@ -136,11 +137,12 @@ class NoteValuePainter {
     var signFont = NotesSettings.tripletSignFont;
     var position = Offset(
       (startStack.stemEnd!.x + endStack.stemEnd!.x - signFont / 2) / 2,
-      (startStack.stemEnd!.y + endStack.stemEnd!.y - 3 * signFont) / 2,
+      (startStack.stemEnd!.y + endStack.stemEnd!.y - 2.5 * signFont) / 2,
     );
     var textStyle = TextStyle(
       color: color,
       fontSize: NotesSettings.tripletSignFont,
+      fontWeight: FontWeight.bold,
     );
     var textSpan = TextSpan(text: "3", style: textStyle);
     var textPainter = TextPainter(

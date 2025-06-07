@@ -81,6 +81,7 @@ class NotesEditingController extends ChangeNotifier {
       }
     }
     return NoteValue.values
+        .where((note) => note >= NoteValue.thirtySecond)
         .where((note) => note.unit.duration <= availableDuration)
         .toList();
   }
