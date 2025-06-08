@@ -111,7 +111,7 @@ class _BeatsNoteValueEditor extends StatelessWidget {
       children: [
         IconButton(
           icon: Icon(Icons.add_outlined),
-          onPressed: timeSignature.noteValue != NoteValue.values.last
+          onPressed: timeSignature.noteValue != NoteValue.thirtySecond
               ? timeSignature.increaseNoteValue
               : null,
         ),
