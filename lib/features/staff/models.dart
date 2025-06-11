@@ -194,21 +194,52 @@ class StaffConverter {
     var step = NoteDuration();
     var toProcess = groups.entries.toList();
     toProcess.sort((a, b) => a.key.value.compareTo(b.key.value));
-    while (true) {
-      toProcess = groups.entries.where((t) => t.key >= step).toList();
-      if (toProcess.length < 2) break;
+    while (toProcess.length > 1) {
       var triplet = toProcess.first;
       step = triplet.value.stacks.last.end;
 
       var toMerge = toProcess.where((t) => t.key < step).toList();
+      var residue = <StaffNoteStack>[];
       toProcess = toProcess.sublist(toMerge.length);
 
       for (var subTriplet in toMerge.sublist(1)) {
         groups.remove(subTriplet.key);
         for (var stack in subTriplet.value.stacks) {
-          mergeTripletWithStack(triplet.value, stack);
-          // TODO добавить обработку случаев, когда триоли пересекаются не полностью
+          var success = mergeTripletWithStack(triplet.value, stack);
+          if (!success) residue.add(stack);
         }
+      }
+
+      if (residue.isNotEmpty) {
+        var last = residue.map((s) => s.start).reduce((a, b) => a > b ? a : b);
+        var noteValue = NoteValue.sixtyFourthTriplet;
+        while (noteValue != NoteValue.eighthTriplet) {
+          var noteValueEnd = step + noteValue.duration;
+          if (noteValueEnd < last) {
+            noteValue = noteValue.larger!;
+            continue;
+          }
+          if (toProcess.isNotEmpty) {
+            last = toProcess
+                .where((t) => t.key < noteValueEnd)
+                .map((t) => t.value.stacks.last.start)
+                .reduce((a, b) => a > b ? a : b);
+          }
+          if (noteValueEnd >= last) break;
+        }
+
+        var newTriplet = createNoteGroup(step, noteValue, withParents: true);
+        for (var stack in residue) {
+          mergeTripletWithStack(newTriplet, stack);
+        }
+        if (toProcess.isNotEmpty && toProcess.first.key == step) {
+          var nextTriplet = toProcess.removeAt(0);
+          for (var stack in nextTriplet.value.stacks) {
+            mergeTripletWithStack(newTriplet, stack);
+          }
+        }
+        groups[step] = newTriplet;
+        toProcess.insert(0, MapEntry(step, newTriplet));
       }
     }
     return groups;
