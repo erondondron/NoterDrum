@@ -54,10 +54,12 @@ class BeatPainter extends CustomPainter {
       for (var note in stack.notes) {
         notesPainter.drawNoteHead(note);
       }
-      noteValuePainter.drawStem(stack);
+      if (stack.stemStart == null || stack.stemEnd == null) continue;
+      noteValuePainter.drawStem(stack.stemStart!, stack.stemEnd!);
     }
-    for (var division in beat.singleNotes) {
-      noteValuePainter.drawSingleNoteFlag(division);
+    for (var stack in beat.singleNotes) {
+      if (stack.stemEnd == null) continue;
+      noteValuePainter.drawSingleNoteFlag(stack.stemEnd!, stack.noteValue);
     }
     for (var group in beat.subgroups.values) {
       noteValuePainter.drawBeam(group: group);

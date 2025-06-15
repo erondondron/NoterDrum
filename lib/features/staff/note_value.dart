@@ -17,25 +17,18 @@ class NoteValuePainter {
     ..strokeWidth = LinesWidthSettings.stem
     ..style = PaintingStyle.fill;
 
-  void drawStem(StaffNoteStack division) {
-    if (division.stemStart == null || division.stemEnd == null) return;
-    canvas.drawLine(
-      division.stemStart!.toOffset(),
-      division.stemEnd!.toOffset(),
-      paint,
-    );
+  void drawStem(StaffPoint start, StaffPoint end) {
+    canvas.drawLine(start.toOffset(), end.toOffset(), paint);
   }
 
-  void drawSingleNoteFlag(StaffNoteStack division) {
-    if (division.noteValue.part < NoteValue.quarter.part) return;
-    if (division.stemEnd == null) return;
-    var flagsCount =
-        division.noteValue.part.bitLength - NoteValue.quarter.part.bitLength;
-    for (var i = 0; i < flagsCount; i++) {
+  void drawSingleNoteFlag(StaffPoint position, NoteValue noteValue) {
+    if (noteValue.part < NoteValue.quarter.part) return;
+    var count = noteValue.part.bitLength - NoteValue.quarter.part.bitLength;
+    for (var i = 0; i < count; i++) {
       var offset = NotesSettings.flagWidth * i;
       var startPosition = Offset(
-        division.stemEnd!.x - offset * NotesSettings.stemInclineDx,
-        division.stemEnd!.y + offset,
+        position.x - offset * NotesSettings.stemInclineDx,
+        position.y + offset,
       );
 
       var path = Path()

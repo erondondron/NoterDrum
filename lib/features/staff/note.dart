@@ -2,8 +2,10 @@ import 'dart:math';
 
 import 'package:drums/features/models/drum_set.dart';
 import 'package:drums/features/models/note.dart';
+import 'package:drums/features/models/note_value.dart';
 import 'package:drums/features/staff/configuration.dart';
 import 'package:drums/features/staff/models.dart';
+import 'package:drums/features/staff/note_value.dart';
 import 'package:flutter/material.dart';
 
 class NotePainter {
@@ -90,23 +92,23 @@ class NotePainter {
       ..translate(position.dx - offset, position.dy)
       ..scale(0.65);
 
-    var signPosition = Offset(0, 0);
-    drawCircleHead(signPosition);
-
-    // var flagPainter = NoteFlagPainter(color: color, canvas: canvas);
-    // flagPainter.drawFlags(
-    //   notePosition: signPosition,
-    //   noteValue: NoteValue.eighth,
-    //   stemLength: flamSignLength,
-    // );
+    drawPlainHead(drum, Offset(0, 0));
 
     var stemLength = 3 * FiveLinesSettings.gap;
+    var stemStart = StaffPoint(x: NotesSettings.headRadius);
+    var stemEnd = StaffPoint(
+      x: NotesSettings.headRadius + stemLength * NotesSettings.stemInclineDx,
+      y: -stemLength,
+    );
+
+    var noteValuePainter = NoteValuePainter(color: color, canvas: canvas);
+    noteValuePainter.drawStem(stemStart, stemEnd);
+    noteValuePainter.drawSingleNoteFlag(stemEnd, NoteValue.eighth);
+
+    var strokeLineStart = Offset(0, -stemLength + offset);
+    var strokeLineEnd = Offset(offset, -stemLength + NotesSettings.headRadius);
     canvas
-      ..drawLine(
-        Offset(0, -stemLength + offset),
-        Offset(offset, -stemLength + NotesSettings.headRadius),
-        paint,
-      )
+      ..drawLine(strokeLineStart, strokeLineEnd, paint)
       ..restore();
   }
 
