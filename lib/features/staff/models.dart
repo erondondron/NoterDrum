@@ -214,7 +214,7 @@ class StaffConverter {
         var last = residue.map((s) => s.start).reduce((a, b) => a > b ? a : b);
         var noteValue = NoteValue.sixtyFourthTriplet;
         while (noteValue != NoteValue.eighthTriplet) {
-          var noteValueEnd = step + noteValue.duration;
+          var noteValueEnd = step + noteValue.unit.duration;
           if (noteValueEnd < last) {
             noteValue = noteValue.larger!;
             continue;

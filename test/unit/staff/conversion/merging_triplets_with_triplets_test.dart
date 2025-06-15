@@ -574,10 +574,15 @@ void mergeOverlappingTriplets() {
 void mergeDoubleOverlappingTriplets() {
   var triplets = <StaffTriplet>[
     StaffTriplet(
-      noteValue: NoteValue.eighthTriplet,
+      noteValue: NoteValue.sixteenthTriplet,
       notes: [
         StaffNote(
           start: NoteDuration(value: 0),
+          stroke: StrokeType.plain,
+          drum: Drum.kick,
+        ),
+        StaffNote(
+          start: NoteDuration(value: 8),
           stroke: StrokeType.plain,
           drum: Drum.kick,
         ),
@@ -586,86 +591,81 @@ void mergeDoubleOverlappingTriplets() {
           stroke: StrokeType.plain,
           drum: Drum.kick,
         ),
+      ],
+    ),
+    StaffTriplet(
+      noteValue: NoteValue.sixteenthTriplet,
+      notes: [
+        StaffNote(
+          start: NoteDuration(value: 24),
+          stroke: StrokeType.plain,
+          drum: Drum.kick,
+        ),
         StaffNote(
           start: NoteDuration(value: 32),
           stroke: StrokeType.plain,
           drum: Drum.kick,
         ),
-      ],
-    ),
-    StaffTriplet(
-      noteValue: NoteValue.eighthTriplet,
-      notes: [
-        StaffNote(
-          start: NoteDuration(value: 24),
-          stroke: StrokeType.plain,
-          drum: Drum.snare,
-        ),
         StaffNote(
           start: NoteDuration(value: 40),
           stroke: StrokeType.plain,
-          drum: Drum.snare,
-        ),
-        StaffNote(
-          start: NoteDuration(value: 56),
-          stroke: StrokeType.plain,
-          drum: Drum.snare,
+          drum: Drum.kick,
         ),
       ],
     ),
     StaffTriplet(
-      noteValue: NoteValue.eighthTriplet,
+      noteValue: NoteValue.sixteenthTriplet,
       notes: [
         StaffNote(
-          start: NoteDuration(value: 48),
+          start: NoteDuration(value: 12),
           stroke: StrokeType.plain,
-          drum: Drum.kick,
+          drum: Drum.snare,
         ),
         StaffNote(
-          start: NoteDuration(value: 64),
+          start: NoteDuration(value: 20),
           stroke: StrokeType.plain,
-          drum: Drum.kick,
+          drum: Drum.snare,
         ),
         StaffNote(
-          start: NoteDuration(value: 80),
+          start: NoteDuration(value: 28),
           stroke: StrokeType.plain,
-          drum: Drum.kick,
+          drum: Drum.snare,
         ),
       ],
     ),
   ];
 
-  var firstSixteenthTriplet = StaffNoteGroup(
-    noteValue: NoteValue.sixteenthTriplet,
+  var firstThirtySecondTriplet = StaffNoteGroup(
+    noteValue: NoteValue.thirtySecondTriplet,
     stacks: [
       StaffNoteStack(
-        start: NoteDuration(value: 24),
-        noteValue: NoteValue.sixteenthTriplet,
+        start: NoteDuration(value: 12),
+        noteValue: NoteValue.thirtySecondTriplet,
         notes: [
           StaffNote(
-            start: NoteDuration(value: 24),
+            start: NoteDuration(value: 12),
             stroke: StrokeType.plain,
             drum: Drum.snare,
           ),
         ],
       ),
       StaffNoteStack(
-        start: NoteDuration(value: 32),
-        noteValue: NoteValue.sixteenthTriplet,
+        start: NoteDuration(value: 16),
+        noteValue: NoteValue.thirtySecondTriplet,
         notes: [
           StaffNote(
-            start: NoteDuration(value: 32),
+            start: NoteDuration(value: 16),
             stroke: StrokeType.plain,
             drum: Drum.kick,
           ),
         ],
       ),
       StaffNoteStack(
-        start: NoteDuration(value: 40),
-        noteValue: NoteValue.sixteenthTriplet,
+        start: NoteDuration(value: 20),
+        noteValue: NoteValue.thirtySecondTriplet,
         notes: [
           StaffNote(
-            start: NoteDuration(value: 40),
+            start: NoteDuration(value: 20),
             stroke: StrokeType.plain,
             drum: Drum.snare,
           ),
@@ -674,12 +674,12 @@ void mergeDoubleOverlappingTriplets() {
     ],
   );
 
-  var firstEighthTriplet = StaffNoteGroup(
-    noteValue: NoteValue.eighthTriplet,
+  var firstSixteenthTriplet = StaffNoteGroup(
+    noteValue: NoteValue.sixteenthTriplet,
     stacks: [
       StaffNoteStack(
         start: NoteDuration(value: 0),
-        noteValue: NoteValue.eighthTriplet,
+        noteValue: NoteValue.sixteenthTriplet,
         notes: [
           StaffNote(
             start: NoteDuration(value: 0),
@@ -689,82 +689,94 @@ void mergeDoubleOverlappingTriplets() {
         ],
       ),
       StaffNoteStack(
-        start: NoteDuration(value: 16),
-        noteValue: NoteValue.eighthTriplet,
+        start: NoteDuration(value: 8),
+        noteValue: NoteValue.sixteenthTriplet,
         notes: [
           StaffNote(
-            start: NoteDuration(value: 16),
+            start: NoteDuration(value: 8),
             stroke: StrokeType.plain,
             drum: Drum.kick,
           ),
         ],
       ),
-      ...firstSixteenthTriplet.stacks,
+      ...firstThirtySecondTriplet.stacks,
     ],
-    subgroups: {NoteDuration(value: 24): firstSixteenthTriplet},
+    subgroups: {NoteDuration(value: 12): firstThirtySecondTriplet},
   );
 
-  var secondSixteenthTriplet = StaffNoteGroup(
-    noteValue: NoteValue.sixteenthTriplet,
+  firstSixteenthTriplet = StaffNoteGroup(
+    noteValue: NoteValue.eighthTriplet,
+    stacks: firstSixteenthTriplet.stacks.toList(),
+    subgroups: {NoteDuration(value: 0): firstSixteenthTriplet},
+  );
+
+  var secondThirtySecondTriplet = StaffNoteGroup(
+    noteValue: NoteValue.thirtySecondTriplet,
     stacks: [
       StaffNoteStack(
-        start: NoteDuration(value: 48),
-        noteValue: NoteValue.sixteenthTriplet,
+        start: NoteDuration(value: 24),
+        noteValue: NoteValue.thirtySecondTriplet,
         notes: [
           StaffNote(
-            start: NoteDuration(value: 48),
+            start: NoteDuration(value: 24),
             stroke: StrokeType.plain,
             drum: Drum.kick,
           ),
         ],
       ),
       StaffNoteStack(
-        start: NoteDuration(value: 56),
-        noteValue: NoteValue.sixteenthTriplet,
+        start: NoteDuration(value: 28),
+        noteValue: NoteValue.thirtySecondTriplet,
         notes: [
           StaffNote(
-            start: NoteDuration(value: 56),
+            start: NoteDuration(value: 28),
             stroke: StrokeType.plain,
             drum: Drum.snare,
           ),
         ],
       ),
       StaffNoteStack(
-        start: NoteDuration(value: 64),
+        start: NoteDuration(value: 32),
+        noteValue: NoteValue.thirtySecondTriplet,
+        notes: [
+          StaffNote(
+            start: NoteDuration(value: 32),
+            stroke: StrokeType.plain,
+            drum: Drum.kick,
+          ),
+        ],
+      ),
+    ],
+  );
+
+  var secondSixteenthTriplet = StaffNoteGroup(
+    noteValue: NoteValue.sixteenthTriplet,
+    stacks: [
+      ...secondThirtySecondTriplet.stacks,
+      StaffNoteStack(
+        start: NoteDuration(value: 40),
         noteValue: NoteValue.sixteenthTriplet,
         notes: [
           StaffNote(
-            start: NoteDuration(value: 64),
+            start: NoteDuration(value: 40),
             stroke: StrokeType.plain,
             drum: Drum.kick,
           ),
         ],
       ),
     ],
+    subgroups: {NoteDuration(value: 24): secondThirtySecondTriplet},
   );
 
-  var secondEighthTriplet = StaffNoteGroup(
+  secondSixteenthTriplet = StaffNoteGroup(
     noteValue: NoteValue.eighthTriplet,
-    stacks: [
-      ...secondSixteenthTriplet.stacks,
-      StaffNoteStack(
-        start: NoteDuration(value: 80),
-        noteValue: NoteValue.eighthTriplet,
-        notes: [
-          StaffNote(
-            start: NoteDuration(value: 80),
-            stroke: StrokeType.plain,
-            drum: Drum.kick,
-          ),
-        ],
-      ),
-    ],
-    subgroups: {NoteDuration(value: 48): secondSixteenthTriplet},
+    stacks: secondSixteenthTriplet.stacks.toList(),
+    subgroups: {NoteDuration(value: 24): secondSixteenthTriplet},
   );
 
   var expected = {
-    NoteDuration(value: 0): firstEighthTriplet,
-    NoteDuration(value: 48): secondEighthTriplet,
+    NoteDuration(value: 0): firstSixteenthTriplet,
+    NoteDuration(value: 24): secondSixteenthTriplet,
   };
 
   var actual = StaffConverter.mergeTriplets(triplets);
