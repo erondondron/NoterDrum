@@ -1,9 +1,9 @@
 import 'package:drums/features/edit_grid/configuration.dart';
 import 'package:drums/features/models/drum_set.dart';
+import 'package:drums/features/shared/svg_icon.dart';
 import 'package:drums/shared/widgets/fix_height_row.dart';
 import 'package:drums/shared/widgets/text_with_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class DrumSetWidget extends StatelessWidget {
@@ -76,7 +76,7 @@ class _SelectNewDrumButton extends StatelessWidget {
               (drum) => PopupMenuItem(
                 value: drum,
                 child: TextWithIcon(
-                  icon: _DrumIcon(asset: drum.icon),
+                  icon: SvgIcon(asset: drum.icon),
                   text: drum.name,
                 ),
               ),
@@ -121,7 +121,7 @@ class _SelectedDrumRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final icon = _DrumIcon(asset: drum.icon);
+    final icon = SvgIcon(asset: drum.icon);
     if (isHidden) return icon;
 
     return FixHeightRow(
@@ -129,23 +129,6 @@ class _SelectedDrumRow extends StatelessWidget {
         TextWithIcon(icon: icon, text: drum.name),
         _RemoveDrumButton(drumSet: drumSet, drum: drum)
       ],
-    );
-  }
-}
-
-class _DrumIcon extends StatelessWidget {
-  const _DrumIcon({required this.asset});
-
-  final String asset;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = Theme.of(context).iconTheme.color!;
-    final theme = ColorFilter.mode(color, BlendMode.srcIn);
-    return SizedBox(
-      height: EditGridConfiguration.noteHeight,
-      width: EditGridConfiguration.noteHeight,
-      child: SvgPicture.asset(asset, colorFilter: theme, fit: BoxFit.none),
     );
   }
 }

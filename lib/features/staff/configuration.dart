@@ -20,13 +20,13 @@ class LinesWidthSettings {
 class NotesSettings {
   static const double headRadius = 0.5 * FiveLinesSettings.gap;
 
-  static const double stemInclineAngle = 0.08727;
-  static const double stemInclineDx = 0.0875;
+  static const double stemInclineAngle = 0.08727;  // 5 degree
+  static const double stemInclineDx = 0.0875;  // 5 degree
   static const double stemOffset = headRadius - 0.5 * LinesWidthSettings.stem;
   static const double stemLength = 3 * FiveLinesSettings.gap;
 
   static const double flagWidth = FiveLinesSettings.gap;
   static const double beamThickness = 4;
-  static const double beamInclineDx = 0.176 * 0.75;
+  static const double beamInclineDx = 0.132; // 7.5 degree
   static const double tripletSignFont = 15;
 }

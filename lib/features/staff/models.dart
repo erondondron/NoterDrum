@@ -138,8 +138,8 @@ class StaffConverter {
         lineDuration += triplet.value.unit.duration;
 
         if (triplet is! Triplet ||
-            triplet.second.stroke == StrokeType.off &&
-                triplet.third.stroke == StrokeType.off) {
+            triplet.second.stroke == StrokeType.rest &&
+                triplet.third.stroke == StrokeType.rest) {
           continue;
         }
 
@@ -180,7 +180,7 @@ class StaffConverter {
         }
         var group = groups[tripletStart]!;
         for (var note in triplet.notes) {
-          if (note.stroke == StrokeType.off) continue;
+          if (note.stroke == StrokeType.rest) continue;
           var stack = StaffNoteStack(
             start: note.start,
             noteValue: noteValue,
@@ -391,12 +391,12 @@ class StaffConverter {
 
         SingleNote? singleNote;
         if (note is SingleNote) {
-          if (note.stroke == StrokeType.off) continue;
+          if (note.stroke == StrokeType.rest) continue;
           singleNote = note;
         } else if (note is Triplet) {
-          if (note.first.stroke == StrokeType.off ||
-              note.second.stroke != StrokeType.off ||
-              note.third.stroke != StrokeType.off) {
+          if (note.first.stroke == StrokeType.rest ||
+              note.second.stroke != StrokeType.rest ||
+              note.third.stroke != StrokeType.rest) {
             continue;
           }
           singleNote = note.first;

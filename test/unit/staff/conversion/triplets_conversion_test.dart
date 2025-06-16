@@ -159,11 +159,11 @@ void convertMixedNotes() {
       ),
       second: TripletNote(
         value: NoteValue.thirtySecondTriplet,
-        stroke: StrokeType.off,
+        stroke: StrokeType.rest,
       ),
       third: TripletNote(
         value: NoteValue.thirtySecondTriplet,
-        stroke: StrokeType.off,
+        stroke: StrokeType.rest,
       ),
     ),
     Triplet(

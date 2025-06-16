@@ -1,6 +1,8 @@
 import 'package:drums/features/actions/editing/model.dart';
 import 'package:drums/features/models/note.dart';
 import 'package:drums/features/models/note_value.dart';
+import 'package:drums/features/shared/svg_icon.dart';
+import 'package:drums/shared/widgets/text_with_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -89,7 +91,6 @@ class _NoteValuesSelector extends StatelessWidget {
   }
 }
 
-// TODO(erondondron): Add note symbols
 class _StrokeTypesSelector extends StatelessWidget {
   const _StrokeTypesSelector({required this.controller});
 
@@ -107,7 +108,10 @@ class _StrokeTypesSelector extends StatelessWidget {
             .map(
               (StrokeType strokeType) => PopupMenuItem(
                 value: strokeType,
-                child: Text(strokeType.name),
+                child: TextWithIcon(
+                  icon: SvgIcon(asset: strokeType.icon),
+                  text: strokeType.name,
+                ),
               ),
             )
             .toList();

@@ -99,7 +99,7 @@ class NoteView extends StatelessWidget {
 
   Widget _noteStrokeView(BuildContext context) {
     switch (note.stroke) {
-      case (StrokeType.off):
+      case (StrokeType.rest):
         return SizedBox.shrink();
       case StrokeType.plain:
         return _plainStrokeView(context: context);

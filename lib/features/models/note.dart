@@ -7,27 +7,29 @@ const Set<Drum> cymbals = {Drum.crash, Drum.ride};
 const Set<Drum> snareAndToms = {Drum.snare, Drum.tom1, Drum.tom2, Drum.tom3};
 
 enum StrokeType {
-  opened(name: "Opened", drums: {Drum.hiHat}),
-  bell(name: "Bell", drums: cymbals),
-  choke(name: "Choke", drums: cymbals),
-  accent(name: "Accent"),
-  plain(name: "Plain"),
-  ghost(name: "Ghost"),
-  rimClick(name: "Rim click", drums: snareAndToms),
-  rimShot(name: "Rim shot", drums: snareAndToms),
-  flam(name: "Flam"),
-  foot(name: "Foot", drums: {Drum.hiHat}),
-  off(name: "Off");
+  opened(name: "Opened", icon: "opened.svg", drums: {Drum.hiHat}),
+  bell(name: "Bell", icon: "bell.svg", drums: cymbals),
+  choke(name: "Choke", icon: "choke.svg", drums: cymbals),
+  accent(name: "Accent", icon: "accent.svg"),
+  plain(name: "Plain", icon: "plain.svg"),
+  ghost(name: "Ghost", icon: "ghost.svg"),
+  rimClick(name: "Rim click", icon: "rim-click.svg", drums: snareAndToms),
+  rimShot(name: "Rim shot", icon: "rim-shot.svg", drums: snareAndToms),
+  flam(name: "Flam", icon: "flam.svg"),
+  foot(name: "Foot", icon: "foot.svg", drums: {Drum.hiHat}),
+  rest(name: "Rest", icon: "rest.svg");
 
   final String name;
   final Set<Drum>? drums;
+  final String icon;
 
   Set<Drum> get filter => drums ?? Drum.values.toSet();
 
   const StrokeType({
     required this.name,
     this.drums,
-  });
+    required String icon,
+  }) : icon = "assets/icons/strokes/$icon";
 }
 
 abstract class Note {
@@ -68,7 +70,7 @@ class SingleNote extends Note {
 
   SingleNote({
     required super.value,
-    this.stroke = StrokeType.off,
+    this.stroke = StrokeType.rest,
   });
 
   SingleNote.fromJson(Map<String, dynamic> json)

@@ -132,7 +132,7 @@ class Beat extends ChangeNotifier {
 
   void changeNoteStroke({required SingleNote note, StrokeType? stroke}) {
     note.stroke = stroke ??
-        (note.stroke == StrokeType.off ? StrokeType.plain : StrokeType.off);
+        (note.stroke == StrokeType.rest ? StrokeType.plain : StrokeType.rest);
     generateDivisions();
   }
 

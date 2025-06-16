@@ -18,7 +18,7 @@ enum Drum {
     required this.order,
     required this.name,
     required String icon,
-  }) : icon = "assets/icons/$icon";
+  }) : icon = "assets/icons/drums/$icon";
 }
 
 class DrumSetPanelController extends ChangeNotifier {

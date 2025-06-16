@@ -18,7 +18,7 @@ void mergeWithSameValues() {
         ),
         StaffNote(
           start: NoteDuration(value: 16),
-          stroke: StrokeType.off,
+          stroke: StrokeType.rest,
           drum: Drum.tom3,
         ),
         StaffNote(
@@ -33,7 +33,7 @@ void mergeWithSameValues() {
       notes: [
         StaffNote(
           start: NoteDuration(value: 0),
-          stroke: StrokeType.off,
+          stroke: StrokeType.rest,
           drum: Drum.snare,
         ),
         StaffNote(
@@ -43,7 +43,7 @@ void mergeWithSameValues() {
         ),
         StaffNote(
           start: NoteDuration(value: 32),
-          stroke: StrokeType.off,
+          stroke: StrokeType.rest,
           drum: Drum.snare,
         ),
       ],
@@ -53,7 +53,7 @@ void mergeWithSameValues() {
       notes: [
         StaffNote(
           start: NoteDuration(value: 48),
-          stroke: StrokeType.off,
+          stroke: StrokeType.rest,
           drum: Drum.tom3,
         ),
         StaffNote(
@@ -63,7 +63,7 @@ void mergeWithSameValues() {
         ),
         StaffNote(
           start: NoteDuration(value: 64),
-          stroke: StrokeType.off,
+          stroke: StrokeType.rest,
           drum: Drum.tom3,
         ),
       ],
@@ -78,7 +78,7 @@ void mergeWithSameValues() {
         ),
         StaffNote(
           start: NoteDuration(value: 56),
-          stroke: StrokeType.off,
+          stroke: StrokeType.rest,
           drum: Drum.snare,
         ),
         StaffNote(
