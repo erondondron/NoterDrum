@@ -19,8 +19,9 @@ enum NoteValue {
     String icon = "empty.svg",
   }) : icon = "assets/icons/note_values/$icon";
 
-  String get name =>
-      length == 3 ? "${part * 2 ~/ length}th triplet" : "${part}th note";
+  String get shortName => length == 3 ? "${part * 2 ~/ length}th" : "${part}th";
+
+  String get name => "$shortName ${length == 3 ? "triplet" : "note"}";
 
   NoteValue get unit {
     return switch (this) {

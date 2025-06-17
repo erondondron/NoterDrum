@@ -2,7 +2,7 @@ import 'package:drums/features/edit_grid/configuration.dart';
 import 'package:drums/features/models/drum_set.dart';
 import 'package:drums/features/shared/svg_icon.dart';
 import 'package:drums/shared/widgets/fix_height_row.dart';
-import 'package:drums/shared/widgets/text_with_icon.dart';
+import 'package:drums/features/shared/text_with_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -67,7 +67,7 @@ class _SelectNewDrumButton extends StatelessWidget {
           width: EditGridConfiguration.noteHeight,
           child: Icon(Icons.add_outlined),
         ),
-        text: "More",
+        text: Text("More"),
       ),
       onSelected: (Drum drum) => drumSet.add(drum),
       itemBuilder: (BuildContext context) {
@@ -77,7 +77,7 @@ class _SelectNewDrumButton extends StatelessWidget {
                 value: drum,
                 child: TextWithIcon(
                   icon: SvgIcon(asset: drum.icon),
-                  text: drum.name,
+                  text: Text(drum.name),
                 ),
               ),
             )
@@ -126,7 +126,7 @@ class _SelectedDrumRow extends StatelessWidget {
 
     return FixHeightRow(
       children: [
-        TextWithIcon(icon: icon, text: drum.name),
+        TextWithIcon(icon: icon, text: Text(drum.name)),
         _RemoveDrumButton(drumSet: drumSet, drum: drum)
       ],
     );

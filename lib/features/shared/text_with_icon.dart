@@ -8,7 +8,7 @@ class TextWithIcon extends StatelessWidget {
   });
 
   final Widget icon;
-  final String text;
+  final Text text;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class TextWithIcon extends StatelessWidget {
         icon,
         Padding(
           padding: EdgeInsets.only(left: 10, right: 20),
-          child: Text(text),
+          child: text,
         ),
       ],
     );

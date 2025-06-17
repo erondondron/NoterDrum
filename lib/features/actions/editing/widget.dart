@@ -2,7 +2,7 @@ import 'package:drums/features/actions/editing/model.dart';
 import 'package:drums/features/models/note.dart';
 import 'package:drums/features/models/note_value.dart';
 import 'package:drums/features/shared/svg_icon.dart';
-import 'package:drums/shared/widgets/text_with_icon.dart';
+import 'package:drums/features/shared/text_with_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -83,7 +83,7 @@ class _NoteValuesSelector extends StatelessWidget {
                 value: noteValue,
                 child: TextWithIcon(
                   icon: SvgIcon(asset: noteValue.icon),
-                  text: noteValue.name,
+                  text: Text(noteValue.name),
                 ),
               ),
             )
@@ -112,7 +112,7 @@ class _StrokeTypesSelector extends StatelessWidget {
                 value: strokeType,
                 child: TextWithIcon(
                   icon: SvgIcon(asset: strokeType.icon),
-                  text: strokeType.name,
+                  text: Text(strokeType.name),
                 ),
               ),
             )

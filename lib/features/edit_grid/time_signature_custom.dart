@@ -1,5 +1,7 @@
 import 'package:drums/features/models/note_value.dart';
 import 'package:drums/features/models/time_signature.dart';
+import 'package:drums/features/shared/svg_icon.dart';
+import 'package:drums/features/shared/text_with_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -84,7 +86,6 @@ class _BeatsLengthEditor extends StatelessWidget {
           onPressed: () => timeSignature.changeBeatLength(
               beatIndex, timeSignature.noteValue.length),
         ),
-        // TODO(erondondron): Add note symbols
         Text(
           timeSignature.measures[beatIndex].toString(),
           style: Theme.of(context).textTheme.headlineSmall,
@@ -107,6 +108,7 @@ class _BeatsNoteValueEditor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
@@ -115,9 +117,12 @@ class _BeatsNoteValueEditor extends StatelessWidget {
               ? timeSignature.increaseNoteValue
               : null,
         ),
-        Text(
-          timeSignature.noteValue.part.toString(),
-          style: Theme.of(context).textTheme.headlineSmall,
+        TextWithIcon(
+          icon: SvgIcon(asset: timeSignature.noteValue.icon),
+          text: Text(
+            timeSignature.noteValue.shortName,
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
         ),
         IconButton(
           icon: Icon(Icons.remove_outlined),
