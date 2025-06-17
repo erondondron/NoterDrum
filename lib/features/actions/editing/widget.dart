@@ -64,7 +64,6 @@ class _NotesEditingActions extends StatelessWidget {
   }
 }
 
-// TODO(erondondron): Add note symbols
 class _NoteValuesSelector extends StatelessWidget {
   const _NoteValuesSelector({required this.controller});
 
@@ -82,7 +81,10 @@ class _NoteValuesSelector extends StatelessWidget {
             .map(
               (NoteValue noteValue) => PopupMenuItem(
                 value: noteValue,
-                child: Text(noteValue.part.toString()),
+                child: TextWithIcon(
+                  icon: SvgIcon(asset: noteValue.icon),
+                  text: noteValue.name,
+                ),
               ),
             )
             .toList();

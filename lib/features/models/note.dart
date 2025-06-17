@@ -13,8 +13,8 @@ enum StrokeType {
   accent(name: "Accent", icon: "accent.svg"),
   plain(name: "Plain", icon: "plain.svg"),
   ghost(name: "Ghost", icon: "ghost.svg"),
-  rimClick(name: "Rim click", icon: "rim-click.svg", drums: snareAndToms),
-  rimShot(name: "Rim shot", icon: "rim-shot.svg", drums: snareAndToms),
+  rimClick(name: "Rim click", icon: "rim_click.svg", drums: snareAndToms),
+  rimShot(name: "Rim shot", icon: "rim_shot.svg", drums: snareAndToms),
   flam(name: "Flam", icon: "flam.svg"),
   foot(name: "Foot", icon: "foot.svg", drums: {Drum.hiHat}),
   rest(name: "Rest", icon: "rest.svg");

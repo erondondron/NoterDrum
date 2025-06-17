@@ -1,21 +1,26 @@
 enum NoteValue {
-  quarter(part: 4),
-  eighth(part: 8),
-  eighthTriplet(part: 12, length: 3),
-  sixteenth(part: 16),
-  sixteenthTriplet(part: 24, length: 3),
-  thirtySecond(part: 32),
+  quarter(part: 4, icon: "quarter.svg"),
+  eighth(part: 8, icon: "eighth.svg"),
+  eighthTriplet(part: 12, length: 3, icon: "eighth_triplet.svg"),
+  sixteenth(part: 16, icon: "sixteenth.svg"),
+  sixteenthTriplet(part: 24, length: 3, icon: "sixteenth_triplet.svg"),
+  thirtySecond(part: 32, icon: "thirty_second.svg"),
   thirtySecondTriplet(part: 48, length: 3),
   sixtyFourth(part: 64),
   sixtyFourthTriplet(part: 96, length: 3);
 
+  final String icon;
   final int part;
   final int length;
 
   const NoteValue({
     required this.part,
     this.length = 1,
-  });
+    String icon = "empty.svg",
+  }) : icon = "assets/icons/note_values/$icon";
+
+  String get name =>
+      length == 3 ? "${part * 2 ~/ length}th triplet" : "${part}th note";
 
   NoteValue get unit {
     return switch (this) {

@@ -29,3 +29,4 @@ flutter:
   assets:
     - assets/icons/drums/
     - assets/icons/strokes/
+    - assets/icons/note_values/
