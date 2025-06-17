@@ -1,5 +1,5 @@
-import 'package:drums/features/models/note_value.dart';
-import 'package:drums/features/staff/models.dart';
+import 'package:drums/models/note_value.dart';
+import 'package:drums/staff/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'utils.dart';

@@ -1,9 +1,9 @@
-import 'package:drums/features/actions/editing/model.dart';
-import 'package:drums/features/app_bar.dart';
-import 'package:drums/features/sheet_music.dart';
-import 'package:drums/features/models/drum_set.dart';
-import 'package:drums/features/storage/model.dart';
-import 'package:drums/features/storage/window.dart';
+import 'package:drums/actions/editing/model.dart';
+import 'package:drums/app_bar.dart';
+import 'package:drums/sheet_music.dart';
+import 'package:drums/models/drum_set.dart';
+import 'package:drums/storage/model.dart';
+import 'package:drums/storage/window.dart';
 import 'package:drums/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

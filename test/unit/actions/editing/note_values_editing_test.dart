@@ -1,8 +1,8 @@
-import 'package:drums/features/actions/editing/model.dart';
-import 'package:drums/features/models/beat.dart';
-import 'package:drums/features/models/drum_set.dart';
-import 'package:drums/features/models/note.dart';
-import 'package:drums/features/models/note_value.dart';
+import 'package:drums/actions/editing/model.dart';
+import 'package:drums/models/beat.dart';
+import 'package:drums/models/drum_set.dart';
+import 'package:drums/models/note.dart';
+import 'package:drums/models/note_value.dart';
 import 'package:test/test.dart';
 
 void compareSingleNotes(SingleNote actual, SingleNote expected) {
