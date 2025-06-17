@@ -64,7 +64,7 @@ class GrooveMeasure extends ChangeNotifier {
           json["time_signature"] as Map<String, dynamic>,
         ),
         beats = (json["beats"] as List<dynamic>)
-            .map((beat) => Beat.fromJson(beat as Map<String, dynamic>))
+            .map((beat) => Beat.fromJson(drumSet, beat as Map<String, dynamic>))
             .toList();
 
   Map<String, dynamic> toJson() => {

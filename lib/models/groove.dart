@@ -16,11 +16,13 @@ class Groove extends ChangeNotifier {
   final List<GrooveMeasure> measures;
 
   String relativePath;
+  bool saved;
 
   Groove({
     required this.relativePath,
     required this.drumSet,
     required this.measures,
+    required this.saved,
   }) {
     drumSet.newDrumCallback = addNewMeasuresLine;
     drumSet.removedDrumCallback = removeMeasuresLine;
@@ -40,6 +42,7 @@ class Groove extends ChangeNotifier {
       relativePath: relativePath,
       drumSet: drumSet,
       measures: [measure],
+      saved: false,
     );
   }
 
@@ -102,6 +105,7 @@ class Groove extends ChangeNotifier {
                 measure as Map<String, dynamic>,
               ))
           .toList(),
+      saved: true,
     );
   }
 

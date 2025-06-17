@@ -55,10 +55,12 @@ abstract class Note {
     var value = NoteValue.values.firstWhere(
       (value) => value.part == json["duration"] as int,
     );
-    return value.length == 1
+    return value.length == 3
         ? Triplet.fromJson(json)
         : SingleNote.fromJson(json);
   }
+
+  Map<String, dynamic> toJson() => throw UnimplementedError();
 }
 
 class SingleNote extends Note {
@@ -83,6 +85,7 @@ class SingleNote extends Note {
           ),
         );
 
+  @override
   Map<String, dynamic> toJson() => {
         "duration": value.part,
         "stroke": stroke.name,
@@ -143,6 +146,7 @@ class Triplet extends Note {
           ),
         );
 
+  @override
   Map<String, dynamic> toJson() => {
         "duration": value.part,
         "first": first.toJson(),

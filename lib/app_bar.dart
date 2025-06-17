@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:drums/storage/model.dart';
+import 'package:drums/storage/setup/models.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -47,8 +48,8 @@ class _NoterDrumAppBarState extends State<NoterDrumAppBar> {
             ),
             actions: [
               _ReturnBackButton(storage: storage),
-              _NewFolderButton(storage: storage),
               _SaveGrooveButton(storage: storage),
+              _NewFolderButton(storage: storage),
               _ExplorerButton(storage: storage),
               _SettingsButton(storage: storage),
               SizedBox(width: NoterDrumAppBar.rightPadding),
@@ -87,26 +88,16 @@ class _ExplorerButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    GestureTapCallback? onTap = storage.openFolder;
-    Color? color;
-
-    if (storage.newGroove != null) {
-      color = Theme.of(context).colorScheme.onSecondaryContainer;
-      onTap = null;
-    } else if (storage.isActive) {
-      color = Theme.of(context).colorScheme.primary;
-      onTap = storage.close;
-    }
-
+    var activeColor = Theme.of(context).colorScheme.primary;
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
-      onTap: onTap,
+      onTap: storage.isActive ? storage.close : storage.openFolder,
       child: SizedBox(
         height: NoterDrumAppBar.height,
         width: NoterDrumAppBar.height,
         child: Icon(
           Icons.folder_outlined,
-          color: color,
+          color: storage.isActive ? activeColor : null,
           size: NoterDrumAppBar.buttonSize,
         ),
       ),
@@ -121,25 +112,19 @@ class _SaveGrooveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    GestureTapCallback? onTap = storage.setupNewGroove;
-    Color? color;
-
-    if (storage.newGroove != null) {
-      color = Theme.of(context).colorScheme.primary;
-      onTap = storage.close;
-    } else if (storage.isActive) {
-      return SizedBox.shrink();
-    }
+    if (!storage.isActive) return SizedBox.shrink();
+    var activeColor = Theme.of(context).colorScheme.primary;
+    var isActive = storage.setupEntity is NewGrooveSetup;
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
-      onTap: onTap,
+      onTap: isActive ? storage.closeSetup : storage.setupNewGroove,
       child: SizedBox(
         height: NoterDrumAppBar.height,
         width: NoterDrumAppBar.height,
         child: Icon(
           Icons.save_outlined,
-          color: color,
+          color: isActive ? activeColor : null,
           size: NoterDrumAppBar.buttonSize,
         ),
       ),
@@ -155,14 +140,17 @@ class _NewFolderButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!storage.isActive) return SizedBox.shrink();
+    var activeColor = Theme.of(context).colorScheme.primary;
+    var isActive = storage.setupEntity is NewFolderSetup;
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
-      onTap: storage.setupNewFolder,
+      onTap: isActive ? storage.closeSetup : storage.setupNewFolder,
       child: SizedBox(
         height: NoterDrumAppBar.height,
         width: NoterDrumAppBar.height,
         child: Icon(
           Icons.create_new_folder_outlined,
+          color: isActive ? activeColor : null,
           size: NoterDrumAppBar.buttonSize,
         ),
       ),

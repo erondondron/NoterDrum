@@ -1,4 +1,5 @@
 import 'package:drums/storage/model.dart';
+import 'package:drums/storage/setup/models.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,8 +25,9 @@ class _NewGrooveSetupWidgetState extends State<NewGrooveSetupWidget> {
   Widget build(BuildContext context) {
     return Consumer<Storage>(
       builder: (BuildContext context, Storage storage, _) {
-        storage.newGroove!.name = storage.getNewGrooveName();
-        _controller.text = storage.newGroove!.name;
+        var setupEntity = storage.setupEntity as NewGrooveSetup;
+        setupEntity.name = storage.getNewGrooveName();
+        _controller.text = setupEntity.name;
         return ListView(
           children: [
             SizedBox(height: 60),
@@ -34,7 +36,7 @@ class _NewGrooveSetupWidgetState extends State<NewGrooveSetupWidget> {
             TextFormField(
               focusNode: _focusNode,
               controller: _controller,
-              onChanged: (_) => storage.newGroove!.name = _controller.text,
+              onChanged: (_) => setupEntity.name = _controller.text,
               onTapOutside: (_) => FocusScope.of(context).unfocus(),
               onTap: () {
                 if (_focusNode.hasFocus) return;
@@ -49,7 +51,7 @@ class _NewGrooveSetupWidgetState extends State<NewGrooveSetupWidget> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 OutlinedButton(
-                  onPressed: storage.close,
+                  onPressed: storage.closeSetup,
                   child: Text("Cancel"),
                 ),
                 SizedBox(width: 10),

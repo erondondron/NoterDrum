@@ -35,7 +35,8 @@ class StorageWindow extends StatelessWidget {
               storage: storage,
             ),
           MoveEntitySetup() => MoveEntitySetupWidget(),
-          _ => storage.newGroove != null ? NewGrooveSetupWidget() : null
+          NewGrooveSetup() => NewGrooveSetupWidget(),
+          _ => null
         };
 
         return Row(

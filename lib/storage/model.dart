@@ -26,7 +26,6 @@ class Storage extends ChangeNotifier {
   List<String> grooves = [];
 
   Groove selectedGroove = Groove.generate();
-  NewGrooveSetup? newGroove;
   StorageSetupEntity? setupEntity;
 
   bool get isActive => relativePath.isNotEmpty;
@@ -197,12 +196,16 @@ class Storage extends ChangeNotifier {
   }
 
   Future<void> setupNewGroove() async {
-    await openFolder(name: path.dirname(selectedGroove.relativePath));
-    newGroove = NewGrooveSetup(name: getNewGrooveName());
+    setupEntity = NewGrooveSetup(name: getNewGrooveName());
     notifyListeners();
   }
 
   String getNewGrooveName() {
+    if (selectedGroove.saved) {
+      return path.basenameWithoutExtension(
+        selectedGroove.relativePath,
+      );
+    }
     var grooveNumber = 0;
     var groovePattern = RegExp(r"^Groove (\d+).pbnd$");
     for (var groove in grooves) {
@@ -215,16 +218,20 @@ class Storage extends ChangeNotifier {
   }
 
   Future<void> saveNewGroove({bool force = false}) async {
-    if (newGroove == null) return;
+    if (setupEntity is! NewGrooveSetup) return;
+    var newGroove = setupEntity as NewGrooveSetup;
     var root = await getApplicationDocumentsDirectory();
-    var name = newGroove!.name + Storage.grooveExtension;
+    var name = newGroove.name + Storage.grooveExtension;
     var groovePath = path.join(relativePath, name);
     var file = File(path.join(root.path, groovePath));
     if (file.existsSync() && !force) {
       throw StorageEntityAlreadyExistsError(groovePath);
     }
     await selectedGroove.dumpFile(groovePath);
-    return close();
+    selectedGroove.relativePath = groovePath;
+    selectedGroove.saved = true;
+    await _sync();
+    return closeSetup();
   }
 
   void closeSetup() {
@@ -233,7 +240,6 @@ class Storage extends ChangeNotifier {
   }
 
   void close() {
-    newGroove = null;
     relativePath = "";
     folders = [];
     grooves = [];

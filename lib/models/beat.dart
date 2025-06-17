@@ -36,7 +36,7 @@ class Beat extends ChangeNotifier {
     required this.noteValue,
     required this.length,
   }) {
-    generateDivisions();
+    createStaffModel();
   }
 
   factory Beat.generate({
@@ -56,7 +56,7 @@ class Beat extends ChangeNotifier {
     );
   }
 
-  void generateDivisions() {
+  void createStaffModel() {
     calculateNotesWidth();
     staffModel = StaffConverter.convertBeat(this);
     notifyListeners();
@@ -76,8 +76,7 @@ class Beat extends ChangeNotifier {
     if (values.contains(NoteValue.eighthTriplet)) {
       tripletSpreaders.add(NoteValue.eighth);
       if (values.intersection(tripletSpreaders).isNotEmpty) dw *= 2;
-    }
-    else if (values.contains(NoteValue.sixteenthTriplet)) {
+    } else if (values.contains(NoteValue.sixteenthTriplet)) {
       if (values.intersection(tripletSpreaders).isNotEmpty) dw *= 2;
     }
 
@@ -104,12 +103,12 @@ class Beat extends ChangeNotifier {
       drum: drum,
     );
     notesGrid.insert(idx, newLine);
-    generateDivisions();
+    createStaffModel();
   }
 
   void removeLine(int idx) {
     notesGrid.removeAt(idx);
-    generateDivisions();
+    createStaffModel();
   }
 
   void selectNotes({required Set<SingleNote> newSelection}) {
@@ -133,13 +132,33 @@ class Beat extends ChangeNotifier {
   void changeNoteStroke({required SingleNote note, StrokeType? stroke}) {
     note.stroke = stroke ??
         (note.stroke == StrokeType.rest ? StrokeType.plain : StrokeType.rest);
-    generateDivisions();
+    createStaffModel();
   }
 
-  // FIXME
-  factory Beat.fromJson(Map<String, dynamic> json) =>
-      throw UnimplementedError();
+  factory Beat.fromJson(DrumSet drumSet, Map<String, dynamic> json) {
+    var notesGrid = <BeatLine>[];
+    var rawNotes = json["notes"] as List<dynamic>;
+    for (var (idx, drum) in drumSet.selected.indexed) {
+      var notes = [
+        for (var rawNote in rawNotes[idx] as List<dynamic>)
+          Note.fromJson(rawNote as Map<String, dynamic>)
+      ];
+      notesGrid.add(BeatLine(notes: notes, drum: drum));
+    }
+    return Beat(
+      notesGrid: notesGrid,
+      noteValue: NoteValue.values.firstWhere(
+        (value) => value.part == json["note_value"] as int,
+      ),
+      length: json["length"] as int,
+    );
+  }
 
-  // FIXME
-  Map<String, dynamic> toJson() => throw UnimplementedError();
+  Map<String, dynamic> toJson() => {
+        "notes": notesGrid
+            .map((line) => line.notes.map((note) => note.toJson()).toList())
+            .toList(),
+        "note_value": noteValue.part,
+        "length": length,
+      };
 }

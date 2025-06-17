@@ -61,7 +61,7 @@ class NotesEditingController extends ChangeNotifier {
       for (var note in beatNotes.value) {
         note.stroke = stroke;
       }
-      beatNotes.key.generateDivisions();
+      beatNotes.key.createStaffModel();
     }
   }
 
@@ -96,7 +96,7 @@ class NotesEditingController extends ChangeNotifier {
       for (var lineNotes in lines.entries) {
         changeLineNotesValues(lineNotes.key, lineNotes.value, newNoteValue);
       }
-      beatNotes.key.generateDivisions();
+      beatNotes.key.createStaffModel();
       newSelection[beatNotes.key] = beatNotes.key.notesGrid
           .expand((line) => line.singleNotes)
           .where((note) => note.isSelected)
