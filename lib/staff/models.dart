@@ -609,19 +609,17 @@ class StaffConverter {
   static void _setupSingleNoteStems(StaffNoteGroup beat) {
     for (var stack in beat.singleNotes) {
       var lowerNote = stack.notes.last;
-      stack.stemStart = StaffPoint(
-        x: lowerNote.position.x + NotesSettings.stemOffset,
-        y: lowerNote.position.y,
-      );
+      var startInclineDx = NotesSettings.stemInclineDx * lowerNote.position.y;
+      var startX = stack.x + NotesSettings.stemOffset - startInclineDx;
+      stack.stemStart = StaffPoint(x: startX, y: lowerNote.position.y);
 
       var upperNote = stack.notes.first;
       var stemFlagLength = _getStemFlagLength(stack.noteValue);
       var stemLength = NotesSettings.stemLength + stemFlagLength / 2;
-      var stemEndOffset = NotesSettings.stemInclineDx * stemLength;
-      stack.stemEnd = StaffPoint(
-        x: upperNote.position.x + NotesSettings.stemOffset + stemEndOffset,
-        y: upperNote.position.y - stemLength,
-      );
+      var endY = upperNote.position.y - stemLength;
+      var endInclineDx = NotesSettings.stemInclineDx * endY;
+      var endX = stack.x + NotesSettings.stemOffset - endInclineDx;
+      stack.stemEnd = StaffPoint(x: endX, y: endY);
     }
   }
 
@@ -664,29 +662,18 @@ class StaffConverter {
     }
 
     for (var stack in group.stacks) {
-      var stackDx = stack.x - startStack.x;
-      var stemEndY = startY - group.beamInclineDx * stackDx;
-
-      if (stack.notes.isNotEmpty) {
-        var lowerNote = stack.notes.last.position;
-        var stemStartX = lowerNote.x + NotesSettings.stemOffset;
-        var stemLength = lowerNote.y - stemEndY;
-        var stemIncline = NotesSettings.stemInclineDx * stemLength;
-        var stemEndX = lowerNote.x + NotesSettings.stemOffset + stemIncline;
-        stack.stemStart = StaffPoint(x: stemStartX, y: lowerNote.y);
-        stack.stemEnd = StaffPoint(x: stemEndX, y: stemEndY);
-        continue;
-      }
-
-      var stemEndIncline = NotesSettings.stemInclineDx * -stemEndY;
-      var stemEndOffset = NotesSettings.stemOffset + stemEndIncline;
-      var stemEndX = stack.x + stemEndOffset;
+      var stemEndY = startY - group.beamInclineDx * (stack.x - startStack.x);
+      var stemEndInclineDx = NotesSettings.stemInclineDx * stemEndY;
+      var stemEndOffsetDx = NotesSettings.stemOffset - stemEndInclineDx;
+      var stemEndX = stack.x + stemEndOffsetDx;
       stack.stemEnd = StaffPoint(x: stemEndX, y: stemEndY);
 
-      var stemLength = _getStemFlagLength(stack.noteValue);
-      var stemStartIncline = NotesSettings.stemInclineDx * stemLength;
-      var stemStartX = stemEndX - stemStartIncline;
-      var stemStartY = stemEndY + stemLength;
+      var stemStartY = stack.notes.isNotEmpty
+          ? stack.notes.last.position.y
+          : stemEndY + _getStemFlagLength(stack.noteValue);
+      var stemStartInclineDx = NotesSettings.stemInclineDx * stemStartY;
+      var stemStartOffsetDx = NotesSettings.stemOffset - stemStartInclineDx;
+      var stemStartX = stack.x + stemStartOffsetDx;
       stack.stemStart = StaffPoint(x: stemStartX, y: stemStartY);
     }
   }
